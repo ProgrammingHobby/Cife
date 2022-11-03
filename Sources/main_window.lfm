@@ -1,7 +1,105 @@
 object MainWindow: TMainWindow
   Left = 434
-  Height = 240
+  Height = 538
   Top = 250
-  Width = 320
+  Width = 661
   Caption = 'CP/M Image-File Explorer'
+  ClientHeight = 538
+  ClientWidth = 661
+  Menu = MainMenu
+  object statusbarMainWindow: TStatusBar
+    Left = 0
+    Height = 20
+    Top = 518
+    Width = 661
+    Panels = <>
+  end
+  object MainMenu: TMainMenu
+    Left = 8
+    Top = 8
+    object menuFile: TMenuItem
+      Caption = 'File'
+      object menuItemNew: TMenuItem
+        Caption = 'menuItemNew'
+      end
+      object menuItemOpen: TMenuItem
+        Caption = 'menuItemOpen'
+      end
+      object Separator1: TMenuItem
+        Caption = '-'
+      end
+      object menuItemClose: TMenuItem
+        Caption = 'menuItemClose'
+      end
+      object Separator2: TMenuItem
+        Caption = '-'
+      end
+      object menuItemQuit: TMenuItem
+        Caption = 'menuItemQuit'
+      end
+    end
+    object menuEdit: TMenuItem
+      Caption = 'Edit'
+      object menuItemCut: TMenuItem
+        Caption = 'menuItemCut'
+      end
+      object menuItemCopy: TMenuItem
+        Caption = 'menuItemCopy'
+      end
+      object menuItemPaste: TMenuItem
+        Caption = 'menuItemPaste'
+      end
+      object menuItemSelectAll: TMenuItem
+        Caption = 'menuItemSelectAll'
+      end
+      object Separator3: TMenuItem
+        Caption = '-'
+      end
+      object menuItemRename: TMenuItem
+        Caption = 'menuItemRename'
+      end
+      object menuItemDelete: TMenuItem
+        Caption = 'menuItemDelete'
+      end
+      object Separator4: TMenuItem
+        Caption = '-'
+      end
+      object menuItemAttributes: TMenuItem
+        Caption = 'menuItemAttributes'
+      end
+      object menuItemProtections: TMenuItem
+        Caption = 'menuItemProtections'
+      end
+      object Separator5: TMenuItem
+        Caption = '-'
+      end
+      object menuItemCreateNew: TMenuItem
+        Caption = 'menuItemCreateNew'
+      end
+    end
+    object menuView: TMenuItem
+      Caption = 'View'
+      object menuItemRefresh: TMenuItem
+        Caption = 'menuItemRefresh'
+      end
+    end
+    object menuTools: TMenuItem
+      Caption = 'Tools'
+      object menuItemCheckImage: TMenuItem
+        Caption = 'menuItemCheckImage'
+      end
+    end
+    object menuOptions: TMenuItem
+      Caption = 'Options'
+      object menuCopySettings: TMenuItem
+        Caption = 'menuCopySettings'
+      end
+    end
+    object menuHelp: TMenuItem
+      Caption = 'Help'
+      object menuItemAbout: TMenuItem
+        Caption = 'menuItemAbout'
+      end
+    end
+  end
 end
