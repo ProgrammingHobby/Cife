@@ -1,0 +1,7 @@
+object MainWindow: TMainWindow
+  Left = 434
+  Height = 240
+  Top = 250
+  Width = 320
+  Caption = 'CP/M Image-File Explorer'
+end

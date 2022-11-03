@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CONFIG>
+  <ProjectOptions>
+    <Version Value="12"/>
+    <General>
+      <SessionStorage Value="InProjectDir"/>
+      <Title Value="cife"/>
+      <Scaled Value="True"/>
+      <ResourceType Value="res"/>
+      <UseXPManifest Value="True"/>
+      <XPManifest>
+        <DpiAware Value="True"/>
+      </XPManifest>
+      <Icon Value="0"/>
+    </General>
+    <MacroValues Count="1">
+      <Macro4 Name="LCLWidgetType" Value="gtk3"/>
+    </MacroValues>
+    <BuildModes>
+      <Item Name="GTK-Debug_64bit" Default="True"/>
+      <Item Name="GTK-Release_64bit">
+        <MacroValues Count="1">
+          <Macro4 Name="LCLWidgetType" Value="gtk3"/>
+        </MacroValues>
+        <CompilerOptions>
+          <Version Value="11"/>
+          <Target>
+            <Filename Value="Build-$(BuildMode)_$(TargetCPU)/bin/cife"/>
+          </Target>
+          <SearchPaths>
+            <IncludeFiles Value="$(ProjOutDir)"/>
+            <OtherUnitFiles Value="Sources"/>
+            <UnitOutputDirectory Value="Build-$(BuildMode)_$(TargetCPU)/lib"/>
+          </SearchPaths>
+          <CodeGeneration>
+            <SmartLinkUnit Value="True"/>
+            <Optimizations>
+              <OptimizationLevel Value="3"/>
+            </Optimizations>
+            <SmallerCode Value="True"/>
+          </CodeGeneration>
+          <Linking>
+            <Debugging>
+              <GenerateDebugInfo Value="False"/>
+              <StripSymbols Value="True"/>
+            </Debugging>
+            <LinkSmart Value="True"/>
+            <Options>
+              <Win32>
+                <GraphicApplication Value="True"/>
+              </Win32>
+            </Options>
+          </Linking>
+        </CompilerOptions>
+      </Item>
+      <SharedMatrixOptions Count="4">
+        <Item1 ID="389553795236" Modes="GTK-Debug_64bit" Value="-d_DEBUG_"/>
+        <Item2 ID="854525153164" Modes="GTK-Release_64bit" Value="-d_RELEASE_"/>
+        <Item3 ID="319618284339" Modes="GTK-Debug_64bit,GTK-Release_64bit" Value="-dUseCThreads"/>
+        <Item4 ID="493932439264" Modes="GTK-Debug_64bit,GTK-Release_64bit" Type="IDEMacro" MacroName="LCLWidgetType" Value="gtk3"/>
+      </SharedMatrixOptions>
+    </BuildModes>
+    <PublishOptions>
+      <Version Value="2"/>
+      <UseFileFilters Value="True"/>
+    </PublishOptions>
+    <RunParams>
+      <FormatVersion Value="2"/>
+    </RunParams>
+    <RequiredPackages>
+      <Item>
+        <PackageName Value="LCL"/>
+      </Item>
+    </RequiredPackages>
+    <Units>
+      <Unit>
+        <Filename Value="cife.lpr"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Sources/main_window.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="MainWindow"/>
+        <ResourceBaseClass Value="Form"/>
+      </Unit>
+    </Units>
+  </ProjectOptions>
+  <CompilerOptions>
+    <Version Value="11"/>
+    <Target>
+      <Filename Value="Build-$(BuildMode)_$(TargetCPU)/bin/cife"/>
+    </Target>
+    <SearchPaths>
+      <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="Sources"/>
+      <UnitOutputDirectory Value="Build-$(BuildMode)_$(TargetCPU)/lib"/>
+    </SearchPaths>
+    <Parsing>
+      <SyntaxOptions>
+        <IncludeAssertionCode Value="True"/>
+      </SyntaxOptions>
+    </Parsing>
+    <CodeGeneration>
+      <Checks>
+        <IOChecks Value="True"/>
+        <RangeChecks Value="True"/>
+        <OverflowChecks Value="True"/>
+        <StackChecks Value="True"/>
+      </Checks>
+      <VerifyObjMethodCallValidity Value="True"/>
+      <Optimizations>
+        <OptimizationLevel Value="0"/>
+      </Optimizations>
+    </CodeGeneration>
+    <Linking>
+      <Debugging>
+        <DebugInfoType Value="dsDwarf3"/>
+        <UseHeaptrc Value="True"/>
+        <TrashVariables Value="True"/>
+        <UseExternalDbgSyms Value="True"/>
+      </Debugging>
+    </Linking>
+  </CompilerOptions>
+  <Debugging>
+    <Exceptions>
+      <Item>
+        <Name Value="EAbort"/>
+      </Item>
+      <Item>
+        <Name Value="ECodetoolError"/>
+      </Item>
+      <Item>
+        <Name Value="EFOpenError"/>
+      </Item>
+    </Exceptions>
+  </Debugging>
+</CONFIG>
