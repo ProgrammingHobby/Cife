@@ -6,106 +6,107 @@ object MainWindow: TMainWindow
   Caption = 'CP/M Image-File Explorer'
   ClientHeight = 538
   ClientWidth = 661
-  Menu = MainMenu
-  object statusbarMainWindow: TStatusBar
+  Menu = MainMenu1
+  object StatusBar1: TStatusBar
     Left = 0
     Height = 20
     Top = 518
     Width = 661
     Panels = <>
   end
-  object MainMenu: TMainMenu
+  object MainMenu1: TMainMenu
+    Images = ImageList1
     Left = 24
     Top = 456
     object menuFile: TMenuItem
       Caption = 'File'
       object menuItemNew: TMenuItem
-        Caption = 'menuItemNew'
+        Action = actionNew
       end
       object menuItemOpen: TMenuItem
-        Caption = 'menuItemOpen'
+        Action = actionOpen
       end
       object Separator1: TMenuItem
         Caption = '-'
       end
       object menuItemClose: TMenuItem
-        Caption = 'menuItemClose'
+        Action = actionClose
       end
       object Separator2: TMenuItem
         Caption = '-'
       end
       object menuItemQuit: TMenuItem
-        Caption = 'menuItemQuit'
+        Action = actionQuit
       end
     end
     object menuEdit: TMenuItem
       Caption = 'Edit'
       object menuItemCut: TMenuItem
-        Caption = 'menuItemCut'
+        Action = actionCut
       end
       object menuItemCopy: TMenuItem
-        Caption = 'menuItemCopy'
+        Action = actionCopy
       end
       object menuItemPaste: TMenuItem
-        Caption = 'menuItemPaste'
+        Action = actionPaste
       end
       object menuItemSelectAll: TMenuItem
-        Caption = 'menuItemSelectAll'
+        Action = actionSelectAll
       end
       object Separator3: TMenuItem
         Caption = '-'
       end
       object menuItemRename: TMenuItem
-        Caption = 'menuItemRename'
+        Action = actionRename
       end
       object menuItemDelete: TMenuItem
-        Caption = 'menuItemDelete'
+        Action = actionDelete
       end
       object Separator4: TMenuItem
         Caption = '-'
       end
       object menuItemAttributes: TMenuItem
-        Caption = 'menuItemAttributes'
+        Action = actionAttributes
       end
       object menuItemProtections: TMenuItem
-        Caption = 'menuItemProtections'
+        Action = actionProtections
       end
       object Separator5: TMenuItem
         Caption = '-'
       end
-      object menuItemCreateNew: TMenuItem
-        Caption = 'menuItemCreateNew'
+      object menuItemFormatCurrent: TMenuItem
+        Action = actionFormatCurrent
       end
     end
     object menuView: TMenuItem
       Caption = 'View'
       object menuItemRefresh: TMenuItem
-        Caption = 'menuItemRefresh'
+        Action = actionRefresh
       end
     end
     object menuTools: TMenuItem
       Caption = 'Tools'
       object menuItemCheckImage: TMenuItem
-        Caption = 'menuItemCheckImage'
+        Action = actionCheckImage
       end
     end
     object menuOptions: TMenuItem
       Caption = 'Options'
       object menuCopySettings: TMenuItem
-        Caption = 'menuCopySettings'
+        Action = actionCopySettings
       end
     end
     object menuHelp: TMenuItem
       Caption = 'Help'
       object menuItemAbout: TMenuItem
-        Caption = 'menuItemAbout'
+        Action = actionAbout
       end
     end
   end
-  object imageListMainWindow: TImageList
+  object ImageList1: TImageList
     Height = 20
     Width = 20
-    Left = 128
+    Left = 104
     Top = 456
     Bitmap = {
       4C7A1000000014000000140000008C1900000000000078DAED9C07585467BA80
@@ -315,5 +316,97 @@ object MainWindow: TMainWindow
       D673FF7C30E4AC67A5CFB794185F728CA1E07C1BEF7C30AEF9EA7FEBF63F9F06
       B1C1
     }
+  end
+  object ActionList1: TActionList
+    Images = ImageList1
+    Left = 184
+    Top = 456
+    object actionNew: TAction
+      Caption = 'New'
+      ImageIndex = 6
+      ShortCut = 16462
+    end
+    object actionOpen: TAction
+      Caption = 'Open'
+      ImageIndex = 8
+      ShortCut = 16463
+    end
+    object actionClose: TAction
+      Caption = 'Close'
+      ImageIndex = 4
+      ShortCut = 16471
+    end
+    object actionQuit: TAction
+      Caption = 'Quit'
+      ImageIndex = 13
+      ShortCut = 16465
+    end
+    object actionCut: TAction
+      Caption = 'Cut'
+      ImageIndex = 7
+      ShortCut = 16472
+    end
+    object actionCopy: TAction
+      Caption = 'Copy'
+      ImageIndex = 5
+      ShortCut = 16451
+    end
+    object actionPaste: TAction
+      Caption = 'Paste'
+      ImageIndex = 11
+      ShortCut = 16470
+    end
+    object actionSelectAll: TAction
+      Caption = 'Select all'
+      ImageIndex = 15
+      ShortCut = 16449
+    end
+    object actionRename: TAction
+      Caption = 'Rename'
+      ImageIndex = 10
+      ShortCut = 113
+    end
+    object actionDelete: TAction
+      Caption = 'Delete'
+      ImageIndex = 9
+      ShortCut = 46
+    end
+    object actionAttributes: TAction
+      Caption = 'Attributes'
+      ImageIndex = 2
+      ShortCut = 118
+    end
+    object actionProtections: TAction
+      Caption = 'Protections'
+      ImageIndex = 12
+      ShortCut = 120
+    end
+    object actionFormatCurrent: TAction
+      Caption = 'Format current Image'
+      ImageIndex = 6
+    end
+    object actionRefresh: TAction
+      Caption = 'Refresh'
+      ImageIndex = 14
+      ShortCut = 116
+    end
+    object actionCheckImage: TAction
+      Caption = 'Check Image'
+      ImageIndex = 3
+      ShortCut = 122
+    end
+    object actionCopySettings: TAction
+      Caption = 'Copy Settings'
+    end
+    object actionAbout: TAction
+      Caption = 'About ...'
+      ImageIndex = 0
+    end
+    object actionClearMessages: TAction
+      Caption = 'Clear Messages'
+    end
+    object actionSaveMessages: TAction
+      Caption = 'Save Messages'
+    end
   end
 end

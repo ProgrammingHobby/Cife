@@ -5,15 +5,36 @@ unit main_window;
 interface
 
 uses
-  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, ComCtrls;
+  Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, ComCtrls,
+  ActnList, StdCtrls;
 
 type
 
   { TMainWindow }
 
   TMainWindow = class(TForm)
-    imageListMainWindow: TImageList;
-    MainMenu: TMainMenu;
+    actionNew: TAction;
+    actionDelete: TAction;
+    actionAttributes: TAction;
+    actionProtections: TAction;
+    actionFormatCurrent: TAction;
+    actionRefresh: TAction;
+    actionCheckImage: TAction;
+    actionCopySettings: TAction;
+    actionAbout: TAction;
+    actionClearMessages: TAction;
+    actionSaveMessages: TAction;
+    actionOpen: TAction;
+    actionClose: TAction;
+    actionQuit: TAction;
+    actionCut: TAction;
+    actionCopy: TAction;
+    actionPaste: TAction;
+    actionSelectAll: TAction;
+    actionRename: TAction;
+    ActionList1: TActionList;
+    ImageList1: TImageList;
+    MainMenu1: TMainMenu;
     menuFile: TMenuItem;
     menuItemCopy: TMenuItem;
     menuItemPaste: TMenuItem;
@@ -26,7 +47,7 @@ type
     menuItemProtections: TMenuItem;
     Separator5: TMenuItem;
     menuItemNew: TMenuItem;
-    menuItemCreateNew: TMenuItem;
+    menuItemFormatCurrent: TMenuItem;
     menuView: TMenuItem;
     menuItemRefresh: TMenuItem;
     menuTools: TMenuItem;
@@ -42,7 +63,7 @@ type
     menuItemQuit: TMenuItem;
     menuEdit: TMenuItem;
     menuItemCut: TMenuItem;
-    statusbarMainWindow: TStatusBar;
+    StatusBar1: TStatusBar;
   private
 
   public
