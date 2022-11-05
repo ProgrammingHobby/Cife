@@ -12,6 +12,7 @@ type
   { TMainWindow }
 
   TMainWindow = class(TForm)
+    imageListMainWindow: TImageList;
     MainMenu: TMainMenu;
     menuFile: TMenuItem;
     menuItemCopy: TMenuItem;

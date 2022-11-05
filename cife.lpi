@@ -81,6 +81,7 @@
         <Filename Value="Sources/main_window.pas"/>
         <IsPartOfProject Value="True"/>
         <ComponentName Value="MainWindow"/>
+        <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
       </Unit>
     </Units>
