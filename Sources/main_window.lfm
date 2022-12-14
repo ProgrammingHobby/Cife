@@ -6,7 +6,7 @@ object MainWindow: TMainWindow
   Caption = 'CP/M Image-File Explorer'
   ClientHeight = 538
   ClientWidth = 661
-  Menu = MainMenu1
+  Menu = MainMenu
   object StatusBar1: TStatusBar
     Left = 0
     Height = 20
@@ -14,8 +14,8 @@ object MainWindow: TMainWindow
     Width = 661
     Panels = <>
   end
-  object MainMenu1: TMainMenu
-    Images = ImageList1
+  object MainMenu: TMainMenu
+    Images = ImageList
     Left = 24
     Top = 456
     object menuFile: TMenuItem
@@ -103,7 +103,7 @@ object MainWindow: TMainWindow
       end
     end
   end
-  object ImageList1: TImageList
+  object ImageList: TImageList
     Height = 20
     Width = 20
     Left = 104
@@ -317,8 +317,8 @@ object MainWindow: TMainWindow
       B1C1
     }
   end
-  object ActionList1: TActionList
-    Images = ImageList1
+  object ActionList: TActionList
+    Images = ImageList
     Left = 184
     Top = 456
     object actionNew: TAction
@@ -407,6 +407,53 @@ object MainWindow: TMainWindow
     end
     object actionSaveMessages: TAction
       Caption = 'Save Messages'
+    end
+  end
+  object PopupMenu1: TPopupMenu
+    Images = ImageList
+    Left = 272
+    Top = 456
+    object popupItemRefresh: TMenuItem
+      Action = actionRefresh
+    end
+    object Separator6: TMenuItem
+      Caption = '-'
+    end
+    object popupItemCut: TMenuItem
+      Action = actionCut
+    end
+    object popupItemCopy: TMenuItem
+      Action = actionCopy
+    end
+    object popupItemPaste: TMenuItem
+      Action = actionPaste
+    end
+    object popupItemSelectAll: TMenuItem
+      Action = actionSelectAll
+    end
+    object Separator7: TMenuItem
+      Caption = '-'
+    end
+    object popupItemRename: TMenuItem
+      Action = actionRename
+    end
+    object popupItemDelete: TMenuItem
+      Action = actionDelete
+    end
+    object Separator8: TMenuItem
+      Caption = '-'
+    end
+    object popupItemAttributes: TMenuItem
+      Action = actionAttributes
+    end
+    object popupItemProtections: TMenuItem
+      Action = actionProtections
+    end
+    object Separator9: TMenuItem
+      Caption = '-'
+    end
+    object popupItemCheckImage: TMenuItem
+      Action = actionCheckImage
     end
   end
 end
