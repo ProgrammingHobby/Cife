@@ -6,7 +6,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, ComCtrls,
-  ActnList, StdCtrls;
+  ActnList;
 
 type
 
@@ -15,12 +15,11 @@ type
   TMainWindow = class(TForm)
     actionNew: TAction;
     actionDelete: TAction;
-    actionAttributes: TAction;
-    actionProtections: TAction;
+    actionCharacteristics: TAction;
     actionFormatCurrent: TAction;
     actionRefresh: TAction;
     actionCheckImage: TAction;
-    actionCopySettings: TAction;
+    actionSettings: TAction;
     actionAbout: TAction;
     actionClearMessages: TAction;
     actionSaveMessages: TAction;
@@ -39,7 +38,6 @@ type
     popupItemRefresh: TMenuItem;
     Separator8: TMenuItem;
     popupItemAttributes: TMenuItem;
-    popupItemProtections: TMenuItem;
     Separator9: TMenuItem;
     popupItemCheckImage: TMenuItem;
     Separator6: TMenuItem;
@@ -58,8 +56,7 @@ type
     menuItemRename: TMenuItem;
     menuItemDelete: TMenuItem;
     Separator4: TMenuItem;
-    menuItemAttributes: TMenuItem;
-    menuItemProtections: TMenuItem;
+    menuItemCharacteristics: TMenuItem;
     Separator5: TMenuItem;
     menuItemNew: TMenuItem;
     menuItemFormatCurrent: TMenuItem;
@@ -68,7 +65,7 @@ type
     menuTools: TMenuItem;
     menuItemCheckImage: TMenuItem;
     menuOptions: TMenuItem;
-    menuCopySettings: TMenuItem;
+    menuSettings: TMenuItem;
     menuHelp: TMenuItem;
     menuItemAbout: TMenuItem;
     menuItemOpen: TMenuItem;
