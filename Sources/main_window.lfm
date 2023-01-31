@@ -7,6 +7,7 @@ object MainWindow: TMainWindow
   ClientHeight = 538
   ClientWidth = 661
   Menu = MainMenu
+  LCLVersion = '2.2.4.0'
   object StatusBar1: TStatusBar
     Left = 0
     Height = 21
