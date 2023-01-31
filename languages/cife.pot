@@ -1,0 +1,266 @@
+msgid ""
+msgstr "Content-Type: text/plain; charset=UTF-8"
+
+#: tmainwindow.actionabout.caption
+msgid "About ..."
+msgstr ""
+
+#: tmainwindow.actioncharacteristics.caption
+msgid "Characteristics"
+msgstr ""
+
+#: tmainwindow.actioncheckimage.caption
+msgid "Check Image"
+msgstr ""
+
+#: tmainwindow.actionclearmessages.caption
+msgid "Clear Messages"
+msgstr ""
+
+#: tmainwindow.actionclose.caption
+msgid "Close"
+msgstr ""
+
+#: tmainwindow.actioncopy.caption
+msgid "Copy"
+msgstr ""
+
+#: tmainwindow.actioncut.caption
+msgid "Cut"
+msgstr ""
+
+#: tmainwindow.actiondelete.caption
+msgid "Delete"
+msgstr ""
+
+#: tmainwindow.actionformatcurrent.caption
+msgid "Format current Image"
+msgstr ""
+
+#: tmainwindow.actionnew.caption
+msgid "New"
+msgstr ""
+
+#: tmainwindow.actionopen.caption
+msgid "Open"
+msgstr ""
+
+#: tmainwindow.actionpaste.caption
+msgid "Paste"
+msgstr ""
+
+#: tmainwindow.actionquit.caption
+msgid "Quit"
+msgstr ""
+
+#: tmainwindow.actionrefresh.caption
+msgid "Refresh"
+msgstr ""
+
+#: tmainwindow.actionrename.caption
+msgid "Rename"
+msgstr ""
+
+#: tmainwindow.actionsavemessages.caption
+msgid "Save Messages"
+msgstr ""
+
+#: tmainwindow.actionselectall.caption
+msgid "Select all"
+msgstr ""
+
+#: tmainwindow.actionsettings.caption
+msgid "Settings"
+msgstr ""
+
+#: tmainwindow.caption
+msgid "CP/M Image-File Explorer"
+msgstr ""
+
+#: tmainwindow.groupdirstatistics.caption
+msgid "Directory Statistics"
+msgstr ""
+
+#: tmainwindow.groupdrivedata.caption
+msgid "Drive Data"
+msgstr ""
+
+#: tmainwindow.groupimagefile.caption
+msgid "Image File"
+msgstr ""
+
+#: tmainwindow.label1.caption
+msgid "Tracks :"
+msgstr ""
+
+#: tmainwindow.label10.caption
+msgid "Type :"
+msgstr ""
+
+#: tmainwindow.label11.caption
+msgid "File :"
+msgstr ""
+
+#: tmainwindow.label12.caption
+msgid "Total Bytes :"
+msgstr ""
+
+#: tmainwindow.label13.caption
+msgid "Total 1k Blocks :"
+msgstr ""
+
+#: tmainwindow.label14.caption
+msgid "Total Records :"
+msgstr ""
+
+#: tmainwindow.label15.caption
+msgid "Files Found :"
+msgstr ""
+
+#: tmainwindow.label16.caption
+msgid "Max Dir Entries :"
+msgstr ""
+
+#: tmainwindow.label17.caption
+msgid "Used Dir Entries :"
+msgstr ""
+
+#: tmainwindow.label2.caption
+msgid "Sectors :"
+msgstr ""
+
+#: tmainwindow.label3.caption
+msgid "Bytes/Sector :"
+msgstr ""
+
+#: tmainwindow.label4.caption
+msgid "Blocksize :"
+msgstr ""
+
+#: tmainwindow.label5.caption
+msgid "MaxDir :"
+msgstr ""
+
+#: tmainwindow.label6.caption
+msgid "Boot Tracks :"
+msgstr ""
+
+#: tmainwindow.label7.caption
+msgid "Offset :"
+msgstr ""
+
+#: tmainwindow.label8.caption
+msgid "Skew :"
+msgstr ""
+
+#: tmainwindow.label9.caption
+msgid "OS :"
+msgstr ""
+
+#: tmainwindow.labelblocksize.caption
+msgctxt "tmainwindow.labelblocksize.caption"
+msgid "XXXXXXXX"
+msgstr ""
+
+#: tmainwindow.labelboottracks.caption
+msgctxt "tmainwindow.labelboottracks.caption"
+msgid "XXXXXXXX"
+msgstr ""
+
+#: tmainwindow.labelfile.caption
+msgid "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+msgstr ""
+
+#: tmainwindow.labelfilesfound.caption
+msgctxt "tmainwindow.labelfilesfound.caption"
+msgid "XXXXXXXX"
+msgstr ""
+
+#: tmainwindow.labelmaxdir.caption
+msgctxt "tmainwindow.labelmaxdir.caption"
+msgid "XXXXXXXX"
+msgstr ""
+
+#: tmainwindow.labelmaxdirentries.caption
+msgctxt "tmainwindow.labelmaxdirentries.caption"
+msgid "XXXXXXXX"
+msgstr ""
+
+#: tmainwindow.labeloffset.caption
+msgctxt "tmainwindow.labeloffset.caption"
+msgid "XXXXXXXX"
+msgstr ""
+
+#: tmainwindow.labelos.caption
+msgctxt "tmainwindow.labelos.caption"
+msgid "XXXXXXXX"
+msgstr ""
+
+#: tmainwindow.labelsectorbytes.caption
+msgctxt "tmainwindow.labelsectorbytes.caption"
+msgid "XXXXXXXX"
+msgstr ""
+
+#: tmainwindow.labelsectors.caption
+msgctxt "tmainwindow.labelsectors.caption"
+msgid "XXXXXXXX"
+msgstr ""
+
+#: tmainwindow.labelskew.caption
+msgctxt "tmainwindow.labelskew.caption"
+msgid "XXXXXXXX"
+msgstr ""
+
+#: tmainwindow.labeltotal1kblocks.caption
+msgctxt "tmainwindow.labeltotal1kblocks.caption"
+msgid "XXXXXXXX"
+msgstr ""
+
+#: tmainwindow.labeltotalbytes.caption
+msgctxt "tmainwindow.labeltotalbytes.caption"
+msgid "XXXXXXXX"
+msgstr ""
+
+#: tmainwindow.labeltotalrecords.caption
+msgctxt "tmainwindow.labeltotalrecords.caption"
+msgid "XXXXXXXX"
+msgstr ""
+
+#: tmainwindow.labeltracks.caption
+msgctxt "tmainwindow.labeltracks.caption"
+msgid "XXXXXXXX"
+msgstr ""
+
+#: tmainwindow.labeltype.caption
+msgid "XXXXXXXXXXXXXXXX"
+msgstr ""
+
+#: tmainwindow.labeluseddirentries.caption
+msgctxt "tmainwindow.labeluseddirentries.caption"
+msgid "XXXXXXXX"
+msgstr ""
+
+#: tmainwindow.menuedit.caption
+msgid "Edit"
+msgstr ""
+
+#: tmainwindow.menufile.caption
+msgid "File"
+msgstr ""
+
+#: tmainwindow.menuhelp.caption
+msgid "Help"
+msgstr ""
+
+#: tmainwindow.menuoptions.caption
+msgid "Options"
+msgstr ""
+
+#: tmainwindow.menutools.caption
+msgid "Tools"
+msgstr ""
+
+#: tmainwindow.menuview.caption
+msgid "View"
+msgstr ""
+

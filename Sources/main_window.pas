@@ -24,7 +24,7 @@ interface
 
 uses
   Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, ComCtrls,
-  ActnList;
+  ActnList, ExtCtrls, StdCtrls;
 
 type
 
@@ -50,10 +50,52 @@ type
     actionSelectAll: TAction;
     actionRename: TAction;
     ActionList: TActionList;
+    groupImageFile: TGroupBox;
+    groupDirStatistics: TGroupBox;
+    groupDriveData: TGroupBox;
     ImageList: TImageList;
+    Label1: TLabel;
+    Label10: TLabel;
+    Label11: TLabel;
+    Label12: TLabel;
+    Label13: TLabel;
+    Label14: TLabel;
+    Label15: TLabel;
+    Label16: TLabel;
+    Label17: TLabel;
+    labelUsedDirEntries: TLabel;
+    labelMaxDirEntries: TLabel;
+    labelFilesFound: TLabel;
+    labelTotalRecords: TLabel;
+    labelTotal1kBlocks: TLabel;
+    labelTotalBytes: TLabel;
+    labelFile: TLabel;
+    labelType: TLabel;
+    labelOs: TLabel;
+    Label2: TLabel;
+    Label3: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    Label6: TLabel;
+    Label7: TLabel;
+    Label8: TLabel;
+    Label9: TLabel;
+    labelSkew: TLabel;
+    labelOffset: TLabel;
+    labelBoottracks: TLabel;
+    labelMaxdir: TLabel;
+    labelBlocksize: TLabel;
+    labelSectorBytes: TLabel;
+    labelSectors: TLabel;
+    labelTracks: TLabel;
     listDirectory: TListView;
     MainMenu: TMainMenu;
     menuFile: TMenuItem;
+    Panel1: TPanel;
+    Panel2: TPanel;
+    Panel3: TPanel;
+    Panel4: TPanel;
+    Panel5: TPanel;
     popupItemRefresh: TMenuItem;
     Separator8: TMenuItem;
     popupItemAttributes: TMenuItem;
