@@ -51,6 +51,7 @@ type
     actionRename: TAction;
     ActionList: TActionList;
     ImageList: TImageList;
+    listDirectory: TListView;
     MainMenu: TMainMenu;
     menuFile: TMenuItem;
     popupItemRefresh: TMenuItem;
@@ -94,6 +95,7 @@ type
     menuEdit: TMenuItem;
     menuItemCut: TMenuItem;
     StatusBar1: TStatusBar;
+    tabDirectory: TTabControl;
   private
 
   public
