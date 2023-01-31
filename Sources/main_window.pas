@@ -63,6 +63,7 @@ type
     Label15: TLabel;
     Label16: TLabel;
     Label17: TLabel;
+    labelType: TLabel;
     labelUsedDirEntries: TLabel;
     labelMaxDirEntries: TLabel;
     labelFilesFound: TLabel;
@@ -70,7 +71,6 @@ type
     labelTotal1kBlocks: TLabel;
     labelTotalBytes: TLabel;
     labelFile: TLabel;
-    labelType: TLabel;
     labelOs: TLabel;
     Label2: TLabel;
     Label3: TLabel;
@@ -92,10 +92,20 @@ type
     MainMenu: TMainMenu;
     menuFile: TMenuItem;
     Panel1: TPanel;
+    Panel10: TPanel;
+    Panel11: TPanel;
+    Panel12: TPanel;
+    Panel13: TPanel;
+    Panel14: TPanel;
+    Panel15: TPanel;
     Panel2: TPanel;
     Panel3: TPanel;
     Panel4: TPanel;
     Panel5: TPanel;
+    Panel6: TPanel;
+    Panel7: TPanel;
+    Panel8: TPanel;
+    Panel9: TPanel;
     popupItemRefresh: TMenuItem;
     Separator8: TMenuItem;
     popupItemAttributes: TMenuItem;
