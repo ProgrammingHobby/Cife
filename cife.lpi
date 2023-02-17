@@ -379,19 +379,43 @@
         <ComponentName Value="MainWindow"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Main_Window"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Sources/uscaledpi.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UscaleDPI"/>
       </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
     <Version Value="11"/>
     <Target>
-      <Filename Value="Build-$(BuildMode)_$(TargetCPU)/bin/project1"/>
+      <Filename Value="Build-$(BuildMode)_$(TargetCPU)/bin/cife"/>
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
+      <OtherUnitFiles Value="Sources"/>
       <UnitOutputDirectory Value="Build-$(BuildMode)_$(TargetCPU)/lib"/>
     </SearchPaths>
+    <Parsing>
+      <SyntaxOptions>
+        <IncludeAssertionCode Value="True"/>
+      </SyntaxOptions>
+    </Parsing>
+    <CodeGeneration>
+      <Checks>
+        <IOChecks Value="True"/>
+        <RangeChecks Value="True"/>
+        <OverflowChecks Value="True"/>
+        <StackChecks Value="True"/>
+      </Checks>
+      <VerifyObjMethodCallValidity Value="True"/>
+    </CodeGeneration>
     <Linking>
+      <Debugging>
+        <UseHeaptrc Value="True"/>
+      </Debugging>
       <Options>
         <Win32>
           <GraphicApplication Value="True"/>

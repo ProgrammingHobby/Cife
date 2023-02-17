@@ -2,14 +2,15 @@
 <CONFIG>
   <ProjectSession>
     <Version Value="12"/>
-    <BuildModes Active="GTK-Debug_32bit"/>
+    <BuildModes Active="Default"/>
     <Units>
       <Unit>
         <Filename Value="cife.lpr"/>
         <IsPartOfProject Value="True"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <CursorPos Y="19"/>
-        <UsageCount Value="30"/>
+        <CursorPos X="11" Y="33"/>
+        <UsageCount Value="31"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -18,11 +19,21 @@
         <ComponentName Value="MainWindow"/>
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
-        <IsVisibleTab Value="True"/>
-        <CursorPos X="25" Y="24"/>
-        <UsageCount Value="30"/>
+        <UnitName Value="Main_Window"/>
+        <CursorPos X="12" Y="19"/>
+        <UsageCount Value="31"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Sources/uscaledpi.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="UscaleDPI"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="20"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="6">
