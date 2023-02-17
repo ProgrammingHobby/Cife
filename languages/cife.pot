@@ -264,3 +264,33 @@ msgstr ""
 msgid "View"
 msgstr ""
 
+#: tnewimagedialog.buttonopenboottrackfile.caption
+msgctxt "tnewimagedialog.buttonopenboottrackfile.caption"
+msgid "Browse"
+msgstr ""
+
+#: tnewimagedialog.buttonopenimagefile.caption
+msgctxt "tnewimagedialog.buttonopenimagefile.caption"
+msgid "Browse"
+msgstr ""
+
+#: tnewimagedialog.checkboxusetimestamps.caption
+msgid "use Timestamps"
+msgstr ""
+
+#: tnewimagedialog.label1.caption
+msgid "Image File :"
+msgstr ""
+
+#: tnewimagedialog.label2.caption
+msgid "ImageType :"
+msgstr ""
+
+#: tnewimagedialog.label3.caption
+msgid "Boot-Track File :"
+msgstr ""
+
+#: tnewimagedialog.label4.caption
+msgid "File-System Label :"
+msgstr ""
+

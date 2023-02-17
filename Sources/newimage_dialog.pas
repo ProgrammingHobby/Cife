@@ -23,10 +23,33 @@ unit NewImage_Dialog;
 interface
 
 uses
-    Classes, SysUtils, Forms, Controls, Graphics, Dialogs;
+    Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ButtonPanel,
+    ExtCtrls, StdCtrls;
 
 type
+
+    { TNewImageDialog }
+
     TNewImageDialog = class(TForm)
+        buttonOpenImageFile: TButton;
+        buttonOpenBootTrackFile: TButton;
+        ButtonPanel1: TButtonPanel;
+        checkboxUseTimestamps: TCheckBox;
+        editImageFile: TEdit;
+        editImageType: TEdit;
+        editBootTrackFile: TEdit;
+        editFileSystemLabel: TEdit;
+        Label1: TLabel;
+        Label2: TLabel;
+        Label3: TLabel;
+        Label4: TLabel;
+        labelCreateNotice: TLabel;
+        Panel1: TPanel;
+        Panel2: TPanel;
+        Panel3: TPanel;
+        Panel4: TPanel;
+        Panel5: TPanel;
+        procedure PanelPaint(Sender: TObject);
     private
 
     public
@@ -40,4 +63,24 @@ implementation
 
 {$R *.lfm}
 
+{ TNewImageDialog }
+
+// --------------------------------------------------------------------------------
+procedure TNewImageDialog.PanelPaint(Sender: TObject);
+const
+    radius = 4;
+var
+    panel: TPanel;
+begin
+    if not (Sender is TPanel) then begin
+        exit;
+    end;
+    panel := TPanel(Sender);
+    panel.Canvas.Brush.Style := bsClear;
+    panel.Canvas.Pen.Color := clSilver;
+    panel.Canvas.Pen.Width := 1;
+    panel.Canvas.RoundRect(0, 0, panel.ClientWidth, panel.ClientHeight, radius, radius);
+end;
+
+// --------------------------------------------------------------------------------
 end.

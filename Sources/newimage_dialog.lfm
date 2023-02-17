@@ -1,8 +1,216 @@
 object NewImageDialog: TNewImageDialog
   Left = 2160
-  Height = 240
+  Height = 272
   Top = 250
-  Width = 320
-  Caption = 'NewImageDialog'
-  LCLVersion = '2.2.4.0'
+  Width = 355
+  AutoSize = True
+  ClientHeight = 272
+  ClientWidth = 355
+  Position = poMainFormCenter
+  object ButtonPanel1: TButtonPanel
+    Left = 8
+    Height = 34
+    Top = 230
+    Width = 339
+    BorderSpacing.Around = 8
+    OKButton.Name = 'OKButton'
+    OKButton.DefaultCaption = True
+    HelpButton.Name = 'HelpButton'
+    HelpButton.DefaultCaption = True
+    CloseButton.Name = 'CloseButton'
+    CloseButton.DefaultCaption = True
+    CancelButton.Name = 'CancelButton'
+    CancelButton.DefaultCaption = True
+    TabOrder = 0
+    ShowButtons = [pbOK, pbCancel]
+    ShowBevel = False
+  end
+  object Panel1: TPanel
+    Left = 8
+    Height = 177
+    Top = 12
+    Width = 339
+    Align = alTop
+    AutoSize = True
+    BorderSpacing.Top = 4
+    BorderSpacing.Bottom = 4
+    BorderSpacing.Around = 8
+    BevelOuter = bvNone
+    ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+    ChildSizing.EnlargeVertical = crsHomogenousChildResize
+    ChildSizing.Layout = cclLeftToRightThenTopToBottom
+    ChildSizing.ControlsPerLine = 3
+    ClientHeight = 177
+    ClientWidth = 339
+    TabOrder = 1
+    object Label1: TLabel
+      Left = 0
+      Height = 33
+      Top = 0
+      Width = 113
+      BorderSpacing.Bottom = 4
+      Caption = 'Image File :'
+      Layout = tlCenter
+      ParentColor = False
+    end
+    object editImageFile: TEdit
+      Left = 117
+      Height = 31
+      Top = 1
+      Width = 160
+      AutoSize = False
+      BorderSpacing.Left = 4
+      BorderSpacing.Right = 4
+      BorderSpacing.Bottom = 4
+      BorderSpacing.CellAlignVertical = ccaCenter
+      Constraints.MinWidth = 160
+      TabOrder = 0
+    end
+    object buttonOpenImageFile: TButton
+      Left = 281
+      Height = 33
+      Top = 0
+      Width = 58
+      BorderSpacing.Bottom = 4
+      BorderSpacing.CellAlignHorizontal = ccaLeftTop
+      Caption = 'Browse'
+      TabOrder = 1
+    end
+    object Label2: TLabel
+      Left = 0
+      Height = 31
+      Top = 37
+      Width = 113
+      BorderSpacing.Bottom = 8
+      Caption = 'ImageType :'
+      Layout = tlCenter
+      ParentColor = False
+    end
+    object editImageType: TEdit
+      Left = 117
+      Height = 31
+      Top = 37
+      Width = 160
+      AutoSize = False
+      BorderSpacing.Left = 4
+      BorderSpacing.Bottom = 8
+      TabOrder = 2
+    end
+    object Panel3: TPanel
+      Left = 281
+      Height = 31
+      Top = 37
+      Width = 58
+      BevelOuter = bvNone
+      TabOrder = 7
+    end
+    object Label3: TLabel
+      Left = 0
+      Height = 33
+      Top = 76
+      Width = 113
+      BorderSpacing.Bottom = 8
+      Caption = 'Boot-Track File :'
+      Layout = tlCenter
+      ParentColor = False
+    end
+    object editBootTrackFile: TEdit
+      Left = 117
+      Height = 31
+      Top = 77
+      Width = 160
+      AutoSize = False
+      BorderSpacing.Left = 4
+      BorderSpacing.Right = 4
+      BorderSpacing.Bottom = 8
+      BorderSpacing.CellAlignVertical = ccaCenter
+      Constraints.MinWidth = 160
+      TabOrder = 3
+    end
+    object buttonOpenBootTrackFile: TButton
+      Left = 281
+      Height = 33
+      Top = 76
+      Width = 58
+      BorderSpacing.Bottom = 8
+      BorderSpacing.CellAlignHorizontal = ccaLeftTop
+      Caption = 'Browse'
+      TabOrder = 4
+    end
+    object Label4: TLabel
+      AnchorSideRight.Side = asrBottom
+      Left = 0
+      Height = 31
+      Top = 117
+      Width = 113
+      BorderSpacing.Bottom = 8
+      Caption = 'File-System Label :'
+      Layout = tlCenter
+      ParentColor = False
+    end
+    object editFileSystemLabel: TEdit
+      Left = 117
+      Height = 31
+      Top = 117
+      Width = 160
+      AutoSize = False
+      BorderSpacing.Left = 4
+      BorderSpacing.Bottom = 8
+      TabOrder = 5
+    end
+    object Panel4: TPanel
+      Left = 281
+      Height = 31
+      Top = 117
+      Width = 58
+      BevelOuter = bvNone
+      TabOrder = 8
+    end
+    object Panel5: TPanel
+      Left = 0
+      Height = 21
+      Top = 156
+      Width = 113
+      BevelOuter = bvNone
+      TabOrder = 9
+    end
+    object checkboxUseTimestamps: TCheckBox
+      Left = 117
+      Height = 21
+      Top = 156
+      Width = 160
+      Caption = 'use Timestamps'
+      Checked = True
+      State = cbChecked
+      TabOrder = 6
+    end
+  end
+  object Panel2: TPanel
+    Left = 8
+    Height = 17
+    Top = 201
+    Width = 339
+    Align = alClient
+    BorderSpacing.Left = 4
+    BorderSpacing.Right = 4
+    BorderSpacing.Bottom = 8
+    BorderSpacing.Around = 4
+    BorderSpacing.InnerBorder = 4
+    BevelOuter = bvNone
+    ClientHeight = 17
+    ClientWidth = 339
+    TabOrder = 2
+    OnPaint = PanelPaint
+    object labelCreateNotice: TLabel
+      Left = 4
+      Height = 9
+      Top = 4
+      Width = 331
+      Align = alClient
+      AutoSize = False
+      BorderSpacing.Around = 4
+      ParentColor = False
+      WordWrap = True
+    end
+  end
 end
