@@ -148,6 +148,7 @@ type
         menuItemCut: TMenuItem;
         StatusBar1: TStatusBar;
         tabDirectory: TTabControl;
+        procedure actionNewExecute(Sender: TObject);
     private
 
     public
@@ -160,5 +161,22 @@ var
 implementation
 
 {$R *.lfm}
+
+uses NewImage_Dialog;
+
+{ TMainWindow }
+
+// --------------------------------------------------------------------------------
+procedure TMainWindow.actionNewExecute(Sender: TObject);
+var
+    dialog: TNewImageDialog;
+begin
+    try
+        dialog := TNewImageDialog.Create(self);
+        dialog.ShowModal;
+    finally
+        FreeAndNil(dialog);
+    end;
+end;
 
 end.
