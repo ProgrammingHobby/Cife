@@ -386,6 +386,14 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="UscaleDPI"/>
       </Unit>
+      <Unit>
+        <Filename Value="Sources/newimage_dialog.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="NewImageDialog"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="NewImage_Dialog"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

@@ -7,9 +7,8 @@
       <Unit>
         <Filename Value="cife.lpr"/>
         <IsPartOfProject Value="True"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <CursorPos X="11" Y="33"/>
+        <CursorPos X="16" Y="33"/>
         <UsageCount Value="31"/>
         <Loaded Value="True"/>
       </Unit>
@@ -34,6 +33,19 @@
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
         <UsageCount Value="20"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Sources/newimage_dialog.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="NewImageDialog"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="NewImage_Dialog"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
+        <UsageCount Value="20"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="6">
