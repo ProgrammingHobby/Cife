@@ -1,0 +1,8 @@
+object NewImageDialog: TNewImageDialog
+  Left = 2160
+  Height = 240
+  Top = 250
+  Width = 320
+  Caption = 'NewImageDialog'
+  LCLVersion = '2.2.4.0'
+end
