@@ -8,7 +8,7 @@
         <Filename Value="cife.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="1"/>
-        <CursorPos X="53" Y="41"/>
+        <CursorPos X="126" Y="4"/>
         <UsageCount Value="32"/>
         <Loaded Value="True"/>
       </Unit>
@@ -19,8 +19,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Main_Window"/>
-        <TopLine Value="132"/>
-        <CursorPos X="36" Y="203"/>
+        <TopLine Value="146"/>
+        <CursorPos X="41" Y="191"/>
         <UsageCount Value="32"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -64,15 +64,26 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="RenameFile_Dialog"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos X="17" Y="19"/>
+        <UsageCount Value="20"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Sources/characteristics_dialog.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="CharacteristicsDialog"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Characteristics_Dialog"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <CursorPos X="17" Y="19"/>
+        <CursorPos X="22" Y="19"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="10">
+    <JumpHistory HistoryIndex="12">
       <Position>
         <Filename Value="Sources/main_window.pas"/>
       </Position>
@@ -115,6 +126,14 @@
       <Position>
         <Filename Value="Sources/main_window.pas"/>
         <Caret Line="203" Column="36" TopLine="151"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/main_window.pas"/>
+        <Caret Line="168" Column="77" TopLine="132"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/characteristics_dialog.pas"/>
+        <Caret Line="19" Column="22"/>
       </Position>
     </JumpHistory>
     <RunParams>

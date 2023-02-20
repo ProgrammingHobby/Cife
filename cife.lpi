@@ -411,6 +411,14 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="RenameFile_Dialog"/>
       </Unit>
+      <Unit>
+        <Filename Value="Sources/characteristics_dialog.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="CharacteristicsDialog"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="Characteristics_Dialog"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
