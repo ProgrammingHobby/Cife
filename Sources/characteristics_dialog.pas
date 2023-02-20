@@ -23,10 +23,31 @@ unit Characteristics_Dialog;
 interface
 
 uses
-    Classes, SysUtils, Forms, Controls, Graphics, Dialogs;
+    Classes, SysUtils, Forms, Controls, Graphics, Dialogs, StdCtrls, ExtCtrls,
+    ButtonPanel;
 
 type
+
+    { TCharacteristicsDialog }
+
     TCharacteristicsDialog = class(TForm)
+        ButtonPanel1: TButtonPanel;
+        checkboxChangeProtect: TCheckBox;
+        checkgroupProtections: TCheckGroup;
+        checkgroupAttributes: TCheckGroup;
+        Label1: TLabel;
+        labelLastAccess: TLabel;
+        Label2: TLabel;
+        Label3: TLabel;
+        Label4: TLabel;
+        Label5: TLabel;
+        labelFileName: TLabel;
+        labelFileSize: TLabel;
+        labelCreated: TLabel;
+        labelUpdated: TLabel;
+        Panel1: TPanel;
+        procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+        procedure Panel1Paint(Sender: TObject);
     private
 
     public
@@ -39,5 +60,29 @@ var
 implementation
 
 {$R *.lfm}
+
+{ TCharacteristicsDialog }
+// --------------------------------------------------------------------------------
+procedure TCharacteristicsDialog.Panel1Paint(Sender: TObject);
+const
+    R = 4;  // Rundungsradius
+var
+    panel: TPanel;
+begin
+    if not (Sender is TPanel) then begin
+        exit;
+    end;
+    panel := TPanel(Sender);
+    panel.Canvas.Brush.Style := bsClear;
+    panel.Canvas.Pen.Color := clSilver;
+    panel.Canvas.Pen.Width := 1;
+    panel.Canvas.RoundRect(0, 0, panel.ClientWidth, panel.ClientHeight, R, R);
+end;
+
+// --------------------------------------------------------------------------------
+procedure TCharacteristicsDialog.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+    CloseAction := caFree;
+end;
 
 end.

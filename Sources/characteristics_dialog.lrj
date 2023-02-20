@@ -1,3 +1,16 @@
 {"version":1,"strings":[
-{"hash":102911959,"name":"tcharacteristicsdialog.caption","sourcebytes":[67,104,97,114,97,99,116,101,114,105,115,116,105,99,115,68,105,97,108,111,103],"value":"CharacteristicsDialog"}
+{"hash":27936851,"name":"tcharacteristicsdialog.caption","sourcebytes":[70,105,108,101,32,67,104,97,114,97,99,116,101,114,105,115,116,105,99,115],"value":"File Characteristics"},
+{"hash":177015923,"name":"tcharacteristicsdialog.checkgroupattributes.caption","sourcebytes":[70,105,108,101,32,65,116,116,114,105,98,117,116,101,115],"value":"File Attributes"},
+{"hash":217687251,"name":"tcharacteristicsdialog.checkgroupprotections.caption","sourcebytes":[70,105,108,101,32,80,114,111,116,101,99,116,105,111,110,115],"value":"File Protections"},
+{"hash":91602745,"name":"tcharacteristicsdialog.checkboxchangeprotect.caption","sourcebytes":[65,116,116,114,105,98,117,116,101,115,32,97,110,100,32,80,101,114,109,105,115,115,105,111,110,115,32,114,101,97,100,32,111,110,108,121],"value":"Attributes and Permissions read only"},
+{"hash":84620618,"name":"tcharacteristicsdialog.label1.caption","sourcebytes":[70,105,108,101,32,78,97,109,101,32,58],"value":"File Name :"},
+{"hash":240289925,"name":"tcharacteristicsdialog.labelfilename.caption","sourcebytes":[108,97,98,101,108,70,105,108,101,78,97,109,101],"value":"labelFileName"},
+{"hash":99485002,"name":"tcharacteristicsdialog.label2.caption","sourcebytes":[70,105,108,101,32,83,105,122,101,32,58],"value":"File Size :"},
+{"hash":240279989,"name":"tcharacteristicsdialog.labelfilesize.caption","sourcebytes":[108,97,98,101,108,70,105,108,101,83,105,122,101],"value":"labelFileSize"},
+{"hash":193658042,"name":"tcharacteristicsdialog.label3.caption","sourcebytes":[67,114,101,97,116,101,100,32,58],"value":"Created :"},
+{"hash":229377716,"name":"tcharacteristicsdialog.labelcreated.caption","sourcebytes":[108,97,98,101,108,67,114,101,97,116,101,100],"value":"labelCreated"},
+{"hash":176876122,"name":"tcharacteristicsdialog.label4.caption","sourcebytes":[85,112,100,97,116,101,100,32,58],"value":"Updated :"},
+{"hash":189597348,"name":"tcharacteristicsdialog.labelupdated.caption","sourcebytes":[108,97,98,101,108,85,112,100,97,116,101,100],"value":"labelUpdated"},
+{"hash":186040634,"name":"tcharacteristicsdialog.label5.caption","sourcebytes":[108,97,115,116,32,65,99,99,101,115,115,32,58],"value":"last Access :"},
+{"hash":12109427,"name":"tcharacteristicsdialog.labellastaccess.caption","sourcebytes":[108,97,98,101,108,76,97,115,116,65,99,99,101,115,115],"value":"labelLastAccess"}
 ]}
