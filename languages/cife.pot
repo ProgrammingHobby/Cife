@@ -25,10 +25,6 @@ msgstr ""
 msgid "FileDialog"
 msgstr ""
 
-#: tfiledialog.editfilename.text
-msgid "editFileName"
-msgstr ""
-
 #: tfiledialog.label1.caption
 msgid "Image Type : "
 msgstr ""
@@ -328,5 +324,37 @@ msgstr ""
 
 #: tnewimagedialog.label4.caption
 msgid "File-System Label :"
+msgstr ""
+
+#: trenamefiledialog.caption
+msgid "Rename CP/M File"
+msgstr ""
+
+#: trenamefiledialog.checkboxchangeusernumber.caption
+msgid "change user number too."
+msgstr ""
+
+#: trenamefiledialog.editnewfilename.hint
+msgid "new File Name"
+msgstr ""
+
+#: trenamefiledialog.editnewusernumber.hint
+msgid "new User Number"
+msgstr ""
+
+#: trenamefiledialog.editoldfilename.hint
+msgid "old File Name"
+msgstr ""
+
+#: trenamefiledialog.editoldusernumer.hint
+msgid "old user number"
+msgstr ""
+
+#: trenamefiledialog.label1.caption
+msgid "old File Name :"
+msgstr ""
+
+#: trenamefiledialog.label2.caption
+msgid "new File Name:"
 msgstr ""
 

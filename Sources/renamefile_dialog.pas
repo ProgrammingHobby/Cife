@@ -23,10 +23,27 @@ unit RenameFile_Dialog;
 interface
 
 uses
-    Classes, SysUtils, Forms, Controls, Graphics, Dialogs;
+    Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ButtonPanel,
+    ExtCtrls, StdCtrls;
 
 type
+
+    { TRenameFileDialog }
+
     TRenameFileDialog = class(TForm)
+        ButtonPanel1: TButtonPanel;
+        checkboxChangeUserNumber: TCheckBox;
+        editOldUserNumer: TEdit;
+        editOldFileName: TEdit;
+        editNewUserNumber: TEdit;
+        editNewFileName: TEdit;
+        Label1: TLabel;
+        Label2: TLabel;
+        Panel1: TPanel;
+        Panel2: TPanel;
+        Panel3: TPanel;
+        Panel4: TPanel;
+        Panel5: TPanel;
     private
 
     public
