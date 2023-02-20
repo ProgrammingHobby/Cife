@@ -7,9 +7,9 @@
       <Unit>
         <Filename Value="cife.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="2"/>
-        <CursorPos X="129" Y="6"/>
-        <UsageCount Value="31"/>
+        <EditorIndex Value="1"/>
+        <CursorPos X="53" Y="41"/>
+        <UsageCount Value="32"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -19,9 +19,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Main_Window"/>
-        <TopLine Value="118"/>
-        <CursorPos X="30" Y="189"/>
-        <UsageCount Value="31"/>
+        <TopLine Value="132"/>
+        <CursorPos X="36" Y="203"/>
+        <UsageCount Value="32"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -33,7 +33,7 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="21"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/newimage_dialog.pas"/>
@@ -43,7 +43,7 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="NewImage_Dialog"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="20"/>
+        <UsageCount Value="21"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/file_dialog.pas"/>
@@ -52,16 +52,27 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="File_Dialog"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="17"/>
         <CursorPos X="11" Y="32"/>
+        <UsageCount Value="21"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Sources/renamefile_dialog.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="RenameFileDialog"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="RenameFile_Dialog"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
+        <CursorPos X="17" Y="19"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="8">
+    <JumpHistory HistoryIndex="10">
       <Position>
         <Filename Value="Sources/main_window.pas"/>
       </Position>
@@ -94,8 +105,16 @@
         <Caret Line="166" Column="34" TopLine="122"/>
       </Position>
       <Position>
-        <Filename Value="Sources/file_dialog.pas"/>
-        <Caret Line="32" Column="11" TopLine="22"/>
+        <Filename Value="cife.lpr"/>
+        <Caret Line="6" Column="129"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/main_window.pas"/>
+        <Caret Line="190" Column="30" TopLine="137"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/main_window.pas"/>
+        <Caret Line="203" Column="36" TopLine="151"/>
       </Position>
     </JumpHistory>
     <RunParams>
