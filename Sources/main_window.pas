@@ -152,6 +152,7 @@ type
         procedure actionNewExecute(Sender: TObject);
         procedure actionOpenExecute(Sender: TObject);
         procedure actionRenameExecute(Sender: TObject);
+        procedure actionSettingsExecute(Sender: TObject);
     private
 
     public
@@ -165,7 +166,7 @@ implementation
 
 {$R *.lfm}
 
-uses NewImage_Dialog, File_Dialog, RenameFile_Dialog, Characteristics_Dialog;
+uses NewImage_Dialog, File_Dialog, RenameFile_Dialog, Characteristics_Dialog, Settings_Dialog;
 
 { TMainWindow }
 
@@ -215,6 +216,19 @@ var
 begin
     try
         dialog := TRenameFileDialog.Create(self);
+        dialog.ShowModal;
+    finally
+        FreeAndNil(dialog);
+    end;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TMainWindow.actionSettingsExecute(Sender: TObject);
+var
+    dialog: TSettingsDialog;
+begin
+    try
+        dialog := TSettingsDialog.Create(self);
         dialog.ShowModal;
     finally
         FreeAndNil(dialog);

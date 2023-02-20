@@ -1098,6 +1098,7 @@ object MainWindow: TMainWindow
     object actionSettings: TAction
       Caption = 'Settings'
       ImageIndex = 16
+      OnExecute = actionSettingsExecute
     end
     object actionAbout: TAction
       Caption = 'About ...'
