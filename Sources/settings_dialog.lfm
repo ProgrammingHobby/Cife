@@ -1,8 +1,236 @@
 object SettingsDialog: TSettingsDialog
   Left = 568
-  Height = 240
+  Height = 242
   Top = 250
-  Width = 320
-  Caption = 'SettingsDialog'
-  LCLVersion = '2.2.4.0'
+  Width = 513
+  Caption = 'Settings'
+  ClientHeight = 242
+  ClientWidth = 513
+  OnClose = FormClose
+  Position = poOwnerFormCenter
+  object Panel1: TPanel
+    Left = 4
+    Height = 180
+    Top = 4
+    Width = 505
+    Align = alClient
+    AutoSize = True
+    BorderSpacing.Around = 4
+    BevelOuter = bvNone
+    ClientHeight = 180
+    ClientWidth = 505
+    DoubleBuffered = False
+    ParentDoubleBuffered = False
+    TabOrder = 1
+    object treeviewSettingPages: TTreeView
+      Left = 4
+      Height = 172
+      Top = 4
+      Width = 132
+      Align = alLeft
+      BorderSpacing.Around = 4
+      BorderStyle = bsNone
+      Constraints.MinWidth = 132
+      ReadOnly = True
+      ScrollBars = ssAutoBoth
+      ShowButtons = False
+      ShowLines = False
+      ShowRoot = False
+      TabOrder = 0
+      ToolTips = False
+      OnSelectionChanged = treeviewSettingPagesSelectionChanged
+      Options = [tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoThemedDraw]
+      Items.Data = {
+        F9FFFFFF020002000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000000000
+        0000001000000047656E6572616C2053657474696E6773FFFFFFFFFFFFFFFFFF
+        FFFFFFFFFFFFFF000000000000000000110000004375742F436F707920536574
+        74696E6773
+      }
+    end
+    object Splitter: TSplitter
+      Left = 140
+      Height = 180
+      Top = 0
+      Width = 5
+      AutoSnap = False
+      MinSize = 132
+    end
+    object Notebook: TNotebook
+      Left = 149
+      Height = 172
+      Top = 4
+      Width = 352
+      PageIndex = 1
+      Align = alClient
+      BorderSpacing.Around = 4
+      TabOrder = 2
+      object Page1: TPage
+        object Panel2: TPanel
+          Left = 4
+          Height = 29
+          Top = 4
+          Width = 344
+          Align = alTop
+          AutoSize = True
+          BorderSpacing.Around = 4
+          BevelOuter = bvNone
+          ClientHeight = 29
+          ClientWidth = 344
+          TabOrder = 0
+          OnPaint = PanelPaint
+          object checkboxOpenLastImage: TCheckBox
+            Left = 4
+            Height = 21
+            Top = 4
+            Width = 221
+            Align = alLeft
+            BorderSpacing.Around = 4
+            Caption = 'open last Image on next Startup'
+            TabOrder = 0
+          end
+        end
+        object Panel3: TPanel
+          Left = 4
+          Height = 29
+          Top = 37
+          Width = 344
+          Align = alTop
+          AutoSize = True
+          BorderSpacing.Around = 4
+          BevelOuter = bvNone
+          ClientHeight = 29
+          ClientWidth = 344
+          TabOrder = 1
+          OnPaint = PanelPaint
+          object checkboxUppercaseCpmCharacters: TCheckBox
+            Left = 4
+            Height = 21
+            Top = 4
+            Width = 296
+            Align = alLeft
+            BorderSpacing.Around = 4
+            Caption = 'use uppercase characters in CP/M filesystem'
+            TabOrder = 0
+          end
+        end
+      end
+      object Page2: TPage
+        object Panel4: TPanel
+          Left = 4
+          Height = 29
+          Top = 4
+          Width = 344
+          Align = alTop
+          AutoSize = True
+          BorderSpacing.Around = 4
+          BevelOuter = bvNone
+          ClientHeight = 29
+          ClientWidth = 344
+          TabOrder = 0
+          OnPaint = PanelPaint
+          object checkboxKeepTimeStamps: TCheckBox
+            Left = 4
+            Height = 21
+            Top = 4
+            Width = 336
+            Align = alClient
+            BorderSpacing.Around = 4
+            Caption = 'keep last updated timestamps'
+            TabOrder = 0
+          end
+        end
+        object Panel5: TPanel
+          Left = 4
+          Height = 37
+          Top = 37
+          Width = 344
+          Align = alTop
+          AutoSize = True
+          BorderSpacing.Around = 4
+          BevelOuter = bvNone
+          ClientHeight = 37
+          ClientWidth = 344
+          TabOrder = 1
+          OnPaint = PanelPaint
+          object Label1: TLabel
+            Left = 4
+            Height = 29
+            Top = 4
+            Width = 258
+            Align = alLeft
+            BorderSpacing.Right = 8
+            BorderSpacing.Around = 4
+            Caption = 'default user number for copy operations :'
+            Layout = tlCenter
+            ParentColor = False
+          end
+          object spineditUserNumber: TSpinEdit
+            Left = 274
+            Height = 29
+            Top = 4
+            Width = 50
+            Align = alLeft
+            BorderSpacing.Around = 4
+            MaxValue = 15
+            TabOrder = 0
+          end
+        end
+        object Panel6: TPanel
+          Left = 4
+          Height = 90
+          Top = 78
+          Width = 344
+          Align = alTop
+          AutoSize = True
+          BorderSpacing.Around = 4
+          BevelOuter = bvNone
+          ClientHeight = 90
+          ClientWidth = 344
+          TabOrder = 2
+          OnPaint = PanelPaint
+          object Label2: TLabel
+            Left = 4
+            Height = 38
+            Top = 4
+            Width = 336
+            Align = alTop
+            BorderSpacing.Around = 4
+            Caption = 'space separated list of textfile endings to be converted during copy Operations :'
+            Layout = tlCenter
+            ParentColor = False
+            WordWrap = True
+          end
+          object memoTextfileEndings: TMemo
+            Left = 4
+            Height = 40
+            Top = 46
+            Width = 336
+            Align = alClient
+            BorderSpacing.Around = 4
+            ScrollBars = ssAutoVertical
+            TabOrder = 0
+            WantReturns = False
+          end
+        end
+      end
+    end
+  end
+  object ButtonPanel: TButtonPanel
+    Left = 12
+    Height = 34
+    Top = 196
+    Width = 489
+    BorderSpacing.Around = 12
+    OKButton.Name = 'OKButton'
+    OKButton.DefaultCaption = True
+    HelpButton.Name = 'HelpButton'
+    HelpButton.DefaultCaption = True
+    CloseButton.Name = 'CloseButton'
+    CloseButton.DefaultCaption = True
+    CancelButton.Name = 'CancelButton'
+    CancelButton.DefaultCaption = True
+    TabOrder = 0
+    ShowButtons = [pbOK, pbCancel]
+    ShowBevel = False
+  end
 end

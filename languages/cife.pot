@@ -81,6 +81,10 @@ msgstr ""
 msgid "FileDialog"
 msgstr ""
 
+#: tfiledialog.editfilename.text
+msgid "editFileName"
+msgstr ""
+
 #: tfiledialog.label1.caption
 msgid "Image Type : "
 msgstr ""
@@ -158,6 +162,7 @@ msgid "Select all"
 msgstr ""
 
 #: tmainwindow.actionsettings.caption
+msgctxt "tmainwindow.actionsettings.caption"
 msgid "Settings"
 msgstr ""
 
@@ -412,5 +417,30 @@ msgstr ""
 
 #: trenamefiledialog.label2.caption
 msgid "new File Name:"
+msgstr ""
+
+#: tsettingsdialog.caption
+msgctxt "tsettingsdialog.caption"
+msgid "Settings"
+msgstr ""
+
+#: tsettingsdialog.checkboxkeeptimestamps.caption
+msgid "keep last updated timestamps"
+msgstr ""
+
+#: tsettingsdialog.checkboxopenlastimage.caption
+msgid "open last Image on next Startup"
+msgstr ""
+
+#: tsettingsdialog.checkboxuppercasecpmcharacters.caption
+msgid "use uppercase characters in CP/M filesystem"
+msgstr ""
+
+#: tsettingsdialog.label1.caption
+msgid "default user number for copy operations :"
+msgstr ""
+
+#: tsettingsdialog.label2.caption
+msgid "space separated list of textfile endings to be converted during copy Operations :"
 msgstr ""
 

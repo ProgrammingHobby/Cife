@@ -23,10 +23,36 @@ unit Settings_Dialog;
 interface
 
 uses
-    Classes, SysUtils, Forms, Controls, Graphics, Dialogs;
+    Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls,
+    ButtonPanel, ExtCtrls, StdCtrls, Spin;
 
 type
+
+    { TSettingsDialog }
+
     TSettingsDialog = class(TForm)
+        ButtonPanel: TButtonPanel;
+        checkboxKeepTimeStamps: TCheckBox;
+        checkboxOpenLastImage: TCheckBox;
+        checkboxUppercaseCpmCharacters: TCheckBox;
+        Label1: TLabel;
+        Label2: TLabel;
+        memoTextfileEndings: TMemo;
+        Notebook: TNotebook;
+        Page1: TPage;
+        Page2: TPage;
+        Panel1: TPanel;
+        Panel4: TPanel;
+        Panel2: TPanel;
+        Panel3: TPanel;
+        Panel5: TPanel;
+        Panel6: TPanel;
+        spineditUserNumber: TSpinEdit;
+        Splitter: TSplitter;
+        treeviewSettingPages: TTreeView;
+        procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+        procedure PanelPaint(Sender: TObject);
+        procedure treeviewSettingPagesSelectionChanged(Sender: TObject);
     private
 
     public
@@ -39,5 +65,35 @@ var
 implementation
 
 {$R *.lfm}
+
+{ TSettingsDialog }
+// --------------------------------------------------------------------------------
+procedure TSettingsDialog.PanelPaint(Sender: TObject);
+const
+    R = 4;  // Rundungsradius
+var
+    panel: TPanel;
+begin
+    if not (Sender is TPanel) then begin
+        exit;
+    end;
+    panel := TPanel(Sender);
+    panel.Canvas.Brush.Style := bsClear;
+    panel.Canvas.Pen.Color := clSilver;
+    panel.Canvas.Pen.Width := 1;
+    panel.Canvas.RoundRect(0, 0, panel.ClientWidth, panel.ClientHeight, R, R);
+end;
+
+// --------------------------------------------------------------------------------
+procedure TSettingsDialog.treeviewSettingPagesSelectionChanged(Sender: TObject);
+begin
+    Notebook.PageIndex := (Sender as TTreeView).Selected.AbsoluteIndex;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TSettingsDialog.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+    CloseAction := caFree;
+end;
 
 end.
