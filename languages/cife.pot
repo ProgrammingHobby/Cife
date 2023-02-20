@@ -1,6 +1,37 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
+#: taboutdialog.caption
+msgid "About CP/M Image-File Explorer"
+msgstr ""
+
+#: taboutdialog.label1.caption
+msgid "Icons by :  "
+msgstr ""
+
+#: taboutdialog.labeldeveloper.caption
+msgid "Uwe Merker    2023"
+msgstr ""
+
+#: taboutdialog.labelhyperlink.caption
+msgid "http://www.moria.de/~michael/cpmtools"
+msgstr ""
+
+#: taboutdialog.labeliconhyperlink.caption
+msgid "https://icons8.com"
+msgstr ""
+
+#: taboutdialog.labeltitle.caption
+msgctxt "taboutdialog.labeltitle.caption"
+msgid "CP/M Image-File Explorer"
+msgstr ""
+
+#: taboutdialog.labeltoolscopyright.caption
+msgid ""
+"   CP/M Images Functionality based on CP/M-Tools   \n"
+" Source Code Version 2.23 from Michael Haardt."
+msgstr ""
+
 #: tcharacteristicsdialog.caption
 msgid "File Characteristics"
 msgstr ""
@@ -167,6 +198,7 @@ msgid "Settings"
 msgstr ""
 
 #: tmainwindow.caption
+msgctxt "tmainwindow.caption"
 msgid "CP/M Image-File Explorer"
 msgstr ""
 

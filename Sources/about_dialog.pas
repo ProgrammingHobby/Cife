@@ -23,10 +23,37 @@ unit About_Dialog;
 interface
 
 uses
-    Classes, SysUtils, Forms, Controls, Graphics, Dialogs;
+    Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ExtCtrls, StdCtrls,
+    ButtonPanel;
 
 type
+
+    { TAboutDialog }
+
     TAboutDialog = class(TForm)
+        ButtonPanel1: TButtonPanel;
+        Image1: TImage;
+        Label1: TLabel;
+        labelIconHyperlink: TLabel;
+        labelDeveloper: TLabel;
+        labelHyperlink: TLabel;
+        labelToolsCopyright: TLabel;
+        labelSystem: TLabel;
+        labelVersion: TLabel;
+        labelTitle: TLabel;
+        Panel1: TPanel;
+        Panel2: TPanel;
+        Panel3: TPanel;
+        Panel4: TPanel;
+        Panel5: TPanel;
+        Panel6: TPanel;
+        Panel7: TPanel;
+        Panel8: TPanel;
+        procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+        procedure FormShow(Sender: TObject);
+        procedure labelHyperlinkDblClick(Sender: TObject);
+        procedure labelHyperlinkMouseEnter(Sender: TObject);
+        procedure labelHyperlinkMouseLeave(Sender: TObject);
     private
 
     public
@@ -40,4 +67,46 @@ implementation
 
 {$R *.lfm}
 
+uses UscaleDPI, Version_Info, LCLIntf;
+
+{ TAboutDialog }
+
+// --------------------------------------------------------------------------------
+procedure TAboutDialog.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+    CloseAction := caFree;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TAboutDialog.FormShow(Sender: TObject);
+begin
+    labelVersion.Caption := GetFileVersion;
+    labelSystem.Caption := 'Written with Lazarus / Free Pascal' + ^M + ^J + GetLCLVersion + ' && ' +
+        GetCompilerInfo + '  ' + IntToStr(SizeOf(PtrUInt) * 8) + 'bit';
+    ScaleDPI(self, 96);
+    Constraints.MinWidth := Width;
+    Constraints.MaxWidth := Width;
+    Constraints.MinHeight := Height;
+    Constraints.MaxHeight := Height;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TAboutDialog.labelHyperlinkDblClick(Sender: TObject);
+begin
+    OpenURL((Sender as TLabel).Caption);
+end;
+
+// --------------------------------------------------------------------------------
+procedure TAboutDialog.labelHyperlinkMouseEnter(Sender: TObject);
+begin
+    (Sender as TLabel).Cursor := crHandPoint;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TAboutDialog.labelHyperlinkMouseLeave(Sender: TObject);
+begin
+    (Sender as TLabel).Cursor := crDefault;
+end;
+
+// --------------------------------------------------------------------------------
 end.
