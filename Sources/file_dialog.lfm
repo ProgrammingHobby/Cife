@@ -1,0 +1,8 @@
+object FileDialog: TFileDialog
+  Left = 2160
+  Height = 240
+  Top = 250
+  Width = 320
+  Caption = 'FileDialog'
+  LCLVersion = '2.2.4.0'
+end
