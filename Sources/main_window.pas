@@ -150,6 +150,7 @@ type
         tabDirectory: TTabControl;
         procedure actionNewExecute(Sender: TObject);
         procedure actionOpenExecute(Sender: TObject);
+        procedure actionRenameExecute(Sender: TObject);
     private
 
     public
@@ -163,7 +164,7 @@ implementation
 
 {$R *.lfm}
 
-uses NewImage_Dialog, File_Dialog;
+uses NewImage_Dialog, File_Dialog, RenameFile_Dialog;
 
 { TMainWindow }
 
@@ -187,6 +188,19 @@ var
 begin
     try
         dialog := TFileDialog.Create(self);
+        dialog.ShowModal;
+    finally
+        FreeAndNil(dialog);
+    end;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TMainWindow.actionRenameExecute(Sender: TObject);
+var
+    dialog: TRenameFileDialog;
+begin
+    try
+        dialog := TRenameFileDialog.Create(self);
         dialog.ShowModal;
     finally
         FreeAndNil(dialog);
