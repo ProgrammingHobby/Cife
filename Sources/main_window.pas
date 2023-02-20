@@ -148,6 +148,7 @@ type
         menuItemCut: TMenuItem;
         StatusBar1: TStatusBar;
         tabDirectory: TTabControl;
+        procedure actionAboutExecute(Sender: TObject);
         procedure actionCharacteristicsExecute(Sender: TObject);
         procedure actionNewExecute(Sender: TObject);
         procedure actionOpenExecute(Sender: TObject);
@@ -166,7 +167,7 @@ implementation
 
 {$R *.lfm}
 
-uses NewImage_Dialog, File_Dialog, RenameFile_Dialog, Characteristics_Dialog, Settings_Dialog;
+uses NewImage_Dialog, File_Dialog, RenameFile_Dialog, Characteristics_Dialog, Settings_Dialog, About_Dialog;
 
 { TMainWindow }
 
@@ -190,6 +191,19 @@ var
 begin
     try
         dialog := TCharacteristicsDialog.Create(self);
+        dialog.ShowModal;
+    finally
+        FreeAndNil(dialog);
+    end;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TMainWindow.actionAboutExecute(Sender: TObject);
+var
+    dialog: TAboutDialog;
+begin
+    try
+        dialog := TAboutDialog.Create(self);
         dialog.ShowModal;
     finally
         FreeAndNil(dialog);

@@ -1103,6 +1103,7 @@ object MainWindow: TMainWindow
     object actionAbout: TAction
       Caption = 'About ...'
       ImageIndex = 0
+      OnExecute = actionAboutExecute
     end
     object actionClearMessages: TAction
       Caption = 'Clear Messages'
