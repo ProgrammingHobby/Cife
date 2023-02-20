@@ -1078,6 +1078,7 @@ object MainWindow: TMainWindow
     object actionCharacteristics: TAction
       Caption = 'Characteristics'
       ImageIndex = 12
+      OnExecute = actionCharacteristicsExecute
       ShortCut = 118
     end
     object actionFormatCurrent: TAction
