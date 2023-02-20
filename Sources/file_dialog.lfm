@@ -1,8 +1,365 @@
 object FileDialog: TFileDialog
   Left = 2160
-  Height = 240
+  Height = 371
   Top = 250
-  Width = 320
+  Width = 538
+  AutoSize = True
   Caption = 'FileDialog'
-  LCLVersion = '2.2.4.0'
+  ClientHeight = 371
+  ClientWidth = 538
+  OnClose = FormClose
+  Position = poOwnerFormCenter
+  ShowHint = True
+  object ButtonPanel: TButtonPanel
+    Left = 6
+    Height = 34
+    Top = 331
+    Width = 510
+    BorderSpacing.Right = 16
+    OKButton.Name = 'OKButton'
+    OKButton.DefaultCaption = True
+    HelpButton.Name = 'HelpButton'
+    HelpButton.DefaultCaption = True
+    CloseButton.Name = 'CloseButton'
+    CloseButton.DefaultCaption = True
+    CancelButton.Name = 'CancelButton'
+    CancelButton.DefaultCaption = True
+    TabOrder = 0
+    ShowButtons = [pbOK, pbCancel]
+    ShowBevel = False
+  end
+  object Panel1: TPanel
+    Left = 0
+    Height = 30
+    Top = 8
+    Width = 538
+    Align = alTop
+    AutoSize = True
+    BorderSpacing.Top = 8
+    BevelOuter = bvNone
+    ClientHeight = 30
+    ClientWidth = 538
+    TabOrder = 1
+    object Panel2: TPanel
+      Left = 16
+      Height = 30
+      Top = 0
+      Width = 76
+      Align = alLeft
+      AutoSize = True
+      BorderSpacing.Left = 16
+      BevelOuter = bvNone
+      ClientHeight = 30
+      ClientWidth = 76
+      TabOrder = 0
+      object buttonListView: TSpeedButton
+        Left = 0
+        Height = 30
+        Hint = 'View files as a list view'
+        Top = 0
+        Width = 30
+        Align = alLeft
+        AutoSize = True
+        BorderSpacing.Right = 16
+        Images = ImageList
+        ImageIndex = 1
+      end
+      object buttonDetailView: TSpeedButton
+        Left = 46
+        Height = 30
+        Hint = 'View files as a detailed view'
+        Top = 0
+        Width = 30
+        Align = alClient
+        AutoSize = True
+        Images = ImageList
+        ImageIndex = 0
+      end
+    end
+    object Panel3: TPanel
+      Left = 368
+      Height = 30
+      Top = 0
+      Width = 76
+      Align = alRight
+      AutoSize = True
+      BorderSpacing.Right = 48
+      BevelOuter = bvNone
+      ClientHeight = 30
+      ClientWidth = 76
+      TabOrder = 1
+      object buttonFolderUp: TSpeedButton
+        Left = 0
+        Height = 30
+        Hint = 'Go to parent folder'
+        Top = 0
+        Width = 30
+        Align = alLeft
+        AutoSize = True
+        BorderSpacing.Right = 16
+        Images = ImageList
+        ImageIndex = 3
+      end
+      object buttonHomeFolder: TSpeedButton
+        Left = 46
+        Height = 30
+        Hint = 'Go to home folder'
+        Top = 0
+        Width = 30
+        Align = alClient
+        AutoSize = True
+        Images = ImageList
+        ImageIndex = 2
+      end
+    end
+    object buttonNewFolder: TSpeedButton
+      Left = 492
+      Height = 30
+      Hint = 'Create new folder'
+      Top = 0
+      Width = 30
+      Align = alRight
+      AutoSize = True
+      BorderSpacing.Left = 16
+      BorderSpacing.Right = 16
+      Images = ImageList
+      ImageIndex = 4
+    end
+  end
+  object Panel4: TPanel
+    Left = 8
+    Height = 277
+    Top = 46
+    Width = 522
+    Align = alClient
+    BorderSpacing.Left = 8
+    BorderSpacing.Top = 8
+    BorderSpacing.Right = 8
+    BorderSpacing.Bottom = 8
+    BevelOuter = bvNone
+    ClientHeight = 277
+    ClientWidth = 522
+    DoubleBuffered = True
+    ParentDoubleBuffered = False
+    TabOrder = 2
+    OnPaint = Panel4Paint
+    object Panel6: TPanel
+      Left = 4
+      Height = 27
+      Top = 4
+      Width = 514
+      Align = alTop
+      AutoSize = True
+      BorderSpacing.Around = 4
+      BevelOuter = bvNone
+      ClientHeight = 27
+      ClientWidth = 514
+      TabOrder = 1
+      object labelFilePath: TLabel
+        Left = 4
+        Height = 19
+        Top = 4
+        Width = 506
+        Align = alClient
+        BorderSpacing.Around = 4
+        Caption = '/home/uwe/Programming/freePascal/Projekte/CPM_Image-File_Explorer/Sources/'
+        Layout = tlCenter
+        ParentColor = False
+      end
+    end
+    object Panel5: TPanel
+      Left = 4
+      Height = 152
+      Top = 35
+      Width = 514
+      Align = alClient
+      BorderSpacing.Left = 4
+      BorderSpacing.Right = 4
+      BevelOuter = bvNone
+      BorderStyle = bsSingle
+      ClientHeight = 150
+      ClientWidth = 512
+      TabOrder = 0
+      object ShellTreeView: TShellTreeView
+        Left = 0
+        Height = 150
+        Top = 0
+        Width = 196
+        Align = alLeft
+        BorderStyle = bsNone
+        FileSortType = fstNone
+        TabOrder = 0
+        ObjectTypes = [otFolders]
+        ShellListView = ShellListView
+      end
+      object Splitter: TSplitter
+        Left = 196
+        Height = 150
+        Top = 0
+        Width = 5
+        AutoSnap = False
+        MinSize = 196
+      end
+      object ShellListView: TShellListView
+        Left = 201
+        Height = 150
+        Top = 0
+        Width = 311
+        Align = alClient
+        BorderStyle = bsNone
+        Color = clDefault
+        ReadOnly = True
+        TabOrder = 2
+        ViewStyle = vsList
+        ObjectTypes = [otNonFolders]
+        ShellTreeView = ShellTreeView
+      end
+    end
+    object Panel7: TPanel
+      Left = 4
+      Height = 78
+      Top = 191
+      Width = 514
+      Align = alBottom
+      AutoSize = True
+      BorderSpacing.Bottom = 4
+      BorderSpacing.Around = 4
+      BevelOuter = bvNone
+      ChildSizing.HorizontalSpacing = 8
+      ChildSizing.VerticalSpacing = 8
+      ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+      ChildSizing.EnlargeVertical = crsHomogenousChildResize
+      ChildSizing.Layout = cclLeftToRightThenTopToBottom
+      ChildSizing.ControlsPerLine = 2
+      ClientHeight = 78
+      ClientWidth = 514
+      TabOrder = 2
+      object Panel8: TPanel
+        Left = 0
+        Height = 31
+        Top = 2
+        Width = 295
+        BorderSpacing.CellAlignVertical = ccaCenter
+        BevelOuter = bvNone
+        ClientHeight = 31
+        ClientWidth = 295
+        TabOrder = 0
+        object editFileName: TEdit
+          Left = 0
+          Height = 31
+          Top = 0
+          Width = 295
+          Align = alClient
+          TabOrder = 0
+          Text = 'editFileName'
+        end
+      end
+      object Panel9: TPanel
+        Left = 303
+        Height = 35
+        Top = 0
+        Width = 211
+        BorderSpacing.CellAlignVertical = ccaCenter
+        BevelOuter = bvNone
+        ClientHeight = 35
+        ClientWidth = 211
+        TabOrder = 1
+        object comboboxFileTypes: TComboBox
+          Left = 0
+          Height = 35
+          Top = 0
+          Width = 211
+          Align = alClient
+          ItemHeight = 0
+          Style = csDropDownList
+          TabOrder = 0
+        end
+      end
+      object Panel10: TPanel
+        Left = 0
+        Height = 35
+        Top = 43
+        Width = 295
+        BorderSpacing.CellAlignVertical = ccaCenter
+        BevelOuter = bvNone
+        ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+        ChildSizing.EnlargeVertical = crsHomogenousChildResize
+        ChildSizing.Layout = cclLeftToRightThenTopToBottom
+        ChildSizing.ControlsPerLine = 2
+        ClientHeight = 35
+        ClientWidth = 295
+        TabOrder = 2
+        object Label1: TLabel
+          Left = 56
+          Height = 19
+          Top = 8
+          Width = 83
+          AutoSize = False
+          BorderSpacing.CellAlignHorizontal = ccaRightBottom
+          BorderSpacing.CellAlignVertical = ccaCenter
+          Caption = 'Image Type : '
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object comboboxImageTypes: TComboBox
+          Left = 139
+          Height = 35
+          Top = 0
+          Width = 156
+          ItemHeight = 0
+          Style = csDropDownList
+          TabOrder = 0
+        end
+      end
+      object Panel11: TPanel
+        Left = 303
+        Height = 35
+        Top = 43
+        Width = 211
+        BevelOuter = bvNone
+        TabOrder = 3
+      end
+    end
+  end
+  object ImageList: TImageList
+    Height = 26
+    Width = 26
+    Left = 488
+    Top = 8
+    Bitmap = {
+      4C7A050000001A0000001A000000F00300000000000078DAED977B48535118C0
+      F772A66966E2A60EDD352BCC1E8421420A65889460090969948A5A94565A4132
+      451421900C9FD34AB2D01E7FD41F96E42B52231F2999BA6A20091151D9C347BE
+      2DD0D3398BDD6EF36EBB9B77E332CE073FF49CE3FD7EF76CE77EF793C7B3ED18
+      382154B3C11677DE56439E852C1160839D9EBC20639E9E04A186398510F42709
+      C93182BAAE6F6E2A53C8C8638DFD4C57FA023608948B8D7A52831C348C971120
+      3BCC891C23A8EBFAE63E5EF661E4B1D67EF2239C354C9413A024DA851C23A8EB
+      FAE63E5FE1D67EAA0EBB6AF809F77337C18D1C23A8EBFAE6BE16C939B59FFA93
+      EE1A2695047872464A8E11D4757D733F4A98ED6704EE1B817EFF562C27C7DA39
+      EA986E6EAA82E0D4E73698E3A501DDD7DB3C19394650D7117DD9CBE7D0F3C0A5
+      FD349F966840E7A0FD9C941C23A8EBFAE6464BB975AE711DE56E1DC5C1ED7899
+      2353B3418097DD56AE3C3FA5875C492CE9490C742041E3BA9312507DD48D113F
+      61ED35D763A9FD8CC1FAA9C5921E6B9D036B7D6EBA1E55AE0CF428BC18817A0A
+      A69EA7191E24F8FB31DF5310E5024EEF5ACD88F132EE3DA7B65E4795B1EB701D
+      E5D039B0250F0E1C4CA2E99CF440438634668D035F6089FCE7235CBC672BD737
+      4D57124BF0DC22861EA54977B3953F3F8CC77F5FE89307F3CED03D27334ADFFB
+      65096289B9F943FCEC458AC8B51130D73B06CFE5C483546946E806B1C854CF78
+      99FC1ABCFEB709356071BC5C5E3B33C9B763927F284F1605BF83D115D49C85A1
+      4BDE8501327BBDE7A431C3E30EBA2F36EADB4C25F1C980A79DAD3A8AC01EECE1
+      BA072ED3D268E07F240E789E59C9D3C49E8798D5EFF1DCC79AA782C83554AFEB
+      D3A5B1F0EF3EAFC0338F1C8E62BE18773938561ACEF1691710167524A5677AAB
+      C6004252D3D4650947E20E0F81D6A16553F9BDFDA6E6A94E1614B4660A162140
+      875FB9D1BC14CF66D5075D0F42E4B37EA3299E9BC97C358D43C3B61E35A07368
+      098FF4CF8B0FE1D311C2D413DCF1C2A003E13B30427B7FAD17055F743D5D5783
+      D4F31D07812E84EA87510FE2466FE9B26B275AC297BD1BFA6FEFFDCF53D35B04
+      E4AA51460E2DE81A5D97310F1DBA79DF749F02C6AEC11EECE1BAC71C6CDDF3AA
+      36EC0DFB9E034BCBF713BE1DAEB5413A59E379549C39EFD4E23D812288508BD4
+      71156E9870D87CB857D70B2122819BC422F99D8E9DE2C3FA9D02790D198628DD
+      ABEA1CCDE9470D793C1FF705C3DC939477C612245DE4E76F523F8A68CBE22B69
+      FACD5CF4F3704B6B83FC6FEE7F3D6AF7F050D291CDA1A67A0C71EBBA02F80FFE
+      DF4FE63C6C846B0E8CFB5126CC75C480EABE5610ACFA0EB6C1DEF2FCC03B30D6
+      799C513F6AB2AB33068C74A5824F5D67C174671C7E6F630FF6600FEE47717022
+      FE006CAF35D3
+    }
+  end
 end

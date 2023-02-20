@@ -1,6 +1,42 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
+#: tfiledialog.buttondetailview.hint
+msgid "View files as a detailed view"
+msgstr ""
+
+#: tfiledialog.buttonfolderup.hint
+msgid "Go to parent folder"
+msgstr ""
+
+#: tfiledialog.buttonhomefolder.hint
+msgid "Go to home folder"
+msgstr ""
+
+#: tfiledialog.buttonlistview.hint
+msgid "View files as a list view"
+msgstr ""
+
+#: tfiledialog.buttonnewfolder.hint
+msgid "Create new folder"
+msgstr ""
+
+#: tfiledialog.caption
+msgid "FileDialog"
+msgstr ""
+
+#: tfiledialog.editfilename.text
+msgid "editFileName"
+msgstr ""
+
+#: tfiledialog.label1.caption
+msgid "Image Type : "
+msgstr ""
+
+#: tfiledialog.labelfilepath.caption
+msgid "/home/uwe/Programming/freePascal/Projekte/CPM_Image-File_Explorer/Sources/"
+msgstr ""
+
 #: tmainwindow.actionabout.caption
 msgid "About ..."
 msgstr ""

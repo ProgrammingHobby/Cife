@@ -1,3 +1,11 @@
 {"version":1,"strings":[
-{"hash":162247543,"name":"tfiledialog.caption","sourcebytes":[70,105,108,101,68,105,97,108,111,103],"value":"FileDialog"}
+{"hash":162247543,"name":"tfiledialog.caption","sourcebytes":[70,105,108,101,68,105,97,108,111,103],"value":"FileDialog"},
+{"hash":198474967,"name":"tfiledialog.buttonlistview.hint","sourcebytes":[86,105,101,119,32,102,105,108,101,115,32,97,115,32,97,32,108,105,115,116,32,118,105,101,119],"value":"View files as a list view"},
+{"hash":29098567,"name":"tfiledialog.buttondetailview.hint","sourcebytes":[86,105,101,119,32,102,105,108,101,115,32,97,115,32,97,32,100,101,116,97,105,108,101,100,32,118,105,101,119],"value":"View files as a detailed view"},
+{"hash":241909394,"name":"tfiledialog.buttonfolderup.hint","sourcebytes":[71,111,32,116,111,32,112,97,114,101,110,116,32,102,111,108,100,101,114],"value":"Go to parent folder"},
+{"hash":133529090,"name":"tfiledialog.buttonhomefolder.hint","sourcebytes":[71,111,32,116,111,32,104,111,109,101,32,102,111,108,100,101,114],"value":"Go to home folder"},
+{"hash":218754514,"name":"tfiledialog.buttonnewfolder.hint","sourcebytes":[67,114,101,97,116,101,32,110,101,119,32,102,111,108,100,101,114],"value":"Create new folder"},
+{"hash":74152319,"name":"tfiledialog.labelfilepath.caption","sourcebytes":[47,104,111,109,101,47,117,119,101,47,80,114,111,103,114,97,109,109,105,110,103,47,102,114,101,101,80,97,115,99,97,108,47,80,114,111,106,101,107,116,101,47,67,80,77,95,73,109,97,103,101,45,70,105,108,101,95,69,120,112,108,111,114,101,114,47,83,111,117,114,99,101,115,47],"value":"/home/uwe/Programming/freePascal/Projekte/CPM_Image-File_Explorer/Sources/"},
+{"hash":177426677,"name":"tfiledialog.editfilename.text","sourcebytes":[101,100,105,116,70,105,108,101,78,97,109,101],"value":"editFileName"},
+{"hash":204580032,"name":"tfiledialog.label1.caption","sourcebytes":[73,109,97,103,101,32,84,121,112,101,32,58,32],"value":"Image Type : "}
 ]}

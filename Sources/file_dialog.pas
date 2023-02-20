@@ -23,10 +23,42 @@ unit File_Dialog;
 interface
 
 uses
-    Classes, SysUtils, Forms, Controls, Graphics, Dialogs;
+    Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ButtonPanel,
+    ComCtrls, ExtCtrls, Buttons, ShellCtrls, StdCtrls;
 
 type
+
+    { TFileDialog }
+
     TFileDialog = class(TForm)
+        ButtonPanel: TButtonPanel;
+        comboboxImageTypes: TComboBox;
+        comboboxFileTypes: TComboBox;
+        editFileName: TEdit;
+        ImageList: TImageList;
+        Label1: TLabel;
+        labelFilePath: TLabel;
+        Panel1: TPanel;
+        buttonListView: TSpeedButton;
+        buttonDetailView: TSpeedButton;
+        buttonFolderUp: TSpeedButton;
+        buttonHomeFolder: TSpeedButton;
+        buttonNewFolder: TSpeedButton;
+        Panel10: TPanel;
+        Panel11: TPanel;
+        Panel2: TPanel;
+        Panel3: TPanel;
+        Panel4: TPanel;
+        Panel5: TPanel;
+        Panel6: TPanel;
+        Panel7: TPanel;
+        Panel8: TPanel;
+        Panel9: TPanel;
+        ShellListView: TShellListView;
+        ShellTreeView: TShellTreeView;
+        Splitter: TSplitter;
+        procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+        procedure Panel4Paint(Sender: TObject);
     private
 
     public
@@ -39,5 +71,29 @@ var
 implementation
 
 {$R *.lfm}
+
+{ TFileDialog }
+// --------------------------------------------------------------------------------
+procedure TFileDialog.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+    CloseAction := caFree;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TFileDialog.Panel4Paint(Sender: TObject);
+const
+    R = 4;  // Rundungsradius
+var
+    panel: TPanel;
+begin
+    if not (Sender is TPanel) then begin
+        exit;
+    end;
+    panel := TPanel(Sender);
+    panel.Canvas.Brush.Style := bsClear;
+    panel.Canvas.Pen.Color := clSilver;
+    panel.Canvas.Pen.Width := 1;
+    panel.Canvas.RoundRect(0, 0, panel.ClientWidth, panel.ClientHeight, R, R);
+end;
 
 end.
