@@ -7,8 +7,8 @@
       <Unit>
         <Filename Value="cife.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="1"/>
-        <CursorPos X="16" Y="33"/>
+        <EditorIndex Value="2"/>
+        <CursorPos X="129" Y="6"/>
         <UsageCount Value="31"/>
         <Loaded Value="True"/>
       </Unit>
@@ -19,7 +19,8 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Main_Window"/>
-        <CursorPos X="12" Y="19"/>
+        <TopLine Value="118"/>
+        <CursorPos X="30" Y="189"/>
         <UsageCount Value="31"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -41,14 +42,26 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="NewImage_Dialog"/>
+        <EditorIndex Value="-1"/>
+        <UsageCount Value="20"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Sources/file_dialog.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FileDialog"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="File_Dialog"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="17"/>
+        <CursorPos X="11" Y="32"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="6">
+    <JumpHistory HistoryIndex="8">
       <Position>
         <Filename Value="Sources/main_window.pas"/>
       </Position>
@@ -75,6 +88,14 @@
       <Position>
         <Filename Value="Sources/main_window.pas"/>
         <Caret Line="27" Column="31"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/main_window.pas"/>
+        <Caret Line="166" Column="34" TopLine="122"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/file_dialog.pas"/>
+        <Caret Line="32" Column="11" TopLine="22"/>
       </Position>
     </JumpHistory>
     <RunParams>
