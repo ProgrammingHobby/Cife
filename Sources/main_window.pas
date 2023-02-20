@@ -149,6 +149,7 @@ type
         StatusBar1: TStatusBar;
         tabDirectory: TTabControl;
         procedure actionNewExecute(Sender: TObject);
+        procedure actionOpenExecute(Sender: TObject);
     private
 
     public
@@ -162,7 +163,7 @@ implementation
 
 {$R *.lfm}
 
-uses NewImage_Dialog;
+uses NewImage_Dialog, File_Dialog;
 
 { TMainWindow }
 
@@ -179,4 +180,18 @@ begin
     end;
 end;
 
+// --------------------------------------------------------------------------------
+procedure TMainWindow.actionOpenExecute(Sender: TObject);
+var
+    dialog: TFileDialog;
+begin
+    try
+        dialog := TFileDialog.Create(self);
+        dialog.ShowModal;
+    finally
+        FreeAndNil(dialog);
+    end;
+end;
+
+// --------------------------------------------------------------------------------
 end.

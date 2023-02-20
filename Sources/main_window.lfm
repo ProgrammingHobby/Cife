@@ -1031,6 +1031,7 @@ object MainWindow: TMainWindow
     object actionOpen: TAction
       Caption = 'Open'
       ImageIndex = 8
+      OnExecute = actionOpenExecute
       ShortCut = 16463
     end
     object actionClose: TAction
