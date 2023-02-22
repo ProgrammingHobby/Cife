@@ -88,9 +88,9 @@ type
         labelSectorBytes: TLabel;
         labelSectors: TLabel;
         labelTracks: TLabel;
-        listDirectory: TListView;
         MainMenu: TMainMenu;
         menuFile: TMenuItem;
+        PageControl: TPageControl;
         Panel1: TPanel;
         Panel10: TPanel;
         Panel11: TPanel;
@@ -147,7 +147,6 @@ type
         menuEdit: TMenuItem;
         menuItemCut: TMenuItem;
         StatusBar1: TStatusBar;
-        tabDirectory: TTabControl;
         procedure actionAboutExecute(Sender: TObject);
         procedure actionCharacteristicsExecute(Sender: TObject);
         procedure actionNewExecute(Sender: TObject);
