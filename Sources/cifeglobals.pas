@@ -26,6 +26,7 @@ uses
     Classes, SysUtils;
 
 function SettingsFile: string;
+procedure GetDiskDefsList(DiskDefsList: TStrings);
 
 implementation
 
@@ -40,5 +41,25 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
+procedure GetDiskDefsList(DiskDefsList: TStrings);
+var
+    Diskdefs: TStringList;
+    Line: TStringArray;
+    Index: integer;
+begin
+    try
+        Diskdefs := TStringList.Create;
+        DiskDefs.LoadFromFile('diskdefs');
+        for Index := 0 to Diskdefs.Count - 1 do begin
+            Line := Diskdefs[Index].Trim.Split(' ');
+            if ((Length(Line) = 2) and (Line[0] = 'diskdef')) then begin
+                DiskDefsList.Add(Line[1]);
+            end;
+        end;
+    finally
+        FreeAndNil(Diskdefs);
+    end;
+end;
 
+// --------------------------------------------------------------------------------
 end.
