@@ -153,6 +153,8 @@ type
         procedure actionOpenExecute(Sender: TObject);
         procedure actionRenameExecute(Sender: TObject);
         procedure actionSettingsExecute(Sender: TObject);
+        procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+        procedure FormShow(Sender: TObject);
     private
 
     public
@@ -166,7 +168,7 @@ implementation
 
 {$R *.lfm}
 
-uses NewImage_Dialog, File_Dialog, RenameFile_Dialog, Characteristics_Dialog, Settings_Dialog, About_Dialog;
+uses NewImage_Dialog, File_Dialog, RenameFile_Dialog, Characteristics_Dialog, Settings_Dialog, About_Dialog, CifeGlobals, XMLSettings;
 
 { TMainWindow }
 
@@ -245,6 +247,32 @@ begin
         dialog.ShowModal;
     finally
         FreeAndNil(dialog);
+    end;
+end;
+
+procedure TMainWindow.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+        with TXMLSettings.Create(SettingsFile) do begin
+            try
+                SaveFormState(TForm(self));
+            finally
+                Free;
+            end;
+        end;
+        CloseAction := caFree;
+end;
+
+procedure TMainWindow.FormShow(Sender: TObject);
+begin
+ SetAutoSize(False);
+    Constraints.MinWidth := Width;
+    Constraints.MinHeight := Height;
+    with TXMLSettings.Create(SettingsFile) do begin
+        try
+            RestoreFormState(TForm(self));
+        finally
+            Free;
+        end;
     end;
 end;
 

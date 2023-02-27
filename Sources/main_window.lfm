@@ -3,11 +3,12 @@ object MainWindow: TMainWindow
   Height = 390
   Top = 250
   Width = 687
-  AutoSize = True
   Caption = 'CP/M Image-File Explorer'
   ClientHeight = 390
   ClientWidth = 687
   Menu = MainMenu
+  OnClose = FormClose
+  OnShow = FormShow
   object StatusBar1: TStatusBar
     Left = 0
     Height = 21
