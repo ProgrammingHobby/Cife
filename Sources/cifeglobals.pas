@@ -25,6 +25,20 @@ interface
 uses
     Classes, SysUtils;
 
+function SettingsFile: string;
+
 implementation
+
+// --------------------------------------------------------------------------------
+function SettingsFile: string;
+begin
+    Result := GetAppConfigDir(False);
+    if (not DirectoryExists(Result, False)) then begin
+        MkDir(Result);
+    end;
+    Result := Result + 'cife.xml';
+end;
+
+// --------------------------------------------------------------------------------
 
 end.
