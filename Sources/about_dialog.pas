@@ -67,7 +67,7 @@ implementation
 
 {$R *.lfm}
 
-uses UscaleDPI, Version_Info, LCLIntf;
+uses Version_Info, LCLIntf;
 
 { TAboutDialog }
 
@@ -83,7 +83,6 @@ begin
     labelVersion.Caption := GetFileVersion;
     labelSystem.Caption := 'Written with Lazarus / Free Pascal' + ^M + ^J + GetLCLVersion + ' && ' +
         GetCompilerInfo + '  ' + IntToStr(SizeOf(PtrUInt) * 8) + 'bit';
-    ScaleDPI(self, 96);
     Constraints.MinWidth := Width;
     Constraints.MaxWidth := Width;
     Constraints.MinHeight := Height;
