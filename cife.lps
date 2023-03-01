@@ -7,10 +7,9 @@
       <Unit>
         <Filename Value="cife.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="-1"/>
         <CursorPos X="16" Y="33"/>
         <UsageCount Value="32"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/main_window.pas"/>
@@ -19,15 +18,15 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Main_Window"/>
+        <IsVisibleTab Value="True"/>
         <TopLine Value="174"/>
-        <CursorPos X="25" Y="206"/>
+        <CursorPos X="44" Y="221"/>
         <UsageCount Value="32"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/uscaledpi.pas"/>
-        <IsPartOfProject Value="True"/>
         <UnitName Value="UscaleDPI"/>
         <EditorIndex Value="-1"/>
         <WindowIndex Value="-1"/>
@@ -98,15 +97,22 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="About_Dialog"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="2"/>
-        <CursorPos X="12" Y="19"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="33"/>
+        <CursorPos X="13" Y="70"/>
+        <UsageCount Value="20"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Sources/imagepage.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ImagePage"/>
+        <EditorIndex Value="1"/>
+        <CursorPos X="153" Y="5"/>
         <UsageCount Value="20"/>
         <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
     </Units>
-    <JumpHistory HistoryIndex="13">
+    <JumpHistory HistoryIndex="12">
       <Position>
         <Filename Value="Sources/main_window.pas"/>
       </Position>
@@ -137,10 +143,6 @@
       <Position>
         <Filename Value="Sources/main_window.pas"/>
         <Caret Line="166" Column="34" TopLine="122"/>
-      </Position>
-      <Position>
-        <Filename Value="cife.lpr"/>
-        <Caret Line="6" Column="129"/>
       </Position>
       <Position>
         <Filename Value="Sources/main_window.pas"/>

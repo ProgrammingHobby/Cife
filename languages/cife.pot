@@ -112,16 +112,8 @@ msgstr ""
 msgid "FileDialog"
 msgstr ""
 
-#: tfiledialog.editfilename.text
-msgid "editFileName"
-msgstr ""
-
 #: tfiledialog.label1.caption
 msgid "Image Type : "
-msgstr ""
-
-#: tfiledialog.labelfilepath.caption
-msgid "/home/uwe/Programming/freePascal/Projekte/CPM_Image-File_Explorer/Sources/"
 msgstr ""
 
 #: tmainwindow.actionabout.caption

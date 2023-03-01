@@ -67,7 +67,7 @@ implementation
 
 {$R *.lfm}
 
-uses Version_Info, LCLIntf;
+uses VersionInfo, LCLIntf;
 
 { TAboutDialog }
 
