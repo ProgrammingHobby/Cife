@@ -92,20 +92,11 @@ type
         menuFile: TMenuItem;
         PageControl: TPageControl;
         Panel1: TPanel;
-        Panel10: TPanel;
-        Panel11: TPanel;
-        Panel12: TPanel;
-        Panel13: TPanel;
-        Panel14: TPanel;
-        Panel15: TPanel;
         Panel2: TPanel;
         Panel3: TPanel;
         Panel4: TPanel;
         Panel5: TPanel;
         Panel6: TPanel;
-        Panel7: TPanel;
-        Panel8: TPanel;
-        Panel9: TPanel;
         popupItemRefresh: TMenuItem;
         Separator8: TMenuItem;
         popupItemAttributes: TMenuItem;
@@ -168,7 +159,8 @@ implementation
 
 {$R *.lfm}
 
-uses NewImage_Dialog, File_Dialog, RenameFile_Dialog, Characteristics_Dialog, Settings_Dialog, About_Dialog, CifeGlobals, XMLSettings;
+uses NewImage_Dialog, File_Dialog, RenameFile_Dialog, Characteristics_Dialog, Settings_Dialog,
+    About_Dialog, CifeGlobals, XMLSettings;
 
 { TMainWindow }
 
@@ -215,10 +207,22 @@ end;
 procedure TMainWindow.actionOpenExecute(Sender: TObject);
 var
     dialog: TFileDialog;
+    ImageFile, ImageType: string;
 begin
     try
         dialog := TFileDialog.Create(self);
-        dialog.ShowModal;
+        dialog.SetDialogTitle('Open CP/M Disk Image File');
+        dialog.SetRootPath(GetUserDir);
+        dialog.SetFileWildcards('Image Files (*.img,*.fdd,*.dsk)|*.img;*.IMG;*.fdd;*.FDD;*.dsk;*.DSK|all Files (*.*)|*');
+        if (dialog.ShowModal = mrOk) then begin
+            ImageFile := dialog.GetFullFileName;
+            ImageType := dialog.GetImageType;
+            labelFile.Caption := ImageFile;
+            labelType.Caption := ImageType;
+            //ImagePage.SetFile(ImageFile);
+            //ImagePage.SetType(ImageType);
+            //ImagePage.ShowDirectory;
+        end;
     finally
         FreeAndNil(dialog);
     end;
@@ -252,19 +256,19 @@ end;
 
 procedure TMainWindow.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-        with TXMLSettings.Create(SettingsFile) do begin
-            try
-                SaveFormState(TForm(self));
-            finally
-                Free;
-            end;
+    with TXMLSettings.Create(SettingsFile) do begin
+        try
+            SaveFormState(TForm(self));
+        finally
+            Free;
         end;
-        CloseAction := caFree;
+    end;
+    CloseAction := caFree;
 end;
 
 procedure TMainWindow.FormShow(Sender: TObject);
 begin
- SetAutoSize(False);
+    SetAutoSize(False);
     Constraints.MinWidth := Width;
     Constraints.MinHeight := Height;
     with TXMLSettings.Create(SettingsFile) do begin
