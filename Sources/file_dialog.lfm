@@ -3,13 +3,14 @@ object FileDialog: TFileDialog
   Height = 371
   Top = 250
   Width = 538
-  AutoSize = True
   Caption = 'FileDialog'
   ClientHeight = 371
   ClientWidth = 538
   OnClose = FormClose
+  OnShow = FormShow
   Position = poOwnerFormCenter
   ShowHint = True
+  LCLVersion = '2.2.4.0'
   object ButtonPanel: TButtonPanel
     Left = 6
     Height = 34
@@ -61,8 +62,11 @@ object FileDialog: TFileDialog
         Align = alLeft
         AutoSize = True
         BorderSpacing.Right = 16
+        Enabled = False
         Images = ImageList
         ImageIndex = 1
+        Visible = False
+        OnClick = buttonListViewClick
       end
       object buttonDetailView: TSpeedButton
         Left = 46
@@ -72,8 +76,11 @@ object FileDialog: TFileDialog
         Width = 30
         Align = alClient
         AutoSize = True
+        Enabled = False
         Images = ImageList
         ImageIndex = 0
+        Visible = False
+        OnClick = buttonDetailViewClick
       end
     end
     object Panel3: TPanel
@@ -145,56 +152,60 @@ object FileDialog: TFileDialog
     OnPaint = Panel4Paint
     object Panel6: TPanel
       Left = 4
-      Height = 27
+      Height = 9
       Top = 4
       Width = 514
       Align = alTop
       AutoSize = True
       BorderSpacing.Around = 4
       BevelOuter = bvNone
-      ClientHeight = 27
+      ClientHeight = 9
       ClientWidth = 514
       TabOrder = 1
       object labelFilePath: TLabel
         Left = 4
-        Height = 19
+        Height = 1
         Top = 4
         Width = 506
         Align = alClient
         BorderSpacing.Around = 4
-        Caption = '/home/uwe/Programming/freePascal/Projekte/CPM_Image-File_Explorer/Sources/'
         Layout = tlCenter
         ParentColor = False
       end
     end
     object Panel5: TPanel
       Left = 4
-      Height = 152
-      Top = 35
+      Height = 170
+      Top = 17
       Width = 514
       Align = alClient
       BorderSpacing.Left = 4
       BorderSpacing.Right = 4
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 150
-      ClientWidth = 512
+      ClientHeight = 170
+      ClientWidth = 514
+      DoubleBuffered = True
+      ParentDoubleBuffered = False
       TabOrder = 0
       object ShellTreeView: TShellTreeView
         Left = 0
-        Height = 150
+        Height = 168
         Top = 0
         Width = 196
         Align = alLeft
         BorderStyle = bsNone
         FileSortType = fstNone
+        ReadOnly = True
+        ScrollBars = ssAutoBoth
         TabOrder = 0
+        Options = [tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
         ObjectTypes = [otFolders]
         ShellListView = ShellListView
       end
       object Splitter: TSplitter
         Left = 196
-        Height = 150
+        Height = 168
         Top = 0
         Width = 5
         AutoSnap = False
@@ -202,15 +213,16 @@ object FileDialog: TFileDialog
       end
       object ShellListView: TShellListView
         Left = 201
-        Height = 150
+        Height = 168
         Top = 0
         Width = 311
         Align = alClient
         BorderStyle = bsNone
         Color = clDefault
         ReadOnly = True
+        ScrollBars = ssAutoBoth
         TabOrder = 2
-        ViewStyle = vsList
+        OnSelectItem = ShellListViewSelectItem
         ObjectTypes = [otNonFolders]
         ShellTreeView = ShellTreeView
       end
@@ -251,7 +263,6 @@ object FileDialog: TFileDialog
           Width = 295
           Align = alClient
           TabOrder = 0
-          Text = 'editFileName'
         end
       end
       object Panel9: TPanel
@@ -271,6 +282,7 @@ object FileDialog: TFileDialog
           Width = 211
           Align = alClient
           ItemHeight = 0
+          OnChange = comboboxFileTypesChange
           Style = csDropDownList
           TabOrder = 0
         end
@@ -324,8 +336,8 @@ object FileDialog: TFileDialog
   object ImageList: TImageList
     Height = 26
     Width = 26
-    Left = 488
-    Top = 8
+    Left = 232
+    Top = 336
     Bitmap = {
       4C7A050000001A0000001A000000F00300000000000078DAED977B48535118C0
       F772A66966E2A60EDD352BCC1E8421420A65889460090969948A5A94565A4132
