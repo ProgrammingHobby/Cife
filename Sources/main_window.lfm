@@ -9,7 +9,6 @@ object MainWindow: TMainWindow
   Menu = MainMenu
   OnClose = FormClose
   OnShow = FormShow
-  LCLVersion = '2.2.4.0'
   object StatusBar1: TStatusBar
     Left = 0
     Height = 21
@@ -383,7 +382,7 @@ object MainWindow: TMainWindow
       ChildSizing.EnlargeVertical = crsHomogenousChildResize
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
       ChildSizing.ControlsPerLine = 2
-      ClientHeight = 143
+      ClientHeight = 144
       ClientWidth = 129
       Font.Height = -13
       Font.Name = 'Sans'
@@ -624,6 +623,7 @@ object MainWindow: TMainWindow
     BorderSpacing.Left = 4
     BorderSpacing.Right = 4
     TabOrder = 2
+    OnCloseTabClicked = PageControlCloseTabClicked
     Options = [nboShowCloseButtons]
   end
   object MainMenu: TMainMenu
@@ -964,6 +964,7 @@ object MainWindow: TMainWindow
     object actionClose: TAction
       Caption = 'Close'
       ImageIndex = 4
+      OnExecute = actionCloseExecute
       ShortCut = 16471
     end
     object actionQuit: TAction

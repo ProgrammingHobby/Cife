@@ -140,13 +140,16 @@ type
         StatusBar1: TStatusBar;
         procedure actionAboutExecute(Sender: TObject);
         procedure actionCharacteristicsExecute(Sender: TObject);
+        procedure actionCloseExecute(Sender: TObject);
         procedure actionNewExecute(Sender: TObject);
         procedure actionOpenExecute(Sender: TObject);
         procedure actionRenameExecute(Sender: TObject);
         procedure actionSettingsExecute(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
         procedure FormShow(Sender: TObject);
+        procedure PageControlCloseTabClicked(Sender: TObject);
     private
+        procedure AddImagePage(ImageFile: string; ImageType: string);
 
     public
 
@@ -160,7 +163,7 @@ implementation
 {$R *.lfm}
 
 uses NewImage_Dialog, File_Dialog, RenameFile_Dialog, Characteristics_Dialog, Settings_Dialog,
-    About_Dialog, CifeGlobals, XMLSettings;
+    About_Dialog, CifeGlobals, XMLSettings, ImagePage;
 
 { TMainWindow }
 
@@ -187,6 +190,15 @@ begin
         dialog.ShowModal;
     finally
         FreeAndNil(dialog);
+    end;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TMainWindow.actionCloseExecute(Sender: TObject);
+begin
+    PageControl.ActivePage.Free;
+    if (PageControl.PageCount <= 0) then begin
+        actionClose.Enabled := False;
     end;
 end;
 
@@ -219,9 +231,7 @@ begin
             ImageType := dialog.GetImageType;
             labelFile.Caption := ImageFile;
             labelType.Caption := ImageType;
-            //ImagePage.SetFile(ImageFile);
-            //ImagePage.SetType(ImageType);
-            //ImagePage.ShowDirectory;
+            AddImagePage(ImageFile, ImageType);
         end;
     finally
         FreeAndNil(dialog);
@@ -254,6 +264,7 @@ begin
     end;
 end;
 
+// --------------------------------------------------------------------------------
 procedure TMainWindow.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
     with TXMLSettings.Create(SettingsFile) do begin
@@ -266,6 +277,7 @@ begin
     CloseAction := caFree;
 end;
 
+// --------------------------------------------------------------------------------
 procedure TMainWindow.FormShow(Sender: TObject);
 begin
     SetAutoSize(False);
@@ -277,6 +289,29 @@ begin
         finally
             Free;
         end;
+    end;
+    actionClose.Enabled := False;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TMainWindow.PageControlCloseTabClicked(Sender: TObject);
+begin
+    PageControl.ActivePage.Free;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TMainWindow.AddImagePage(ImageFile: string; ImageType: string);
+var
+    ImagePage: TImagePage;
+begin
+    ImagePage := TImagePage.Create(PageControl);
+    ImagePage.PageControl := PageControl;
+    ImagePage.Caption := ExtractFileName(ImageFile);
+    ImagePage.SetFile(ImageFile);
+    ImagePage.SetType(ImageType);
+    //ImagePage.ShowDirectory;
+    if (PageControl.PageCount > 0) then begin
+        actionClose.Enabled := True;
     end;
 end;
 
