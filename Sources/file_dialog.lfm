@@ -10,7 +10,6 @@ object FileDialog: TFileDialog
   OnShow = FormShow
   Position = poOwnerFormCenter
   ShowHint = True
-  LCLVersion = '2.2.4.0'
   object ButtonPanel: TButtonPanel
     Left = 6
     Height = 34
@@ -183,8 +182,8 @@ object FileDialog: TFileDialog
       BorderSpacing.Right = 4
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 170
-      ClientWidth = 514
+      ClientHeight = 168
+      ClientWidth = 512
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 0
@@ -195,7 +194,7 @@ object FileDialog: TFileDialog
         Width = 196
         Align = alLeft
         BorderStyle = bsNone
-        FileSortType = fstNone
+        FileSortType = fstFoldersFirst
         ReadOnly = True
         ScrollBars = ssAutoBoth
         TabOrder = 0
@@ -221,6 +220,7 @@ object FileDialog: TFileDialog
         Color = clDefault
         ReadOnly = True
         ScrollBars = ssAutoBoth
+        SortType = stText
         TabOrder = 2
         OnSelectItem = ShellListViewSelectItem
         ObjectTypes = [otNonFolders]
