@@ -96,7 +96,7 @@ begin
         Align := alClient;
         BorderStyle := bsSingle;
         ReadOnly := True;
-        ScrollBars := ssAutoBoth;
+        ScrollBars := ssAutoVertical;
         ViewStyle := vsReport;
         GridLines := True;
         ColumnClick := False;
@@ -142,7 +142,11 @@ begin
     ColWidths := 0;
     dlv := TListView(Sender);
     dlv.BeginUpdate;
-    ActListViewWidth := ClientWidth;
+{$ifdef Windows}
+    ActListViewWidth := (ClientWidth - 4);
+{$else}
+    ActListViewWidth := (ClientWidth - 1);
+{$endif}
     NewWidth := Round(ActListViewWidth * 0.151);
     ColWidths := ColWidths + NewWidth;
     dlv.Columns[0].Width := NewWidth;
@@ -158,15 +162,15 @@ begin
     NewWidth := Round(ActListViewWidth * 0.107);
     ColWidths := ColWidths + NewWidth;
     dlv.Columns[4].Width := NewWidth;
-    NewWidth := Round(ActListViewWidth * 0.161);
+    NewWidth := Round(ActListViewWidth * 0.16);
     ColWidths := ColWidths + NewWidth;
     dlv.Columns[5].Width := NewWidth;
-    NewWidth := Round(ActListViewWidth * 0.161);
+    NewWidth := Round(ActListViewWidth * 0.16);
     ColWidths := ColWidths + NewWidth;
     dlv.Columns[6].Width := NewWidth;
-    NewWidth := Round(ActListViewWidth * 0.161);
+    NewWidth := Round(ActListViewWidth * 0.16);
     ColWidths := ColWidths + NewWidth;
-    dlv.Columns[7].Width := (NewWidth + (ActListViewWidth - Colwidths) - 2);
+    dlv.Columns[7].Width := (NewWidth + (ActListViewWidth - Colwidths));
     dlv.EndUpdate;
 end;
 
