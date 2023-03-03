@@ -638,6 +638,15 @@ object MainWindow: TMainWindow
       object menuItemOpen: TMenuItem
         Action = actionOpen
       end
+      object menuitemRecentFiles: TMenuItem
+        Caption = 'Recent Files'
+        object Separator10: TMenuItem
+          Caption = '-'
+        end
+        object menuitemClearHistory: TMenuItem
+          Action = actionClearHistory
+        end
+      end
       object Separator1: TMenuItem
         Caption = '-'
       end
@@ -1033,11 +1042,8 @@ object MainWindow: TMainWindow
       ImageIndex = 0
       OnExecute = actionAboutExecute
     end
-    object actionClearMessages: TAction
-      Caption = 'Clear Messages'
-    end
-    object actionSaveMessages: TAction
-      Caption = 'Save Messages'
+    object actionClearHistory: TAction
+      Caption = 'Clear History'
     end
   end
   object PopupMenu1: TPopupMenu

@@ -31,6 +31,7 @@ type
     { TMainWindow }
 
     TMainWindow = class(TForm)
+      actionClearHistory: TAction;
         actionNew: TAction;
         actionDelete: TAction;
         actionCharacteristics: TAction;
@@ -39,8 +40,6 @@ type
         actionCheckImage: TAction;
         actionSettings: TAction;
         actionAbout: TAction;
-        actionClearMessages: TAction;
-        actionSaveMessages: TAction;
         actionOpen: TAction;
         actionClose: TAction;
         actionQuit: TAction;
@@ -90,6 +89,8 @@ type
         labelTracks: TLabel;
         MainMenu: TMainMenu;
         menuFile: TMenuItem;
+        menuitemClearHistory: TMenuItem;
+        menuitemRecentFiles: TMenuItem;
         PageControl: TPageControl;
         Panel1: TPanel;
         Panel2: TPanel;
@@ -98,6 +99,7 @@ type
         Panel5: TPanel;
         Panel6: TPanel;
         popupItemRefresh: TMenuItem;
+        Separator10: TMenuItem;
         Separator8: TMenuItem;
         popupItemAttributes: TMenuItem;
         Separator9: TMenuItem;
@@ -309,7 +311,6 @@ begin
     ImagePage.Caption := ExtractFileName(ImageFile);
     ImagePage.SetFile(ImageFile);
     ImagePage.SetType(ImageType);
-    //ImagePage.ShowDirectory;
     if (PageControl.PageCount > 0) then begin
         actionClose.Enabled := True;
     end;

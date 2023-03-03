@@ -38,6 +38,7 @@
 {"hash":345402,"name":"tmainwindow.label9.caption","sourcebytes":[79,83,32,58],"value":"OS :"},
 {"hash":98426328,"name":"tmainwindow.labelos.caption","sourcebytes":[88,88,88,88,88,88],"value":"XXXXXX"},
 {"hash":315429,"name":"tmainwindow.menufile.caption","sourcebytes":[70,105,108,101],"value":"File"},
+{"hash":63405715,"name":"tmainwindow.menuitemrecentfiles.caption","sourcebytes":[82,101,99,101,110,116,32,70,105,108,101,115],"value":"Recent Files"},
 {"hash":310020,"name":"tmainwindow.menuedit.caption","sourcebytes":[69,100,105,116],"value":"Edit"},
 {"hash":380871,"name":"tmainwindow.menuview.caption","sourcebytes":[86,105,101,119],"value":"View"},
 {"hash":5989939,"name":"tmainwindow.menutools.caption","sourcebytes":[84,111,111,108,115],"value":"Tools"},
@@ -59,6 +60,5 @@
 {"hash":218618949,"name":"tmainwindow.actioncheckimage.caption","sourcebytes":[67,104,101,99,107,32,73,109,97,103,101],"value":"Check Image"},
 {"hash":213582195,"name":"tmainwindow.actionsettings.caption","sourcebytes":[83,101,116,116,105,110,103,115],"value":"Settings"},
 {"hash":113670302,"name":"tmainwindow.actionabout.caption","sourcebytes":[65,98,111,117,116,32,46,46,46],"value":"About ..."},
-{"hash":236010579,"name":"tmainwindow.actionclearmessages.caption","sourcebytes":[67,108,101,97,114,32,77,101,115,115,97,103,101,115],"value":"Clear Messages"},
-{"hash":86313123,"name":"tmainwindow.actionsavemessages.caption","sourcebytes":[83,97,118,101,32,77,101,115,115,97,103,101,115],"value":"Save Messages"}
+{"hash":86061721,"name":"tmainwindow.actionclearhistory.caption","sourcebytes":[67,108,101,97,114,32,72,105,115,116,111,114,121],"value":"Clear History"}
 ]}
