@@ -24,14 +24,14 @@ interface
 
 uses
     Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, ComCtrls,
-    ActnList, ExtCtrls, StdCtrls;
+    ActnList, ExtCtrls, StdCtrls, ImageFileHistory;
 
 type
 
     { TMainWindow }
 
     TMainWindow = class(TForm)
-      actionClearHistory: TAction;
+        actionClearHistory: TAction;
         actionNew: TAction;
         actionDelete: TAction;
         actionCharacteristics: TAction;
@@ -142,6 +142,7 @@ type
         StatusBar1: TStatusBar;
         procedure actionAboutExecute(Sender: TObject);
         procedure actionCharacteristicsExecute(Sender: TObject);
+        procedure actionClearHistoryExecute(Sender: TObject);
         procedure actionCloseExecute(Sender: TObject);
         procedure actionNewExecute(Sender: TObject);
         procedure actionOpenExecute(Sender: TObject);
@@ -151,6 +152,7 @@ type
         procedure FormShow(Sender: TObject);
         procedure PageControlCloseTabClicked(Sender: TObject);
     private
+        m_ImageFileHistory: TImageFileHistory;
         procedure AddImagePage(ImageFile: string; ImageType: string);
 
     public
@@ -193,6 +195,12 @@ begin
     finally
         FreeAndNil(dialog);
     end;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TMainWindow.actionClearHistoryExecute(Sender: TObject);
+begin
+    m_ImageFileHistory.Clear;
 end;
 
 // --------------------------------------------------------------------------------
@@ -269,6 +277,7 @@ end;
 // --------------------------------------------------------------------------------
 procedure TMainWindow.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
+    FreeAndNil(m_ImageFileHistory);
     with TXMLSettings.Create(SettingsFile) do begin
         try
             SaveFormState(TForm(self));
@@ -293,6 +302,7 @@ begin
         end;
     end;
     actionClose.Enabled := False;
+    m_ImageFileHistory := TImageFileHistory.Create(menuitemRecentFiles);
 end;
 
 // --------------------------------------------------------------------------------
@@ -311,9 +321,11 @@ begin
     ImagePage.Caption := ExtractFileName(ImageFile);
     ImagePage.SetFile(ImageFile);
     ImagePage.SetType(ImageType);
+    PageControl.ActivePage := ImagePage;
     if (PageControl.PageCount > 0) then begin
         actionClose.Enabled := True;
     end;
+    m_ImageFileHistory.AddItem(ImageFile, ImageType);
 end;
 
 // --------------------------------------------------------------------------------
