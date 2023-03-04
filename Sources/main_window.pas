@@ -201,6 +201,7 @@ end;
 procedure TMainWindow.actionClearHistoryExecute(Sender: TObject);
 begin
     m_ImageFileHistory.Clear;
+    actionClearHistory.Enabled := False;
 end;
 
 // --------------------------------------------------------------------------------
@@ -277,6 +278,7 @@ end;
 // --------------------------------------------------------------------------------
 procedure TMainWindow.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
+    m_ImageFileHistory.Save;
     FreeAndNil(m_ImageFileHistory);
     with TXMLSettings.Create(SettingsFile) do begin
         try
@@ -303,6 +305,7 @@ begin
     end;
     actionClose.Enabled := False;
     m_ImageFileHistory := TImageFileHistory.Create(menuitemRecentFiles);
+    actionClearHistory.Enabled := m_ImageFileHistory.Load;
 end;
 
 // --------------------------------------------------------------------------------
@@ -324,6 +327,7 @@ begin
     PageControl.ActivePage := ImagePage;
     if (PageControl.PageCount > 0) then begin
         actionClose.Enabled := True;
+        actionClearHistory.Enabled := True;
     end;
     m_ImageFileHistory.AddItem(ImageFile, ImageType);
 end;

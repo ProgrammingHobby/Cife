@@ -76,8 +76,15 @@ implementation
 
 // --------------------------------------------------------------------------------
 procedure TImageFileHistory.Clear;
+var
+    Index: integer;
 begin
-
+    for Index := Low(m_HistoryArray) to High(m_HistoryArray) do begin
+        m_HistoryArray[Index].FileType := '';
+        m_HistoryArray[Index].FileName := '';
+    end;
+    m_HistoryItemsCount := 0;
+    UpdateRecentMenu;
 end;
 
 // --------------------------------------------------------------------------------
@@ -128,13 +135,13 @@ end;
 // --------------------------------------------------------------------------------
 function TImageFileHistory.Load: boolean;
 begin
-
+    Result := False;
 end;
 
 // --------------------------------------------------------------------------------
 function TImageFileHistory.Save: boolean;
 begin
-
+    Result := False;
 end;
 
 // --------------------------------------------------------------------------------
@@ -169,13 +176,15 @@ begin
     end;
 
     // create new History Menuitems
-    for Index := Low(m_HistoryArray) to (m_HistoryItemsCount - 1) do begin
+    Index := 0;
+    while (Index < m_HistoryItemsCount) do begin
         NewMenuItem := TMenuItem.Create(m_RecentMenu);
         NewMenuItem.Tag := Index;
         NewMenuItem.Caption := IntToStr(m_HistoryItemsCount - Index) + '  ' +
             ExtractFileName(m_HistoryArray[Index].FileName) + ' (' + m_HistoryArray[Index].FileType + ')';
         //NewMenuItem.OnClick:=;
         m_RecentMenu.Insert(0, NewMenuItem);
+        Inc(Index);
     end;
 end;
 
