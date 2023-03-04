@@ -33,6 +33,13 @@ type
     public    // Attribute
 
     public    // Methoden
+        procedure Clear;
+        procedure AddItem(ImageFile: string; ImageType: string);
+        procedure DeleteItem(Item: integer);
+        function GetImageFile(Item: integer): string;
+        function GetImageType(Item: integer): string;
+        function Load: boolean;
+        function Save: boolean;
 
     public  // Konstruktor/Destruktor
         constructor Create(RecentMenu: TMenuItem); overload;
@@ -43,8 +50,23 @@ type
     protected // Methoden
 
     private   // Attribute
+    type
+        THistoryEntry = record
+            FileName: string;
+            FileType: string;
+        end;
+        THistoryArray = array of THistoryEntry;
+
+    const
+        MAXITEMS = 10;
+
+    var
+        m_RecentMenu: TMenuItem;
+        m_HistoryArray: THistoryArray;
+        m_HistoryItemsCount: integer;
 
     private   // Methoden
+        procedure UpdateRecentMenu;
 
     end;
 
@@ -53,15 +75,108 @@ implementation
 { TImageFileHistory }
 
 // --------------------------------------------------------------------------------
-constructor TImageFileHistory.Create(RecentMenu: TMenuItem);
+procedure TImageFileHistory.Clear;
 begin
 
+end;
+
+// --------------------------------------------------------------------------------
+procedure TImageFileHistory.AddItem(ImageFile: string; ImageType: string);
+var
+    Index: integer;
+begin
+
+    // check if the given Image is already in History
+    for Index := Low(m_HistoryArray) to (m_HistoryItemsCount - 1) do begin
+        if ((ImageFile = m_HistoryArray[Index].FileName) and (ImageType = m_HistoryArray[Index].FileType)) then begin
+            DeleteItem(Index);
+            Dec(m_HistoryItemsCount);
+            break;
+        end;
+    end;
+
+    // if History full, delete last item
+    if (m_HistoryItemsCount = MAXITEMS) then begin
+        Dec(m_HistoryItemsCount);
+        DeleteItem(m_HistoryItemsCount);
+    end;
+
+    Inc(m_HistoryItemsCount);
+    m_HistoryArray[m_HistoryItemsCount - 1].FileName := ImageFile;
+    m_HistoryArray[m_HistoryItemsCount - 1].FileType := ImageType;
+    UpdateRecentMenu;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TImageFileHistory.DeleteItem(Item: integer);
+begin
+
+end;
+
+// --------------------------------------------------------------------------------
+function TImageFileHistory.GetImageFile(Item: integer): string;
+begin
+
+end;
+
+// --------------------------------------------------------------------------------
+function TImageFileHistory.GetImageType(Item: integer): string;
+begin
+
+end;
+
+// --------------------------------------------------------------------------------
+function TImageFileHistory.Load: boolean;
+begin
+
+end;
+
+// --------------------------------------------------------------------------------
+function TImageFileHistory.Save: boolean;
+begin
+
+end;
+
+// --------------------------------------------------------------------------------
+constructor TImageFileHistory.Create(RecentMenu: TMenuItem);
+begin
+    m_RecentMenu := RecentMenu;
+    SetLength(m_HistoryArray, MAXITEMS);
+    m_HistoryItemsCount := 0;
 end;
 
 // --------------------------------------------------------------------------------
 destructor TImageFileHistory.Destroy;
 begin
     inherited Destroy;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TImageFileHistory.UpdateRecentMenu;
+var
+    NewMenuItem: TMenuItem;
+    Index: integer;
+begin
+    // clear all History entries
+    Index := 0;
+    while (Index < m_RecentMenu.Count) do begin
+        if not (m_RecentMenu.Items[Index].Caption = '-') and not (m_RecentMenu.Items[Index].Caption = 'Clear History') then begin
+            m_RecentMenu.Items[Index].Free;
+        end
+        else begin
+            Inc(Index);
+        end;
+    end;
+
+    // create new History Menuitems
+    for Index := Low(m_HistoryArray) to (m_HistoryItemsCount - 1) do begin
+        NewMenuItem := TMenuItem.Create(m_RecentMenu);
+        NewMenuItem.Tag := Index;
+        NewMenuItem.Caption := IntToStr(m_HistoryItemsCount - Index) + '  ' +
+            ExtractFileName(m_HistoryArray[Index].FileName) + ' (' + m_HistoryArray[Index].FileType + ')';
+        //NewMenuItem.OnClick:=;
+        m_RecentMenu.Insert(0, NewMenuItem);
+    end;
 end;
 
 // --------------------------------------------------------------------------------
