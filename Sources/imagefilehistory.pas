@@ -74,6 +74,8 @@ implementation
 
 { TImageFileHistory }
 
+uses XMLSettings, CifeGlobals;
+
 // --------------------------------------------------------------------------------
 procedure TImageFileHistory.Clear;
 var
@@ -140,8 +142,29 @@ end;
 
 // --------------------------------------------------------------------------------
 function TImageFileHistory.Save: boolean;
+var
+    Index: integer;
 begin
     Result := False;
+    with TXMLSettings.Create(SettingsFile) do begin
+        try
+            OpenKey('History');
+            SetAttribute('Count', m_HistoryItemsCount);
+            for Index := 0 to (MAXITEMS - 1) do begin
+                DeletePath('Item' + IntToStr(Index));
+            end;
+            for Index := 0 to (m_HistoryItemsCount - 1) do begin
+                OpenKey('Item' + IntToStr(Index));
+                SetValue('File', m_HistoryArray[Index].FileName);
+                SetValue('Type', m_HistoryArray[Index].FileType);
+                CloseKey;
+            end;
+            CloseKey;
+            Result := True;
+        finally
+            Free;
+        end;
+    end;
 end;
 
 // --------------------------------------------------------------------------------
