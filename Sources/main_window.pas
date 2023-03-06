@@ -313,7 +313,9 @@ end;
 // --------------------------------------------------------------------------------
 procedure TMainWindow.PageControlCloseTabClicked(Sender: TObject);
 begin
-    PageControl.ActivePage.Free;
+    if (Sender is TTabSheet) then begin
+        TTabSheet(Sender).Free;
+    end;
 end;
 
 // --------------------------------------------------------------------------------
