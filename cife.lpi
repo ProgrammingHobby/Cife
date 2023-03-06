@@ -436,6 +436,20 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="ImagePage"/>
       </Unit>
+      <Unit>
+        <Filename Value="Sources/imagefilehistory.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ImageFileHistory"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Sources/versioninfo.pas"/>
+        <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Sources/xmlsettings.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="XMLSettings"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>

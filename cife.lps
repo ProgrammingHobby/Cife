@@ -8,8 +8,8 @@
         <Filename Value="cife.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos X="16" Y="33"/>
-        <UsageCount Value="36"/>
+        <CursorPos X="133" Y="2"/>
+        <UsageCount Value="49"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/main_window.pas"/>
@@ -18,9 +18,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Main_Window"/>
-        <TopLine Value="237"/>
-        <CursorPos X="5" Y="294"/>
-        <UsageCount Value="36"/>
+        <TopLine Value="302"/>
+        <CursorPos X="123" Y="304"/>
+        <UsageCount Value="49"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -32,7 +32,7 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="NewImage_Dialog"/>
         <EditorIndex Value="-1"/>
-        <UsageCount Value="25"/>
+        <UsageCount Value="38"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/file_dialog.pas"/>
@@ -44,7 +44,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="17"/>
         <CursorPos X="11" Y="32"/>
-        <UsageCount Value="25"/>
+        <UsageCount Value="38"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/renamefile_dialog.pas"/>
@@ -55,7 +55,7 @@
         <UnitName Value="RenameFile_Dialog"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="17" Y="19"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="37"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/characteristics_dialog.pas"/>
@@ -66,7 +66,7 @@
         <UnitName Value="Characteristics_Dialog"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="22" Y="19"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="37"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/settings_dialog.pas"/>
@@ -78,7 +78,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="4"/>
         <CursorPos X="4" Y="64"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="37"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/about_dialog.pas"/>
@@ -90,18 +90,45 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="33"/>
         <CursorPos X="13" Y="70"/>
-        <UsageCount Value="24"/>
+        <UsageCount Value="37"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/imagepage.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="ImagePage"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="106"/>
-        <CursorPos X="41" Y="146"/>
-        <UsageCount Value="24"/>
+        <TopLine Value="43"/>
+        <CursorPos X="131" Y="46"/>
+        <UsageCount Value="37"/>
         <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Sources/imagefilehistory.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="ImageFileHistory"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="198"/>
+        <CursorPos X="130" Y="233"/>
+        <UsageCount Value="32"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Sources/versioninfo.pas"/>
+        <IsPartOfProject Value="True"/>
+        <EditorIndex Value="-1"/>
+        <WindowIndex Value="-1"/>
+        <TopLine Value="-1"/>
+        <CursorPos X="-1" Y="-1"/>
+        <UsageCount Value="27"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Sources/xmlsettings.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="XMLSettings"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="46"/>
+        <UsageCount Value="27"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/uscaledpi.pas"/>
@@ -112,127 +139,134 @@
         <CursorPos X="-1" Y="-1"/>
         <UsageCount Value="21"/>
       </Unit>
+      <Unit>
+        <Filename Value="../../../../Lazarus_2.2.4/lazarus/lcl/include/customform.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="1861"/>
+        <CursorPos Y="1892"/>
+        <UsageCount Value="10"/>
+      </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
       <Position>
-        <Filename Value="Sources/main_window.pas"/>
-        <Caret Line="168" Column="77" TopLine="132"/>
+        <Filename Value="Sources/imagefilehistory.pas"/>
+        <Caret Line="136" TopLine="92"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagefilehistory.pas"/>
+        <Caret Line="135" TopLine="92"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagefilehistory.pas"/>
+        <Caret Line="136" TopLine="92"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagefilehistory.pas"/>
+        <Caret Line="135" TopLine="92"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagefilehistory.pas"/>
+        <Caret Line="136" TopLine="92"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagefilehistory.pas"/>
+        <Caret Line="135" TopLine="92"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagefilehistory.pas"/>
+        <Caret Line="136" TopLine="92"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagefilehistory.pas"/>
+        <Caret Line="135" TopLine="92"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagefilehistory.pas"/>
+        <Caret Line="138" TopLine="92"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagefilehistory.pas"/>
+        <Caret Line="139" TopLine="92"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagefilehistory.pas"/>
+        <Caret Line="140" TopLine="92"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagefilehistory.pas"/>
+        <Caret Line="141" TopLine="92"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagefilehistory.pas"/>
+        <Caret Line="139" Column="46" TopLine="92"/>
       </Position>
       <Position>
         <Filename Value="Sources/main_window.pas"/>
-        <Caret Line="169" Column="94" TopLine="146"/>
+        <Caret Line="346" TopLine="305"/>
       </Position>
       <Position>
         <Filename Value="Sources/main_window.pas"/>
-        <Caret Line="170" Column="108" TopLine="133"/>
+        <Caret Line="324" TopLine="305"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagefilehistory.pas"/>
+        <Caret Line="109" TopLine="92"/>
       </Position>
       <Position>
         <Filename Value="Sources/main_window.pas"/>
-        <Caret Line="150" Column="50" TopLine="130"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="38" Column="29" TopLine="26"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="37" Column="46" TopLine="24"/>
+        <Caret Line="300" Column="151" TopLine="290"/>
       </Position>
       <Position>
         <Filename Value="Sources/main_window.pas"/>
-        <Caret Line="290" Column="40" TopLine="256"/>
+        <Caret Line="322" Column="20" TopLine="290"/>
       </Position>
       <Position>
         <Filename Value="Sources/main_window.pas"/>
-        <Caret Line="297" Column="53" TopLine="259"/>
+        <Caret Line="298" Column="145" TopLine="290"/>
       </Position>
       <Position>
         <Filename Value="Sources/main_window.pas"/>
-        <Caret Line="294" Column="32" TopLine="271"/>
+        <Caret Line="320" TopLine="290"/>
       </Position>
       <Position>
         <Filename Value="Sources/main_window.pas"/>
-        <Caret Line="313" Column="33" TopLine="203"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="53" Column="43" TopLine="29"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="89" Column="19" TopLine="31"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="91" Column="22" TopLine="39"/>
+        <Caret Line="321" TopLine="290"/>
       </Position>
       <Position>
         <Filename Value="Sources/main_window.pas"/>
-        <Caret Line="293" Column="34" TopLine="239"/>
+        <Caret Line="322" TopLine="290"/>
       </Position>
       <Position>
         <Filename Value="Sources/main_window.pas"/>
-        <Caret Line="294" Column="34" TopLine="240"/>
+        <Caret Line="324" Column="9" TopLine="289"/>
       </Position>
       <Position>
         <Filename Value="Sources/main_window.pas"/>
-        <Caret Line="293" Column="34" TopLine="239"/>
+        <Caret Line="290" Column="148" TopLine="284"/>
       </Position>
       <Position>
         <Filename Value="Sources/main_window.pas"/>
-        <Caret Line="293" Column="34" TopLine="239"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="94" Column="29" TopLine="40"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="101" Column="21" TopLine="46"/>
+        <Caret Line="322" Column="60" TopLine="286"/>
       </Position>
       <Position>
         <Filename Value="Sources/main_window.pas"/>
-        <Caret Line="294" Column="34" TopLine="240"/>
+        <Caret Line="287" Column="99" TopLine="287"/>
       </Position>
       <Position>
         <Filename Value="Sources/main_window.pas"/>
-        <Caret Line="293" Column="34" TopLine="239"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="106" Column="26" TopLine="51"/>
+        <Caret Line="321" TopLine="286"/>
       </Position>
       <Position>
         <Filename Value="Sources/main_window.pas"/>
-        <Caret Line="293" Column="34" TopLine="239"/>
+        <Caret Line="322" TopLine="286"/>
       </Position>
       <Position>
         <Filename Value="Sources/main_window.pas"/>
-        <Caret Line="295" Column="34" TopLine="241"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="54" Column="23" TopLine="24"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="105" Column="37" TopLine="78"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="159" Column="26" TopLine="107"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="175" Column="24" TopLine="124"/>
+        <Caret Line="323" TopLine="286"/>
       </Position>
       <Position>
         <Filename Value="Sources/main_window.pas"/>
-        <Caret Line="295" Column="5" TopLine="243"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/main_window.pas"/>
-        <Caret Line="294" Column="5" TopLine="242"/>
+        <Caret Line="324" TopLine="286"/>
       </Position>
     </JumpHistory>
     <RunParams>
@@ -240,4 +274,14 @@
       <Modes ActiveMode=""/>
     </RunParams>
   </ProjectSession>
+  <Debugging>
+    <Watches>
+      <Item>
+        <Expression Value="m_HistoryArray"/>
+      </Item>
+      <Item>
+        <Expression Value="m_HistoryItemsCount"/>
+      </Item>
+    </Watches>
+  </Debugging>
 </CONFIG>

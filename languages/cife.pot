@@ -128,8 +128,8 @@ msgstr ""
 msgid "Check Image"
 msgstr ""
 
-#: tmainwindow.actionclearmessages.caption
-msgid "Clear Messages"
+#: tmainwindow.actionclearhistory.caption
+msgid "Clear History"
 msgstr ""
 
 #: tmainwindow.actionclose.caption
@@ -174,10 +174,6 @@ msgstr ""
 
 #: tmainwindow.actionrename.caption
 msgid "Rename"
-msgstr ""
-
-#: tmainwindow.actionsavemessages.caption
-msgid "Save Messages"
 msgstr ""
 
 #: tmainwindow.actionselectall.caption
@@ -367,6 +363,10 @@ msgstr ""
 
 #: tmainwindow.menuhelp.caption
 msgid "Help"
+msgstr ""
+
+#: tmainwindow.menuitemrecentfiles.caption
+msgid "Recent Files"
 msgstr ""
 
 #: tmainwindow.menuoptions.caption
