@@ -136,8 +136,31 @@ end;
 
 // --------------------------------------------------------------------------------
 function TImageFileHistory.Load: boolean;
+var
+    Index:integer;
 begin
     Result := False;
+    for Index := Low(m_HistoryArray) to High(m_HistoryArray) do begin
+        m_HistoryArray[Index].FileType := '';
+        m_HistoryArray[Index].FileName := '';
+    end;
+    with TXMLSettings.Create(SettingsFile) do begin
+        try
+            OpenKey('History');
+            m_HistoryItemsCount:=GetAttribute('Count', MAXITEMS);
+            for Index := 0 to (m_HistoryItemsCount - 1) do begin
+                OpenKey('Item' + IntToStr(Index));
+                m_HistoryArray[Index].FileName:=GetValue('File','');
+                m_HistoryArray[Index].FileType:=GetValue('Type','');
+                CloseKey;
+            end;
+            CloseKey;
+            Result := True;
+        finally
+            Free;
+        end;
+    end;
+    UpdateRecentMenu;
 end;
 
 // --------------------------------------------------------------------------------
