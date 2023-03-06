@@ -29,6 +29,11 @@ type
 
     { TImageFileHistory }
 
+    THistoryEntry = record
+            FileName: string;
+            FileType: string;
+        end;
+
     TImageFileHistory = class
     public    // Attribute
     type
@@ -38,9 +43,8 @@ type
         procedure Clear;
         procedure SetHistoryMenuItemsEvent(HMIEvent: THistoryMenuItemClick);
         procedure AddItem(ImageFile: string; ImageType: string);
-        procedure DeleteItem(Item: integer);
-        function GetImageFile(Item: integer): string;
-        function GetImageType(Item: integer): string;
+        procedure DeleteItem(Index: integer);
+        function GetHistoryEntry(Index: integer): THistoryEntry;
         function Load: boolean;
         function Save: boolean;
 
@@ -54,10 +58,6 @@ type
 
     private   // Attribute
     type
-        THistoryEntry = record
-            FileName: string;
-            FileType: string;
-        end;
         THistoryArray = array of THistoryEntry;
 
     const
@@ -127,21 +127,22 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-procedure TImageFileHistory.DeleteItem(Item: integer);
+procedure TImageFileHistory.DeleteItem(Index: integer);
 begin
 
 end;
 
 // --------------------------------------------------------------------------------
-function TImageFileHistory.GetImageFile(Item: integer): string;
+function TImageFileHistory.GetHistoryEntry(Index: integer): THistoryEntry;
+var
+    HistoryEntry: THistoryEntry;
 begin
-
-end;
-
-// --------------------------------------------------------------------------------
-function TImageFileHistory.GetImageType(Item: integer): string;
-begin
-
+    HistoryEntry.FileName := '';
+    HistoryEntry.FileType := '';
+    if ((Index >= 0) and (Index < MAXITEMS)) then begin
+        HistoryEntry := m_HistoryArray[Index];
+    end;
+    Result := HistoryEntry;
 end;
 
 // --------------------------------------------------------------------------------

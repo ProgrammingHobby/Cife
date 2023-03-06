@@ -337,12 +337,25 @@ end;
 // --------------------------------------------------------------------------------
 procedure TMainWindow.HistoryMenuItemClick(Sender: TObject);
 var
+    HistoryMenuItem: TMenuItem;
+    HistoryEntry: THistoryEntry;
     Index: integer;
-    HistoryMenuItem:TMenuItem;
+    TabExisting: boolean;
+    ImagePage: TImagePage;
 begin
-    if(Sender is TMenuItem) then begin
-      HistoryMenuItem:=TMenuItem(Sender);
-      Index:=HistoryMenuItem.Tag;
+    if (Sender is TMenuItem) then begin
+        HistoryMenuItem := TMenuItem(Sender);
+        HistoryEntry := m_ImageFileHistory.GetHistoryEntry(HistoryMenuItem.Tag);
+        TabExisting := False;
+        for Index := 0 to (PageControl.PageCount - 1) do begin
+            ImagePage := TImagePage(PageControl.Pages[Index]);
+            if (ImagePage.GetFile = HistoryEntry.FileName) then begin
+                TabExisting := True;
+            end;
+        end;
+        if not TabExisting then begin
+            AddImagePage(HistoryEntry.FileName, HistoryEntry.FileType);
+        end;
     end;
 end;
 

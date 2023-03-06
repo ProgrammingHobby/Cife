@@ -35,6 +35,8 @@ type
     public    // Methoden
         procedure SetFile(ImageFile: string);
         procedure SetType(ImageType: string);
+        function GetFile: string;
+        function GetType: string;
 
     public  // Konstruktor/Destruktor
         constructor Create(TheOwner: TComponent); override;
@@ -71,6 +73,18 @@ end;
 procedure TImagePage.SetType(ImageType: string);
 begin
     m_ImageType := ImageType;
+end;
+
+// --------------------------------------------------------------------------------
+function TImagePage.GetFile: string;
+begin
+    Result := m_ImageFile;
+end;
+
+// --------------------------------------------------------------------------------
+function TImagePage.GetType: string;
+begin
+    Result := m_ImageType;
 end;
 
 // --------------------------------------------------------------------------------
