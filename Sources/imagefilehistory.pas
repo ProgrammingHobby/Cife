@@ -30,9 +30,9 @@ type
     { TImageFileHistory }
 
     THistoryEntry = record
-            FileName: string;
-            FileType: string;
-        end;
+        FileName: string;
+        FileType: string;
+    end;
 
     TImageFileHistory = class
     public    // Attribute
@@ -43,8 +43,8 @@ type
         procedure Clear;
         procedure SetHistoryMenuItemsEvent(HMIEvent: THistoryMenuItemClick);
         procedure AddItem(ImageFile: string; ImageType: string);
-        procedure DeleteItem(Index: integer);
-        function GetHistoryEntry(Index: integer): THistoryEntry;
+        procedure DeleteItem(Item: integer);
+        function GetHistoryEntry(Item: integer): THistoryEntry;
         function Load: boolean;
         function Save: boolean;
 
@@ -127,20 +127,26 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-procedure TImageFileHistory.DeleteItem(Index: integer);
+procedure TImageFileHistory.DeleteItem(Item: integer);
+var
+    Index: integer;
 begin
-
+    for Index := Item to (MAXITEMS - 2) do begin
+        m_HistoryArray[Index] := m_HistoryArray[Index + 1];
+    end;
+    m_HistoryArray[MAXITEMS - 1].FileName := '';
+    m_HistoryArray[MAXITEMS - 1].FileType := '';
 end;
 
 // --------------------------------------------------------------------------------
-function TImageFileHistory.GetHistoryEntry(Index: integer): THistoryEntry;
+function TImageFileHistory.GetHistoryEntry(Item: integer): THistoryEntry;
 var
     HistoryEntry: THistoryEntry;
 begin
     HistoryEntry.FileName := '';
     HistoryEntry.FileType := '';
-    if ((Index >= 0) and (Index < MAXITEMS)) then begin
-        HistoryEntry := m_HistoryArray[Index];
+    if ((Item >= 0) and (Item < MAXITEMS)) then begin
+        HistoryEntry := m_HistoryArray[Item];
     end;
     Result := HistoryEntry;
 end;
