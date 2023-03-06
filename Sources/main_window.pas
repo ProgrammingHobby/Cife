@@ -154,6 +154,7 @@ type
     private
         m_ImageFileHistory: TImageFileHistory;
         procedure AddImagePage(ImageFile: string; ImageType: string);
+        procedure HistoryMenuItemClick(Sender: TObject);
 
     public
 
@@ -305,6 +306,7 @@ begin
     end;
     actionClose.Enabled := False;
     m_ImageFileHistory := TImageFileHistory.Create(menuitemRecentFiles);
+    m_ImageFileHistory.SetHistoryMenuItemsEvent(@HistoryMenuItemClick);
     actionClearHistory.Enabled := m_ImageFileHistory.Load;
 end;
 
@@ -330,6 +332,18 @@ begin
         actionClearHistory.Enabled := True;
     end;
     m_ImageFileHistory.AddItem(ImageFile, ImageType);
+end;
+
+// --------------------------------------------------------------------------------
+procedure TMainWindow.HistoryMenuItemClick(Sender: TObject);
+var
+    Index: integer;
+    HistoryMenuItem:TMenuItem;
+begin
+    if(Sender is TMenuItem) then begin
+      HistoryMenuItem:=TMenuItem(Sender);
+      Index:=HistoryMenuItem.Tag;
+    end;
 end;
 
 // --------------------------------------------------------------------------------

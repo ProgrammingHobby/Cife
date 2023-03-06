@@ -31,9 +31,12 @@ type
 
     TImageFileHistory = class
     public    // Attribute
+    type
+        THistoryMenuItemClick = procedure (Sender: TObject) of object;
 
     public    // Methoden
         procedure Clear;
+        procedure SetHistoryMenuItemsEvent(HMIEvent: THistoryMenuItemClick);
         procedure AddItem(ImageFile: string; ImageType: string);
         procedure DeleteItem(Item: integer);
         function GetImageFile(Item: integer): string;
@@ -64,6 +67,7 @@ type
         m_RecentMenu: TMenuItem;
         m_HistoryArray: THistoryArray;
         m_HistoryItemsCount: integer;
+        m_HistoryMenuItemEvent: THistoryMenuItemClick;
 
     private   // Methoden
         procedure UpdateRecentMenu;
@@ -87,6 +91,12 @@ begin
     end;
     m_HistoryItemsCount := 0;
     UpdateRecentMenu;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TImageFileHistory.SetHistoryMenuItemsEvent(HMIEvent: THistoryMenuItemClick);
+begin
+    m_HistoryMenuItemEvent := HMIEvent;
 end;
 
 // --------------------------------------------------------------------------------
@@ -137,7 +147,7 @@ end;
 // --------------------------------------------------------------------------------
 function TImageFileHistory.Load: boolean;
 var
-    Index:integer;
+    Index: integer;
 begin
     Result := False;
     for Index := Low(m_HistoryArray) to High(m_HistoryArray) do begin
@@ -147,11 +157,11 @@ begin
     with TXMLSettings.Create(SettingsFile) do begin
         try
             OpenKey('History');
-            m_HistoryItemsCount:=GetAttribute('Count', MAXITEMS);
+            m_HistoryItemsCount := GetAttribute('Count', MAXITEMS);
             for Index := 0 to (m_HistoryItemsCount - 1) do begin
                 OpenKey('Item' + IntToStr(Index));
-                m_HistoryArray[Index].FileName:=GetValue('File','');
-                m_HistoryArray[Index].FileType:=GetValue('Type','');
+                m_HistoryArray[Index].FileName := GetValue('File', '');
+                m_HistoryArray[Index].FileType := GetValue('Type', '');
                 CloseKey;
             end;
             CloseKey;
@@ -228,7 +238,7 @@ begin
         NewMenuItem.Tag := Index;
         NewMenuItem.Caption := IntToStr(m_HistoryItemsCount - Index) + '  ' +
             ExtractFileName(m_HistoryArray[Index].FileName) + ' (' + m_HistoryArray[Index].FileType + ')';
-        //NewMenuItem.OnClick:=;
+        NewMenuItem.OnClick := m_HistoryMenuItemEvent;
         m_RecentMenu.Insert(0, NewMenuItem);
         Inc(Index);
     end;
