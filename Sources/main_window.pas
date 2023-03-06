@@ -150,6 +150,7 @@ type
         procedure actionSettingsExecute(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
         procedure FormShow(Sender: TObject);
+        procedure PageControlChange(Sender: TObject);
         procedure PageControlCloseTabClicked(Sender: TObject);
     private
         m_ImageFileHistory: TImageFileHistory;
@@ -241,8 +242,6 @@ begin
         if (dialog.ShowModal = mrOk) then begin
             ImageFile := dialog.GetFullFileName;
             ImageType := dialog.GetImageType;
-            labelFile.Caption := ImageFile;
-            labelType.Caption := ImageType;
             AddImagePage(ImageFile, ImageType);
         end;
     finally
@@ -311,6 +310,20 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
+procedure TMainWindow.PageControlChange(Sender: TObject);
+var
+    ImagePage: TImagePage;
+    PgCtrl: TPageControl;
+begin
+    if (Sender is TPageControl) then begin
+        PgCtrl := TPageControl(Sender);
+        ImagePage := TImagePage(PgCtrl.Pages[PgCtrl.PageIndex]);
+        labelFile.Caption := ImagePage.GetFile;
+        labelType.Caption := ImagePage.GetType;
+    end;
+end;
+
+// --------------------------------------------------------------------------------
 procedure TMainWindow.PageControlCloseTabClicked(Sender: TObject);
 begin
     if (Sender is TTabSheet) then begin
@@ -328,6 +341,8 @@ begin
     ImagePage.Caption := ExtractFileName(ImageFile);
     ImagePage.SetFile(ImageFile);
     ImagePage.SetType(ImageType);
+    labelFile.Caption := ImageFile;
+    labelType.Caption := ImageType;
     PageControl.ActivePage := ImagePage;
     if (PageControl.PageCount > 0) then begin
         actionClose.Enabled := True;
