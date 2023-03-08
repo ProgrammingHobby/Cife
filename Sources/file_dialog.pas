@@ -58,6 +58,7 @@ type
         ShellTreeView: TShellTreeView;
         Splitter: TSplitter;
         procedure buttonDetailViewClick(Sender: TObject);
+        procedure buttonHomeFolderClick(Sender: TObject);
         procedure buttonListViewClick(Sender: TObject);
         procedure comboboxFileTypesChange(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -129,6 +130,13 @@ begin
     ShellListView.ViewStyle := vsReport;
     ShellListView.ShowColumnHeaders := True;
     ShellListView.Repaint;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TFileDialog.buttonHomeFolderClick(Sender: TObject);
+begin
+    ShellTreeView.Path := ShellTreeView.GetRootPath;
+    labelFilePath.Caption := ShellTreeView.Path;
 end;
 
 // --------------------------------------------------------------------------------

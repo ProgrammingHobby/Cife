@@ -30,21 +30,21 @@ object FileDialog: TFileDialog
   end
   object Panel1: TPanel
     Left = 0
-    Height = 38
+    Height = 30
     Top = 8
     Width = 538
     Align = alTop
     AutoSize = True
     BorderSpacing.Top = 8
     BevelOuter = bvNone
-    ClientHeight = 34
-    ClientWidth = 534
+    ClientHeight = 30
+    ClientWidth = 538
     TabOrder = 1
     object Panel2: TPanel
       Left = 16
-      Height = 34
+      Height = 30
       Top = 0
-      Width = 80
+      Width = 76
       Align = alLeft
       AutoSize = True
       BorderSpacing.Left = 16
@@ -83,10 +83,10 @@ object FileDialog: TFileDialog
       end
     end
     object Panel3: TPanel
-      Left = 360
-      Height = 34
+      Left = 368
+      Height = 30
       Top = 0
-      Width = 80
+      Width = 76
       Align = alRight
       AutoSize = True
       BorderSpacing.Right = 48
@@ -103,8 +103,10 @@ object FileDialog: TFileDialog
         Align = alLeft
         AutoSize = True
         BorderSpacing.Right = 16
+        Enabled = False
         Images = ImageList
         ImageIndex = 3
+        Visible = False
       end
       object buttonHomeFolder: TSpeedButton
         Left = 46
@@ -116,11 +118,12 @@ object FileDialog: TFileDialog
         AutoSize = True
         Images = ImageList
         ImageIndex = 2
+        OnClick = buttonHomeFolderClick
       end
     end
     object buttonNewFolder: TSpeedButton
-      Left = 488
-      Height = 34
+      Left = 492
+      Height = 30
       Hint = 'Create new folder'
       Top = 0
       Width = 30
@@ -134,8 +137,8 @@ object FileDialog: TFileDialog
   end
   object Panel4: TPanel
     Left = 8
-    Height = 269
-    Top = 54
+    Height = 277
+    Top = 46
     Width = 522
     Align = alClient
     BorderSpacing.Left = 8
@@ -143,7 +146,7 @@ object FileDialog: TFileDialog
     BorderSpacing.Right = 8
     BorderSpacing.Bottom = 8
     BevelOuter = bvNone
-    ClientHeight = 269
+    ClientHeight = 277
     ClientWidth = 522
     DoubleBuffered = True
     ParentDoubleBuffered = False
@@ -151,7 +154,7 @@ object FileDialog: TFileDialog
     OnPaint = Panel4Paint
     object Panel6: TPanel
       Left = 4
-      Height = 13
+      Height = 9
       Top = 4
       Width = 514
       Align = alTop
@@ -159,13 +162,13 @@ object FileDialog: TFileDialog
       BorderSpacing.Around = 4
       BevelOuter = bvNone
       ClientHeight = 9
-      ClientWidth = 510
+      ClientWidth = 514
       TabOrder = 1
       object labelFilePath: TLabel
         Left = 4
         Height = 1
         Top = 4
-        Width = 502
+        Width = 506
         Align = alClient
         BorderSpacing.Around = 4
         Layout = tlCenter
@@ -174,22 +177,22 @@ object FileDialog: TFileDialog
     end
     object Panel5: TPanel
       Left = 4
-      Height = 154
-      Top = 21
+      Height = 170
+      Top = 17
       Width = 514
       Align = alClient
       BorderSpacing.Left = 4
       BorderSpacing.Right = 4
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 150
-      ClientWidth = 510
+      ClientHeight = 168
+      ClientWidth = 512
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 0
       object ShellTreeView: TShellTreeView
         Left = 0
-        Height = 150
+        Height = 168
         Top = 0
         Width = 196
         Align = alLeft
@@ -205,7 +208,7 @@ object FileDialog: TFileDialog
       end
       object Splitter: TSplitter
         Left = 196
-        Height = 150
+        Height = 168
         Top = 0
         Width = 5
         AutoSnap = False
@@ -213,9 +216,9 @@ object FileDialog: TFileDialog
       end
       object ShellListView: TShellListView
         Left = 201
-        Height = 150
+        Height = 168
         Top = 0
-        Width = 309
+        Width = 311
         Align = alClient
         BorderStyle = bsNone
         Color = clDefault
@@ -230,8 +233,8 @@ object FileDialog: TFileDialog
     end
     object Panel7: TPanel
       Left = 4
-      Height = 82
-      Top = 179
+      Height = 78
+      Top = 191
       Width = 514
       Align = alBottom
       AutoSize = True
@@ -244,43 +247,43 @@ object FileDialog: TFileDialog
       ChildSizing.EnlargeVertical = crsHomogenousChildResize
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
       ChildSizing.ControlsPerLine = 2
-      ClientHeight = 82
+      ClientHeight = 78
       ClientWidth = 514
       TabOrder = 2
       object Panel8: TPanel
         Left = 0
-        Height = 35
+        Height = 31
         Top = 2
-        Width = 293
+        Width = 295
         BorderSpacing.CellAlignVertical = ccaCenter
         BevelOuter = bvNone
         ClientHeight = 31
-        ClientWidth = 289
+        ClientWidth = 295
         TabOrder = 0
         object editFileName: TEdit
           Left = 0
           Height = 31
           Top = 0
-          Width = 289
+          Width = 295
           Align = alClient
           TabOrder = 0
         end
       end
       object Panel9: TPanel
-        Left = 301
-        Height = 39
+        Left = 303
+        Height = 35
         Top = 0
-        Width = 213
+        Width = 211
         BorderSpacing.CellAlignVertical = ccaCenter
         BevelOuter = bvNone
         ClientHeight = 35
-        ClientWidth = 209
+        ClientWidth = 211
         TabOrder = 1
         object comboboxFileTypes: TComboBox
           Left = 0
           Height = 35
           Top = 0
-          Width = 209
+          Width = 211
           Align = alClient
           ItemHeight = 0
           OnChange = comboboxFileTypesChange
@@ -291,8 +294,8 @@ object FileDialog: TFileDialog
       object Panel10: TPanel
         Left = 0
         Height = 35
-        Top = 47
-        Width = 293
+        Top = 43
+        Width = 295
         BorderSpacing.CellAlignVertical = ccaCenter
         BevelOuter = bvNone
         ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
@@ -300,10 +303,10 @@ object FileDialog: TFileDialog
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 2
         ClientHeight = 35
-        ClientWidth = 293
+        ClientWidth = 295
         TabOrder = 2
         object Label1: TLabel
-          Left = 55
+          Left = 56
           Height = 19
           Top = 8
           Width = 83
@@ -315,20 +318,20 @@ object FileDialog: TFileDialog
           ParentColor = False
         end
         object comboboxImageTypes: TComboBox
-          Left = 138
+          Left = 139
           Height = 35
           Top = 0
-          Width = 155
+          Width = 156
           ItemHeight = 0
           Style = csDropDownList
           TabOrder = 0
         end
       end
       object Panel11: TPanel
-        Left = 301
+        Left = 303
         Height = 35
-        Top = 47
-        Width = 213
+        Top = 43
+        Width = 211
         BevelOuter = bvNone
         TabOrder = 3
       end
