@@ -97,6 +97,7 @@ begin
     with TXMLSettings.Create(SettingsFile) do begin
         try
             SaveFormState(TForm(self));
+            SetAttribute('Forms/' + self.Name + '/Splitterpos', Splitter.GetSplitterPosition);
         finally
             Free;
         end;
@@ -149,6 +150,7 @@ begin
     with TXMLSettings.Create(SettingsFile) do begin
         try
             RestoreFormState(TForm(self));
+            Splitter.SetSplitterPosition(GetAttribute('Forms/' + self.Name + '/Splitterpos', 196));
         finally
             Free;
         end;
