@@ -160,7 +160,7 @@ begin
     FormState := FormState + IntToHex(Form.RestoredHeight, 6);
     FormState := FormState + IntToHex(integer(Form.WindowState), 6);
     OpenKey('Forms/' + Form.Name);
-    SetValue('State', FormState);
+    SetAttribute('State', FormState);
     CloseKey;
 end;
 
@@ -171,7 +171,7 @@ var
     FormState: string;
 begin
     OpenKey('Forms/' + Form.Name);
-    FormState := GetValue('State', '000000000000000000000000000000000000000000000000000000');
+    FormState := GetAttribute('State', '000000000000000000000000000000000000000000000000000000');
     CloseKey;
     LastWindowState := TWindowState(Hex2Dec(FormState.Substring(48, 6)));
     if LastWindowState = wsMaximized then begin
