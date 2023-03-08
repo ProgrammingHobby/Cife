@@ -103,6 +103,7 @@ end;
 procedure TImageFileHistory.AddItem(ImageFile: string; ImageType: string);
 var
     Index: integer;
+    Entry: THistoryEntry;
 begin
 
     // check if the given Image is already in History
@@ -121,8 +122,14 @@ begin
     end;
 
     Inc(m_HistoryItemsCount);
-    m_HistoryArray[m_HistoryItemsCount - 1].FileName := ImageFile;
-    m_HistoryArray[m_HistoryItemsCount - 1].FileType := ImageType;
+
+    Entry.FileName := ImageFile;
+    Entry.FileType := ImageType;
+    for Index := MAXITEMS - 2 downto 0 do begin
+        m_HistoryArray[Index + 1] := m_HistoryArray[Index];
+    end;
+    m_HistoryArray[0] := Entry;
+
     UpdateRecentMenu;
 end;
 
@@ -239,15 +246,14 @@ begin
     end;
 
     // create new History Menuitems
-    Index := 0;
-    while (Index < m_HistoryItemsCount) do begin
+    for Index := 0 to m_HistoryItemsCount - 1 do begin
+        ;
         NewMenuItem := TMenuItem.Create(m_RecentMenu);
         NewMenuItem.Tag := Index;
-        NewMenuItem.Caption := IntToStr(m_HistoryItemsCount - Index) + '  ' +
-            ExtractFileName(m_HistoryArray[Index].FileName) + ' (' + m_HistoryArray[Index].FileType + ')';
+        NewMenuItem.Caption := IntToStr(Index + 1) + '  ' + ExtractFileName(m_HistoryArray[Index].FileName) +
+            ' (' + m_HistoryArray[Index].FileType + ')';
         NewMenuItem.OnClick := m_HistoryMenuItemEvent;
-        m_RecentMenu.Insert(0, NewMenuItem);
-        Inc(Index);
+        m_RecentMenu.Insert(Index, NewMenuItem);
     end;
 end;
 
