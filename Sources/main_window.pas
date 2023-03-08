@@ -233,11 +233,14 @@ procedure TMainWindow.actionOpenExecute(Sender: TObject);
 var
     dialog: TFileDialog;
     ImageFile, ImageType: string;
+    HistoryEntry: THistoryEntry;
 begin
     try
         dialog := TFileDialog.Create(self);
         dialog.SetDialogTitle('Open CP/M Disk Image File');
         dialog.SetRootPath(GetUserDir);
+        HistoryEntry := m_ImageFileHistory.GetHistoryEntry(0);
+        dialog.SetDefaultPath(ExtractFileDir(HistoryEntry.FileName));
         dialog.SetFileWildcards('Image Files (*.img,*.fdd,*.dsk)|*.img;*.IMG;*.fdd;*.FDD;*.dsk;*.DSK|all Files (*.*)|*');
         if (dialog.ShowModal = mrOk) then begin
             ImageFile := dialog.GetFullFileName;

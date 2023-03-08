@@ -64,6 +64,7 @@ type
         procedure FormShow(Sender: TObject);
         procedure Panel4Paint(Sender: TObject);
         procedure ShellListViewSelectItem(Sender: TObject; Item: TListItem; Selected: boolean);
+        procedure ShellTreeViewClick(Sender: TObject);
     private
         WildcardsList: TStringArray;
 
@@ -173,6 +174,16 @@ begin
         if Assigned(Slv.Selected) then begin
             editFileName.Caption := Slv.Selected.Caption;
         end;
+    end;
+end;
+
+procedure TFileDialog.ShellTreeViewClick(Sender: TObject);
+var
+    Stv: TShellTreeView;
+begin
+    if (Sender is TShellTreeView) then begin
+        Stv := TShellTreeView(Sender);
+        labelFilePath.Caption := Stv.Path;
     end;
 end;
 
