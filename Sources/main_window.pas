@@ -146,6 +146,7 @@ type
         procedure actionCloseExecute(Sender: TObject);
         procedure actionNewExecute(Sender: TObject);
         procedure actionOpenExecute(Sender: TObject);
+        procedure actionQuitExecute(Sender: TObject);
         procedure actionRenameExecute(Sender: TObject);
         procedure actionSettingsExecute(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -250,6 +251,12 @@ begin
     finally
         FreeAndNil(dialog);
     end;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TMainWindow.actionQuitExecute(Sender: TObject);
+begin
+    Close;
 end;
 
 // --------------------------------------------------------------------------------

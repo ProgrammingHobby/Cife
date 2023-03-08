@@ -9,7 +9,6 @@ object MainWindow: TMainWindow
   Menu = MainMenu
   OnClose = FormClose
   OnShow = FormShow
-  LCLVersion = '2.2.4.0'
   object StatusBar1: TStatusBar
     Left = 0
     Height = 21
@@ -375,7 +374,7 @@ object MainWindow: TMainWindow
       ChildSizing.EnlargeVertical = crsHomogenousChildResize
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
       ChildSizing.ControlsPerLine = 2
-      ClientHeight = 143
+      ClientHeight = 144
       ClientWidth = 94
       Font.Height = -13
       Font.Name = 'Sans'
@@ -964,6 +963,7 @@ object MainWindow: TMainWindow
     object actionQuit: TAction
       Caption = 'Quit'
       ImageIndex = 13
+      OnExecute = actionQuitExecute
       ShortCut = 16465
     end
     object actionCut: TAction
