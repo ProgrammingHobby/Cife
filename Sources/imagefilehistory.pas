@@ -164,7 +164,7 @@ begin
     with TXMLSettings.Create(SettingsFile) do begin
         try
             OpenKey('History');
-            m_HistoryItemsCount := GetAttribute('Count', MAXITEMS);
+            m_HistoryItemsCount := GetAttribute('Count', 0);
             for Index := 0 to (m_HistoryItemsCount - 1) do begin
                 OpenKey('Item' + IntToStr(Index));
                 m_HistoryArray[Index].FileName := GetValue('File', '');
