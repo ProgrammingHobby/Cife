@@ -61,6 +61,7 @@ type
         procedure buttonHomeFolderClick(Sender: TObject);
         procedure buttonListViewClick(Sender: TObject);
         procedure comboboxFileTypesChange(Sender: TObject);
+        procedure comboboxImageTypesChange(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
         procedure FormShow(Sender: TObject);
         procedure Panel4Paint(Sender: TObject);
@@ -68,6 +69,7 @@ type
         procedure ShellTreeViewClick(Sender: TObject);
     private
         WildcardsList: TStringArray;
+        procedure CheckOkButtonState;
 
     public
         procedure SetDialogTitle(title: string);
@@ -118,6 +120,12 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
+procedure TFileDialog.comboboxImageTypesChange(Sender: TObject);
+begin
+    CheckOkButtonState;
+end;
+
+// --------------------------------------------------------------------------------
 procedure TFileDialog.buttonListViewClick(Sender: TObject);
 begin
     ShellListView.ViewStyle := vsIcon;
@@ -155,6 +163,9 @@ begin
             Free;
         end;
     end;
+    ButtonPanel.OKButton.Enabled := False;
+    buttonNewFolder.Enabled := False;
+    editFileName.ReadOnly := True;
 end;
 
 // --------------------------------------------------------------------------------
@@ -184,6 +195,7 @@ begin
         if Assigned(Slv.Selected) then begin
             editFileName.Caption := Slv.Selected.Caption;
         end;
+        CheckOkButtonState;
     end;
 end;
 
@@ -194,6 +206,17 @@ begin
     if (Sender is TShellTreeView) then begin
         Stv := TShellTreeView(Sender);
         labelFilePath.Caption := Stv.Path;
+    end;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TFileDialog.CheckOkButtonState;
+begin
+    if (editFileName.Caption = '') or (comboboxImageTypes.ItemIndex = -1) then begin
+        ButtonPanel.OKButton.Enabled := False;
+    end
+    else begin
+        ButtonPanel.OKButton.Enabled := True;
     end;
 end;
 

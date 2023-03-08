@@ -266,6 +266,7 @@ object FileDialog: TFileDialog
           Top = 0
           Width = 289
           Align = alClient
+          AutoSelect = False
           TabOrder = 0
         end
       end
@@ -323,6 +324,7 @@ object FileDialog: TFileDialog
           Top = 0
           Width = 155
           ItemHeight = 0
+          OnChange = comboboxImageTypesChange
           Style = csDropDownList
           TabOrder = 0
         end
