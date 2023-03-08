@@ -292,10 +292,23 @@ end;
 
 // --------------------------------------------------------------------------------
 procedure TMainWindow.FormShow(Sender: TObject);
+var
+    LabelWidth: integer;
 begin
-    SetAutoSize(False);
+
+    LabelWidth := labelTotalBytes.Canvas.GetTextWidth('######');
+    labelTotalBytes.Constraints.MinWidth := LabelWidth;
+    labelTotalRecords.Constraints.MinWidth := LabelWidth;
+    labelMaxDirEntries.Constraints.MinWidth := LabelWidth;
+
+    LabelWidth := labelTracks.Canvas.GetTextWidth('######');
+    labelTracks.Constraints.MinWidth := LabelWidth;
+
+    SetAutoSize(True);
     Constraints.MinWidth := Width;
     Constraints.MinHeight := Height;
+    SetAutoSize(False);
+
     with TXMLSettings.Create(SettingsFile) do begin
         try
             RestoreFormState(TForm(self));
