@@ -187,13 +187,10 @@ end;
 
 // --------------------------------------------------------------------------------
 procedure TFileDialog.ShellListViewSelectItem(Sender: TObject; Item: TListItem; Selected: boolean);
-var
-    Slv: TShellListView;
 begin
     if (Sender is TShellListView) then begin
-        Slv := TShellListView(Sender);
-        if Assigned(Slv.Selected) then begin
-            editFileName.Caption := Slv.Selected.Caption;
+        if (Selected) then begin
+            editFileName.Caption := Item.Caption;
         end;
         CheckOkButtonState;
     end;
