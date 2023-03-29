@@ -50,6 +50,7 @@ begin
     try
         Diskdefs := TStringList.Create;
         DiskDefs.LoadFromFile('diskdefs');
+        DiskDefsList.Add('Amstrad (PCW16)');
         for Index := 0 to Diskdefs.Count - 1 do begin
             Line := Diskdefs[Index].Trim.Split(' ');
             if ((Length(Line) = 2) and (Line[0] = 'diskdef')) then begin
