@@ -33,6 +33,9 @@ type
     public    // Attribute
 
     public    // Methoden
+        function OpenImage(const AFileName: string; const AFileType: string; AUpperCase: boolean): boolean;
+        function GetFileName: string;
+        function GetFileType: string;
 
     public  // Konstruktor/Destruktor
         constructor Create; overload;
@@ -43,6 +46,8 @@ type
     protected // Methoden
 
     private   // Attribute
+        FFileName: string;
+        FFileType: string;
 
     private   // Methoden
 
@@ -51,6 +56,26 @@ type
 implementation
 
 { TCpmTools }
+
+// --------------------------------------------------------------------------------
+function TCpmTools.OpenImage(const AFileName: string; const AFileType: string; AUpperCase: boolean): boolean;
+begin
+    FFileName := AFileName;
+    FFileType := AFileType;
+    Result := True;
+end;
+
+// --------------------------------------------------------------------------------
+function TCpmTools.GetFileName: string;
+begin
+    Result := FFileName;
+end;
+
+// --------------------------------------------------------------------------------
+function TCpmTools.GetFileType: string;
+begin
+    Result := FFileName;
+end;
 
 // --------------------------------------------------------------------------------
 constructor TCpmTools.Create;
