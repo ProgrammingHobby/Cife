@@ -33,10 +33,9 @@ type
     public    // Attribute
 
     public    // Methoden
-        procedure SetFile(AImageFile: string);
-        procedure SetType(AImageType: string);
-        function GetFile: string;
-        function GetType: string;
+        function Open(const AFileName: string; const AFileType: string; AUpperCase: boolean = False): boolean;
+        function GetFileName: string;
+        function GetFileType: string;
 
     public  // Konstruktor/Destruktor
         constructor Create(ATheOwner: TComponent); override;
@@ -47,8 +46,6 @@ type
     protected // Methoden
 
     private   // Attribute
-        FImageFile: string;
-        FImageType: string;
         FDirectoryList: TListView;
         FCpmTools: TCpmTools;
 
@@ -65,27 +62,21 @@ implementation
 uses Controls, StdCtrls;
 
 // --------------------------------------------------------------------------------
-procedure TImagePage.SetFile(AImageFile: string);
+function TImagePage.Open(const AFileName: string; const AFileType: string; AUpperCase: boolean): boolean;
 begin
-    FImageFile := AImageFile;
+    Result := True;
 end;
 
 // --------------------------------------------------------------------------------
-procedure TImagePage.SetType(AImageType: string);
+function TImagePage.GetFileName: string;
 begin
-    FImageType := AImageType;
+    Result := EmptyStr;
 end;
 
 // --------------------------------------------------------------------------------
-function TImagePage.GetFile: string;
+function TImagePage.GetFileType: string;
 begin
-    Result := FImageFile;
-end;
-
-// --------------------------------------------------------------------------------
-function TImagePage.GetType: string;
-begin
-    Result := FImageType;
+    Result := EmptyStr;
 end;
 
 // --------------------------------------------------------------------------------
