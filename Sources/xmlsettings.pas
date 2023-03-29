@@ -33,7 +33,7 @@ type
     public    // Methoden
         procedure Clear;
         procedure Flush;
-        procedure OpenKey(const aPath: DOMString);
+        procedure OpenKey(const APath: DOMString);
         procedure CloseKey;
         procedure ResetKey;
         procedure SaveFormState(var Form: TForm);
@@ -51,11 +51,11 @@ type
         procedure SetAttribute(const APath: DOMString; AValue: integer); overload;
         procedure SetAttribute(const APath: DOMString; AValue: boolean); overload;
         procedure SetDeleteValue(const APath: DOMString; const AValue, DefValue: DOMString); overload;
-        procedure SetDeleteValue(const APath: DOMString; AValue, DefValue: integer); overload;
-        procedure SetDeleteValue(const APath: DOMString; AValue, DefValue: boolean); overload;
-        procedure SetDeleteAttribute(const APath: DOMString; const AValue, DefValue: DOMString); overload;
-        procedure SetDeleteAttribute(const APath: DOMString; AValue, DefValue: integer); overload;
-        procedure SetDeleteAttribute(const APath: DOMString; AValue, DefValue: boolean); overload;
+        procedure SetDeleteValue(const APath: DOMString; AValue, ADefValue: integer); overload;
+        procedure SetDeleteValue(const APath: DOMString; AValue, ADefValue: boolean); overload;
+        procedure SetDeleteAttribute(const APath: DOMString; const AValue, ADefValue: DOMString); overload;
+        procedure SetDeleteAttribute(const APath: DOMString; AValue, ADefValue: integer); overload;
+        procedure SetDeleteAttribute(const APath: DOMString; AValue, ADefValue: boolean); overload;
         procedure DeletePath(const APath: DOMString);
         procedure DeleteValue(const APath: DOMString);
         procedure DeleteAttribute(const APath: DOMString);
@@ -73,19 +73,19 @@ type
         TNodeFlags = set of (nfHasValue, nfWriteAccess);
 
     var
-        m_Modified: boolean;
-        m_FileName: string;
-        m_RootName: DOMString;
-        m_XmlDoc: TXMLDocument;
-        m_NodePathDirty: boolean;
-        m_NodePathCount: integer;
-        m_NodePathStack: array of DOMString;
-        m_DomElement: TDOMElement;
+        FModified: boolean;
+        FFileName: string;
+        FRootName: DOMString;
+        FXmlDoc: TXMLDocument;
+        FNodePathDirty: boolean;
+        FNodePathCount: integer;
+        FNodePathStack: array of DOMString;
+        FDomElement: TDOMElement;
 
     private   // Methoden
         function CompareDOMStrings(const s1, s2: DOMPChar; l1, l2: integer): integer;
-        function FindNode(const APath: DOMString; out Ident: DOMString; Flags: TNodeFlags): TDOMElement;
-        function DoFindNode(const APath: DOMString; var Ident: DOMString; Flags: TNodeFlags): TDomElement;
+        function FindNode(const APath: DOMString; out AIdent: DOMString; AFlags: TNodeFlags): TDOMElement;
+        function DoFindNode(const APath: DOMString; var AIdent: DOMString; AFlags: TNodeFlags): TDomElement;
 
     end;
 
@@ -96,39 +96,39 @@ uses StrUtils;
 // --------------------------------------------------------------------------------
 procedure TXMLSettings.Clear;
 begin
-    m_XmlDoc.ReplaceChild(m_XmlDoc.CreateElement(m_RootName), m_XmlDoc.DocumentElement);
+    FXmlDoc.ReplaceChild(FXmlDoc.CreateElement(FRootName), FXmlDoc.DocumentElement);
 end;
 
 // --------------------------------------------------------------------------------
 procedure TXMLSettings.Flush;
 begin
-    if (m_Modified and not m_FileName.IsEmpty) then begin
-        WriteXMLFile(m_XmlDoc, m_FileName);
+    if (FModified and not FFileName.IsEmpty) then begin
+        WriteXMLFile(FXmlDoc, FFileName);
     end;
 end;
 
 // --------------------------------------------------------------------------------
-procedure TXMLSettings.OpenKey(const aPath: DOMString);
+procedure TXMLSettings.OpenKey(const APath: DOMString);
 begin
-    if not aPath.IsEmpty then begin
-        if m_NodePathCount >= Length(m_NodePathStack) then begin
-            SetLength(m_NodePathStack, m_NodePathCount + 5);
+    if not APath.IsEmpty then begin
+        if FNodePathCount >= Length(FNodePathStack) then begin
+            SetLength(FNodePathStack, FNodePathCount + 5);
         end;
-        m_NodePathStack[m_NodePathCount] := APath;
-        Inc(m_NodePathCount);
-        m_DomElement := nil;
-        m_NodePathDirty := True;
+        FNodePathStack[FNodePathCount] := APath;
+        Inc(FNodePathCount);
+        FDomElement := nil;
+        FNodePathDirty := True;
     end;
 end;
 
 // --------------------------------------------------------------------------------
 procedure TXMLSettings.CloseKey;
 begin
-    if m_NodePathCount > 0 then begin
-        m_NodePathStack[m_NodePathCount - 1] := '';
-        Dec(m_NodePathCount);
-        m_DomElement := nil;
-        m_NodePathDirty := True;
+    if FNodePathCount > 0 then begin
+        FNodePathStack[FNodePathCount - 1] := '';
+        Dec(FNodePathCount);
+        FDomElement := nil;
+        FNodePathDirty := True;
     end;
 end;
 
@@ -137,12 +137,12 @@ procedure TXMLSettings.ResetKey;
 var
     I: integer;
 begin
-    for I := Length(m_NodePathStack) - 1 downto 0 do begin
-        m_NodePathStack[I] := '';
+    for I := Length(FNodePathStack) - 1 downto 0 do begin
+        FNodePathStack[I] := '';
     end;
-    m_DomElement := nil;
-    m_NodePathDirty := False;
-    m_NodePathCount := 0;
+    FDomElement := nil;
+    FNodePathDirty := False;
+    FNodePathCount := 0;
 end;
 
 // --------------------------------------------------------------------------------
@@ -278,17 +278,17 @@ begin
     if Assigned(KeyNode) then begin
         if KeyNode.FirstChild.NodeType = TEXT_NODE then begin
             OldNode := KeyNode.FirstChild;
-            DataNode := m_XmlDoc.CreateTextNode(AValue);
+            DataNode := FXmlDoc.CreateTextNode(AValue);
             if (KeyNode.ReplaceChild(DataNode, OldNode) <> nil) then begin
-                m_Modified := True;
+                FModified := True;
             end;
         end;
     end
     else begin
-        KeyNode := m_XmlDoc.CreateElement(Ident);
-        DataNode := m_XmlDoc.CreateTextNode(AValue);
+        KeyNode := FXmlDoc.CreateElement(Ident);
+        DataNode := FXmlDoc.CreateTextNode(AValue);
         if (KeyNode.AppendChild(DataNode) <> nil) and (Node.AppendChild(KeyNode) <> nil) then begin
-            m_Modified := True;
+            FModified := True;
         end;
     end;
 end;
@@ -321,7 +321,7 @@ begin
     Attr := Node.GetAttributeNode(Ident);
     if (Attr = nil) or (Attr.NodeValue <> AValue) then begin
         Node[Ident] := AValue;
-        m_Modified := True;
+        FModified := True;
     end;
 end;
 
@@ -354,9 +354,9 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-procedure TXMLSettings.SetDeleteValue(const APath: DOMString; AValue, DefValue: integer);
+procedure TXMLSettings.SetDeleteValue(const APath: DOMString; AValue, ADefValue: integer);
 begin
-    if AValue = DefValue then begin
+    if AValue = ADefValue then begin
         DeleteValue(APath);
     end
     else begin
@@ -365,9 +365,9 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-procedure TXMLSettings.SetDeleteValue(const APath: DOMString; AValue, DefValue: boolean);
+procedure TXMLSettings.SetDeleteValue(const APath: DOMString; AValue, ADefValue: boolean);
 begin
-    if AValue = DefValue then begin
+    if AValue = ADefValue then begin
         DeleteValue(APath);
     end
     else begin
@@ -376,9 +376,9 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-procedure TXMLSettings.SetDeleteAttribute(const APath: DOMString; const AValue, DefValue: DOMString);
+procedure TXMLSettings.SetDeleteAttribute(const APath: DOMString; const AValue, ADefValue: DOMString);
 begin
-    if AValue = DefValue then begin
+    if AValue = ADefValue then begin
         DeleteAttribute(APath);
     end
     else begin
@@ -387,9 +387,9 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-procedure TXMLSettings.SetDeleteAttribute(const APath: DOMString; AValue, DefValue: integer);
+procedure TXMLSettings.SetDeleteAttribute(const APath: DOMString; AValue, ADefValue: integer);
 begin
-    if AValue = DefValue then begin
+    if AValue = ADefValue then begin
         DeleteAttribute(APath);
     end
     else begin
@@ -398,9 +398,9 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-procedure TXMLSettings.SetDeleteAttribute(const APath: DOMString; AValue, DefValue: boolean);
+procedure TXMLSettings.SetDeleteAttribute(const APath: DOMString; AValue, ADefValue: boolean);
 begin
-    if AValue = DefValue then begin
+    if AValue = ADefValue then begin
         DeleteAttribute(APath);
     end
     else begin
@@ -417,9 +417,9 @@ begin
     Node := FindNode(APath, Ident, []);
     if Assigned(Node) and Assigned(Node.ParentNode) then begin
         Node.ParentNode.RemoveChild(Node);
-        m_NodePathDirty := True;
-        m_DomElement := nil;
-        m_Modified := True;
+        FNodePathDirty := True;
+        FDomElement := nil;
+        FModified := True;
     end;
 end;
 
@@ -435,9 +435,9 @@ begin
         Parent := Node.FindNode(Ident);
         if Assigned(Parent) then begin
             Node.RemoveChild(Parent);
-            m_NodePathDirty := True;
-            m_DomElement := nil;
-            m_Modified := True;
+            FNodePathDirty := True;
+            FDomElement := nil;
+            FModified := True;
         end;
     end;
 end;
@@ -453,7 +453,7 @@ begin
     if Assigned(Node) then begin
         if Assigned(Node.GetAttributeNode(Ident)) then begin
             Node.RemoveAttribute(Ident);
-            m_Modified := True;
+            FModified := True;
         end;
         while (Node.FirstChild = nil) and Assigned(Node.ParentNode) and Assigned(Node.ParentNode.ParentNode) do begin
             if Node.HasAttributes then begin
@@ -462,9 +462,9 @@ begin
             Parent := Node.ParentNode;
             Parent.RemoveChild(Node);
             Node := TDOMElement(Parent);
-            m_NodePathDirty := True;
-            m_DomElement := nil;
-            m_Modified := True;
+            FNodePathDirty := True;
+            FDomElement := nil;
+            FModified := True;
         end;
     end;
 end;
@@ -472,26 +472,26 @@ end;
 // --------------------------------------------------------------------------------
 constructor TXMLSettings.Create(const AFilename: string);
 begin
-    m_FileName := AFilename;
-    m_Modified := False;
-    m_NodePathDirty := False;
+    FFileName := AFilename;
+    FModified := False;
+    FNodePathDirty := False;
 
-    if FileExists(m_FileName) then begin
-        ReadXMLFile(m_XmlDoc, m_FileName);
+    if FileExists(FFileName) then begin
+        ReadXMLFile(FXmlDoc, FFileName);
     end
     else begin
-        m_RootName := 'config';
-        m_XmlDoc := TXMLDocument.Create;
-        m_XmlDoc.AppendChild(m_XmlDoc.CreateElement(m_RootName));
+        FRootName := 'config';
+        FXmlDoc := TXMLDocument.Create;
+        FXmlDoc.AppendChild(FXmlDoc.CreateElement(FRootName));
     end;
 end;
 
 // --------------------------------------------------------------------------------
 destructor TXMLSettings.Destroy;
 begin
-    if Assigned(m_XmlDoc) then begin
+    if Assigned(FXmlDoc) then begin
         Flush;
-        m_XmlDoc.Free;
+        FXmlDoc.Free;
     end;
     inherited Destroy;
 end;
@@ -510,34 +510,34 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-function TXMLSettings.FindNode(const APath: DOMString; out Ident: DOMString; Flags: TNodeFlags): TDOMElement;
+function TXMLSettings.FindNode(const APath: DOMString; out AIdent: DOMString; AFlags: TNodeFlags): TDOMElement;
 var
     i: integer;
     dummy: DOMString;
 begin
-    if m_NodePathDirty then begin
-        for i := 0 to m_NodePathCount - 1 do begin
-            m_DOMElement := DoFindNode(m_NodePathStack[i], dummy, Flags - [nfHasValue]);
+    if FNodePathDirty then begin
+        for i := 0 to FNodePathCount - 1 do begin
+            FDomElement := DoFindNode(FNodePathStack[i], dummy, AFlags - [nfHasValue]);
         end;
-        if Assigned(m_DOMElement) then begin
-            m_NodePathDirty := False;
+        if Assigned(FDomElement) then begin
+            FNodePathDirty := False;
         end;
     end;
-    Result := DoFindNode(APath, Ident, Flags);
+    Result := DoFindNode(APath, AIdent, AFlags);
 end;
 
 // --------------------------------------------------------------------------------
-function TXMLSettings.DoFindNode(const APath: DOMString; var Ident: DOMString; Flags: TNodeFlags): TDomElement;
+function TXMLSettings.DoFindNode(const APath: DOMString; var AIdent: DOMString; AFlags: TNodeFlags): TDomElement;
 var
     StartPos, EndPos: integer;
     PathLen: integer;
     Child: TDOMNode;
 begin
-    if Assigned(m_DOMElement) and (Length(APath) > 0) and (APath[1] <> '/') then begin
-        Result := m_DOMElement;
+    if Assigned(FDomElement) and (Length(APath) > 0) and (APath[1] <> '/') then begin
+        Result := FDomElement;
     end
     else begin
-        Result := m_XmlDoc.DocumentElement;
+        Result := FXmlDoc.DocumentElement;
     end;
 
     PathLen := Length(APath);
@@ -550,8 +550,8 @@ begin
         while (EndPos <= PathLen) and (APath[EndPos] <> '/') do begin
             Inc(EndPos);
         end;
-        if (EndPos > PathLen) and (nfHasValue in Flags) then begin
-            SetString(Ident, PChar(@APath[StartPos]), PathLen - StartPos + 1);
+        if (EndPos > PathLen) and (nfHasValue in AFlags) then begin
+            SetString(AIdent, PChar(@APath[StartPos]), PathLen - StartPos + 1);
             exit;
         end;
         if EndPos = StartPos then begin
@@ -563,8 +563,8 @@ begin
                 Length(TDOMElement(Child).TagName), EndPos - StartPos))) do begin
             Child := Child.NextSibling;
         end;
-        if (Child = nil) and (nfWriteAccess in Flags) then begin
-            Child := m_XmlDoc.CreateElementBuf(@APath[StartPos], EndPos - StartPos);
+        if (Child = nil) and (nfWriteAccess in AFlags) then begin
+            Child := FXmlDoc.CreateElementBuf(@APath[StartPos], EndPos - StartPos);
             Result.AppendChild(Child);
         end;
         Result := TDOMElement(Child);

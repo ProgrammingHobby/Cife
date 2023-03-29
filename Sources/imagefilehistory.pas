@@ -37,19 +37,19 @@ type
     TImageFileHistory = class
     public    // Attribute
     type
-        THistoryMenuItemClick = procedure (Sender: TObject) of object;
+        THistoryMenuItemClick = procedure (ASender: TObject) of object;
 
     public    // Methoden
         procedure Clear;
-        procedure SetHistoryMenuItemsEvent(HMIEvent: THistoryMenuItemClick);
-        procedure AddItem(ImageFile: string; ImageType: string);
-        procedure DeleteItem(Item: integer);
-        function GetHistoryEntry(Item: integer): THistoryEntry;
+        procedure SetHistoryMenuItemsEvent(AHmiEvent: THistoryMenuItemClick);
+        procedure AddItem(AImageFile: string; AImageType: string);
+        procedure DeleteItem(AItem: integer);
+        function GetHistoryEntry(AItem: integer): THistoryEntry;
         function Load: boolean;
         function Save: boolean;
 
     public  // Konstruktor/Destruktor
-        constructor Create(RecentMenu: TMenuItem); overload;
+        constructor Create(ARecentMenu: TMenuItem); overload;
         destructor Destroy; override;
 
     protected // Attribute
@@ -64,10 +64,10 @@ type
         MAXITEMS = 10;
 
     var
-        m_RecentMenu: TMenuItem;
-        m_HistoryArray: THistoryArray;
-        m_HistoryItemsCount: integer;
-        m_HistoryMenuItemEvent: THistoryMenuItemClick;
+        FRecentMenu: TMenuItem;
+        FHistoryArray: THistoryArray;
+        FHistoryItemsCount: integer;
+        FHistoryMenuItemEvent: THistoryMenuItemClick;
 
     private   // Methoden
         procedure UpdateRecentMenu;
@@ -85,75 +85,75 @@ procedure TImageFileHistory.Clear;
 var
     Index: integer;
 begin
-    for Index := Low(m_HistoryArray) to High(m_HistoryArray) do begin
-        m_HistoryArray[Index].FileType := '';
-        m_HistoryArray[Index].FileName := '';
+    for Index := Low(FHistoryArray) to High(FHistoryArray) do begin
+        FHistoryArray[Index].FileType := '';
+        FHistoryArray[Index].FileName := '';
     end;
-    m_HistoryItemsCount := 0;
+    FHistoryItemsCount := 0;
     UpdateRecentMenu;
 end;
 
 // --------------------------------------------------------------------------------
-procedure TImageFileHistory.SetHistoryMenuItemsEvent(HMIEvent: THistoryMenuItemClick);
+procedure TImageFileHistory.SetHistoryMenuItemsEvent(AHmiEvent: THistoryMenuItemClick);
 begin
-    m_HistoryMenuItemEvent := HMIEvent;
+    FHistoryMenuItemEvent := AHmiEvent;
 end;
 
 // --------------------------------------------------------------------------------
-procedure TImageFileHistory.AddItem(ImageFile: string; ImageType: string);
+procedure TImageFileHistory.AddItem(AImageFile: string; AImageType: string);
 var
     Index: integer;
     Entry: THistoryEntry;
 begin
 
     // check if the given Image is already in History
-    for Index := Low(m_HistoryArray) to (m_HistoryItemsCount - 1) do begin
-        if ((ImageFile = m_HistoryArray[Index].FileName) and (ImageType = m_HistoryArray[Index].FileType)) then begin
+    for Index := Low(FHistoryArray) to (FHistoryItemsCount - 1) do begin
+        if ((AImageFile = FHistoryArray[Index].FileName) and (AImageType = FHistoryArray[Index].FileType)) then begin
             DeleteItem(Index);
-            Dec(m_HistoryItemsCount);
+            Dec(FHistoryItemsCount);
             break;
         end;
     end;
 
     // if History full, delete last item
-    if (m_HistoryItemsCount = MAXITEMS) then begin
-        Dec(m_HistoryItemsCount);
-        DeleteItem(m_HistoryItemsCount);
+    if (FHistoryItemsCount = MAXITEMS) then begin
+        Dec(FHistoryItemsCount);
+        DeleteItem(FHistoryItemsCount);
     end;
 
-    Inc(m_HistoryItemsCount);
+    Inc(FHistoryItemsCount);
 
-    Entry.FileName := ImageFile;
-    Entry.FileType := ImageType;
+    Entry.FileName := AImageFile;
+    Entry.FileType := AImageType;
     for Index := MAXITEMS - 2 downto 0 do begin
-        m_HistoryArray[Index + 1] := m_HistoryArray[Index];
+        FHistoryArray[Index + 1] := FHistoryArray[Index];
     end;
-    m_HistoryArray[0] := Entry;
+    FHistoryArray[0] := Entry;
 
     UpdateRecentMenu;
 end;
 
 // --------------------------------------------------------------------------------
-procedure TImageFileHistory.DeleteItem(Item: integer);
+procedure TImageFileHistory.DeleteItem(AItem: integer);
 var
     Index: integer;
 begin
-    for Index := Item to (MAXITEMS - 2) do begin
-        m_HistoryArray[Index] := m_HistoryArray[Index + 1];
+    for Index := AItem to (MAXITEMS - 2) do begin
+        FHistoryArray[Index] := FHistoryArray[Index + 1];
     end;
-    m_HistoryArray[MAXITEMS - 1].FileName := '';
-    m_HistoryArray[MAXITEMS - 1].FileType := '';
+    FHistoryArray[MAXITEMS - 1].FileName := '';
+    FHistoryArray[MAXITEMS - 1].FileType := '';
 end;
 
 // --------------------------------------------------------------------------------
-function TImageFileHistory.GetHistoryEntry(Item: integer): THistoryEntry;
+function TImageFileHistory.GetHistoryEntry(AItem: integer): THistoryEntry;
 var
     HistoryEntry: THistoryEntry;
 begin
     HistoryEntry.FileName := '';
     HistoryEntry.FileType := '';
-    if ((Item >= 0) and (Item < MAXITEMS)) then begin
-        HistoryEntry := m_HistoryArray[Item];
+    if ((AItem >= 0) and (AItem < MAXITEMS)) then begin
+        HistoryEntry := FHistoryArray[AItem];
     end;
     Result := HistoryEntry;
 end;
@@ -164,18 +164,18 @@ var
     Index: integer;
 begin
     Result := False;
-    for Index := Low(m_HistoryArray) to High(m_HistoryArray) do begin
-        m_HistoryArray[Index].FileType := '';
-        m_HistoryArray[Index].FileName := '';
+    for Index := Low(FHistoryArray) to High(FHistoryArray) do begin
+        FHistoryArray[Index].FileType := '';
+        FHistoryArray[Index].FileName := '';
     end;
     with TXMLSettings.Create(SettingsFile) do begin
         try
             OpenKey('History');
-            m_HistoryItemsCount := GetAttribute('Count', 0);
-            for Index := 0 to (m_HistoryItemsCount - 1) do begin
+            FHistoryItemsCount := GetAttribute('Count', 0);
+            for Index := 0 to (FHistoryItemsCount - 1) do begin
                 OpenKey('Item' + IntToStr(Index));
-                m_HistoryArray[Index].FileName := GetValue('File', '');
-                m_HistoryArray[Index].FileType := GetValue('Type', '');
+                FHistoryArray[Index].FileName := GetValue('File', '');
+                FHistoryArray[Index].FileType := GetValue('Type', '');
                 CloseKey;
             end;
             CloseKey;
@@ -196,14 +196,14 @@ begin
     with TXMLSettings.Create(SettingsFile) do begin
         try
             OpenKey('History');
-            SetAttribute('Count', m_HistoryItemsCount);
+            SetAttribute('Count', FHistoryItemsCount);
             for Index := 0 to (MAXITEMS - 1) do begin
                 DeletePath('Item' + IntToStr(Index));
             end;
-            for Index := 0 to (m_HistoryItemsCount - 1) do begin
+            for Index := 0 to (FHistoryItemsCount - 1) do begin
                 OpenKey('Item' + IntToStr(Index));
-                SetValue('File', m_HistoryArray[Index].FileName);
-                SetValue('Type', m_HistoryArray[Index].FileType);
+                SetValue('File', FHistoryArray[Index].FileName);
+                SetValue('Type', FHistoryArray[Index].FileType);
                 CloseKey;
             end;
             CloseKey;
@@ -215,11 +215,11 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-constructor TImageFileHistory.Create(RecentMenu: TMenuItem);
+constructor TImageFileHistory.Create(ARecentMenu: TMenuItem);
 begin
-    m_RecentMenu := RecentMenu;
-    SetLength(m_HistoryArray, MAXITEMS);
-    m_HistoryItemsCount := 0;
+    FRecentMenu := ARecentMenu;
+    SetLength(FHistoryArray, MAXITEMS);
+    FHistoryItemsCount := 0;
 end;
 
 // --------------------------------------------------------------------------------
@@ -236,9 +236,9 @@ var
 begin
     // clear all History entries
     Index := 0;
-    while (Index < m_RecentMenu.Count) do begin
-        if not (m_RecentMenu.Items[Index].Caption = '-') and not (m_RecentMenu.Items[Index].Caption = 'Clear History') then begin
-            m_RecentMenu.Items[Index].Free;
+    while (Index < FRecentMenu.Count) do begin
+        if not (FRecentMenu.Items[Index].Caption = '-') and not (FRecentMenu.Items[Index].Caption = 'Clear History') then begin
+            FRecentMenu.Items[Index].Free;
         end
         else begin
             Inc(Index);
@@ -246,14 +246,14 @@ begin
     end;
 
     // create new History Menuitems
-    for Index := 0 to m_HistoryItemsCount - 1 do begin
+    for Index := 0 to FHistoryItemsCount - 1 do begin
         ;
-        NewMenuItem := TMenuItem.Create(m_RecentMenu);
+        NewMenuItem := TMenuItem.Create(FRecentMenu);
         NewMenuItem.Tag := Index;
-        NewMenuItem.Caption := IntToStr(Index + 1) + '  ' + ExtractFileName(m_HistoryArray[Index].FileName) +
-            ' (' + m_HistoryArray[Index].FileType + ')';
-        NewMenuItem.OnClick := m_HistoryMenuItemEvent;
-        m_RecentMenu.Insert(Index, NewMenuItem);
+        NewMenuItem.Caption := IntToStr(Index + 1) + '  ' + ExtractFileName(FHistoryArray[Index].FileName) +
+            ' (' + FHistoryArray[Index].FileType + ')';
+        NewMenuItem.OnClick := FHistoryMenuItemEvent;
+        FRecentMenu.Insert(Index, NewMenuItem);
     end;
 end;
 

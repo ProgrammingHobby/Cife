@@ -33,13 +33,13 @@ type
     public    // Attribute
 
     public    // Methoden
-        procedure SetFile(ImageFile: string);
-        procedure SetType(ImageType: string);
+        procedure SetFile(AImageFile: string);
+        procedure SetType(AImageType: string);
         function GetFile: string;
         function GetType: string;
 
     public  // Konstruktor/Destruktor
-        constructor Create(TheOwner: TComponent); override;
+        constructor Create(ATheOwner: TComponent); override;
         destructor Destroy; override;
 
     protected // Attribute
@@ -47,13 +47,13 @@ type
     protected // Methoden
 
     private   // Attribute
-        m_ImageFile: string;
-        m_ImageType: string;
-        m_DirectoryList: TListView;
+        FImageFile: string;
+        FImageType: string;
+        FDirectoryList: TListView;
 
     private   // Methoden
         procedure CreateDirectoryListView;
-        procedure DirectoryListResize(Sender: TObject);
+        procedure DirectoryListResize(ASender: TObject);
 
     end;
 
@@ -64,33 +64,33 @@ implementation
 uses Controls, StdCtrls;
 
 // --------------------------------------------------------------------------------
-procedure TImagePage.SetFile(ImageFile: string);
+procedure TImagePage.SetFile(AImageFile: string);
 begin
-    m_ImageFile := ImageFile;
+    FImageFile := AImageFile;
 end;
 
 // --------------------------------------------------------------------------------
-procedure TImagePage.SetType(ImageType: string);
+procedure TImagePage.SetType(AImageType: string);
 begin
-    m_ImageType := ImageType;
+    FImageType := AImageType;
 end;
 
 // --------------------------------------------------------------------------------
 function TImagePage.GetFile: string;
 begin
-    Result := m_ImageFile;
+    Result := FImageFile;
 end;
 
 // --------------------------------------------------------------------------------
 function TImagePage.GetType: string;
 begin
-    Result := m_ImageType;
+    Result := FImageType;
 end;
 
 // --------------------------------------------------------------------------------
-constructor TImagePage.Create(TheOwner: TComponent);
+constructor TImagePage.Create(ATheOwner: TComponent);
 begin
-    inherited Create(TheOwner);
+    inherited Create(ATheOwner);
     CreateDirectoryListView;
 end;
 
@@ -104,8 +104,8 @@ procedure TImagePage.CreateDirectoryListView;
 var
     DirColumn: TListColumn;
 begin
-    m_DirectoryList := TListView.Create(self);
-    with m_DirectoryList do begin
+    FDirectoryList := TListView.Create(self);
+    with FDirectoryList do begin
         Parent := self;
         Align := alClient;
         BorderStyle := bsSingle;
@@ -147,14 +147,14 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-procedure TImagePage.DirectoryListResize(Sender: TObject);
+procedure TImagePage.DirectoryListResize(ASender: TObject);
 var
     NewWidth, ColWidths, ActListViewWidth: integer;
     dlv: TListView;
 begin
     NewWidth := 0;
     ColWidths := 0;
-    dlv := TListView(Sender);
+    dlv := TListView(ASender);
     dlv.BeginUpdate;
 {$ifdef Windows}
     ActListViewWidth := (ClientWidth - 4);
