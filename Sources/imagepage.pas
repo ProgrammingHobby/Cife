@@ -29,10 +29,38 @@ type
 
     { TImagePage }
 
+    TFileSystemInfo = record
+        FileName: string;
+        FileType: string;
+        Tracks: integer;
+        Sectors: integer;
+        SecBytes: integer;
+        BlockSize: integer;
+        MaxDir: integer;
+        BootTracks: integer;
+        Offset: string;
+        skew: string;
+        System: string;
+    end;
+
+    TDirStatistics = record
+        TotalBytes: integer;
+        TotalRecords: integer;
+        Total1KBlocks: integer;
+        Filesfound: integer;
+        MaxDirEntries: integer;
+        UsedDirEntries: integer;
+    end;
+
     TImagePage = class(TTabSheet)
     public    // Attribute
+        type
+            TFileSystemInfoCB = procedure (const Info:TFileSystemInfo) of object;
+            TDirectoryStatisticsCB = procedure (const Statistics:TDirStatistics) of object;
 
     public    // Methoden
+        procedure DoShow; override;
+        procedure SetFileSystemInfoCallBack(AFileSystemInfoCB: TFileSystemInfoCB);
         function Open(const AFileName: string; const AFileType: string; AUpperCase: boolean = False): boolean;
         function GetFileName: string;
         function GetFileType: string;
@@ -48,6 +76,8 @@ type
     private   // Attribute
         FDirectoryList: TListView;
         FCpmTools: TCpmTools;
+        FFileSystemInfoCallBack: TFileSystemInfoCB;
+        FDirStatisticsCallBack: TDirectoryStatisticsCB;
 
     private   // Methoden
         procedure CreateDirectoryListView;
@@ -60,6 +90,25 @@ implementation
 { TImagePage }
 
 uses Controls, StdCtrls;
+
+// --------------------------------------------------------------------------------
+procedure TImagePage.DoShow;
+var
+    Info: TFileSystemInfo;
+begin
+    inherited DoShow;
+    Info.FileName := FCpmTools.GetFileName;
+    Info.FileType := FCpmTools.GetFileType;
+    if Assigned(FFileSystemInfoCallBack) then begin
+        FFileSystemInfoCallBack(Info);
+    end;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TImagePage.SetFileSystemInfoCallBack(AFileSystemInfoCB: TFileSystemInfoCB);
+begin
+    FFileSystemInfoCallBack := AFileSystemInfoCB;
+end;
 
 // --------------------------------------------------------------------------------
 function TImagePage.Open(const AFileName: string; const AFileType: string; AUpperCase: boolean): boolean;
