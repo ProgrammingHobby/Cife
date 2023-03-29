@@ -29,7 +29,7 @@ type
 
     { TCpmFileSystem }
 
-    TCpmFileSystem = class(CpmDevice)
+    TCpmFileSystem = class(TCpmDevice)
     public    // Attribute
 
     public    // Methoden
@@ -55,7 +55,7 @@ implementation
 // --------------------------------------------------------------------------------
 constructor TCpmFileSystem.Create;
 begin
-
+    inherited Create;
 end;
 
 // --------------------------------------------------------------------------------

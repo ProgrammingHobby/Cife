@@ -29,7 +29,7 @@ type
 
     { TCpmTools }
 
-    TCpmTools = class(CpmFileSystem)
+    TCpmTools = class(TCpmFileSystem)
     public    // Attribute
 
     public    // Methoden
@@ -55,7 +55,7 @@ implementation
 // --------------------------------------------------------------------------------
 constructor TCpmTools.Create;
 begin
-
+    inherited Create;
 end;
 
 // --------------------------------------------------------------------------------

@@ -23,7 +23,7 @@ unit ImagePage;
 interface
 
 uses
-    Classes, SysUtils, ComCtrls;
+    Classes, SysUtils, ComCtrls, CpmTools;
 
 type
 
@@ -50,6 +50,7 @@ type
         FImageFile: string;
         FImageType: string;
         FDirectoryList: TListView;
+        FCpmTools: TCpmTools;
 
     private   // Methoden
         procedure CreateDirectoryListView;
@@ -92,11 +93,13 @@ constructor TImagePage.Create(ATheOwner: TComponent);
 begin
     inherited Create(ATheOwner);
     CreateDirectoryListView;
+    FCpmTools := TCpmTools.Create;
 end;
 
 // --------------------------------------------------------------------------------
 destructor TImagePage.Destroy;
 begin
+    FreeAndNil(FCpmTools);
     inherited Destroy;
 end;
 
