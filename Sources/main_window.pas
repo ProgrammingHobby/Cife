@@ -341,8 +341,8 @@ begin
     if (Sender is TPageControl) then begin
         PgCtrl := TPageControl(Sender);
         ImagePage := TImagePage(PgCtrl.Pages[PgCtrl.PageIndex]);
-        labelFile.Caption := ImagePage.GetFile;
-        labelType.Caption := ImagePage.GetType;
+        labelFile.Caption := ImagePage.GetFileName;
+        labelType.Caption := ImagePage.GetFileType;
     end;
 end;
 
@@ -362,8 +362,7 @@ begin
     ImagePage := TImagePage.Create(PageControl);
     ImagePage.PageControl := PageControl;
     ImagePage.Caption := ExtractFileName(ImageFile);
-    ImagePage.SetFile(ImageFile);
-    ImagePage.SetType(ImageType);
+    ImagePage.Open(ImageFile, ImageType);
     labelFile.Caption := ImageFile;
     labelType.Caption := ImageType;
     PageControl.ActivePage := ImagePage;
@@ -389,7 +388,7 @@ begin
         TabExisting := False;
         for Index := 0 to (PageControl.PageCount - 1) do begin
             ImagePage := TImagePage(PageControl.Pages[Index]);
-            if (ImagePage.GetFile = HistoryEntry.FileName) then begin
+            if (ImagePage.GetFileName = HistoryEntry.FileName) then begin
                 TabExisting := True;
             end;
         end;
