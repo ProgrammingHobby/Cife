@@ -63,7 +63,6 @@ type
         procedure SetFileSystemInfoCallBack(AFileSystemInfoCB: TFileSystemInfoCB);
         function Open(const AFileName: string; const AFileType: string; AUpperCase: boolean = False): boolean;
         function GetFileName: string;
-        function GetFileType: string;
 
     public  // Konstruktor/Destruktor
         constructor Create(ATheOwner: TComponent); override;
@@ -113,19 +112,13 @@ end;
 // --------------------------------------------------------------------------------
 function TImagePage.Open(const AFileName: string; const AFileType: string; AUpperCase: boolean): boolean;
 begin
-    Result := True;
+    Result := FCpmTools.OpenImage(AFileName, AFileType, AUpperCase);
 end;
 
 // --------------------------------------------------------------------------------
 function TImagePage.GetFileName: string;
 begin
-    Result := EmptyStr;
-end;
-
-// --------------------------------------------------------------------------------
-function TImagePage.GetFileType: string;
-begin
-    Result := EmptyStr;
+    Result := FCpmTools.GetFileName;
 end;
 
 // --------------------------------------------------------------------------------
