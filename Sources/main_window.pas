@@ -396,12 +396,12 @@ procedure TMainWindow.ShowImageInfo(const Info: TFileSystemInfo);
 begin
     labelFile.Caption := Info.FileName;
     labelType.Caption := Info.FileType;
-    labelTracks.Caption := IntToStr(Info.Tracks);
-    labelSectors.Caption := IntToStr(Info.Sectors);
-    labelSectorBytes.Caption := IntToStr(Info.SecBytes);
-    labelBlocksize.Caption := IntToStr(Info.BlockSize);
-    labelMaxdir.Caption := IntToStr(Info.MaxDir);
-    labelBoottracks.Caption := IntToStr(Info.BootTracks);
+    labelTracks.Caption := Info.Tracks;
+    labelSectors.Caption := Info.Sectors;
+    labelSectorBytes.Caption := Info.SecBytes;
+    labelBlocksize.Caption := Info.BlockSize;
+    labelMaxdir.Caption := Info.MaxDir;
+    labelBoottracks.Caption := Info.BootTracks;
     labelOffset.Caption := Info.Offset;
     labelSkew.Caption := Info.skew;
     labelOs.Caption := Info.System;
