@@ -22,7 +22,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="1"/>
-      <BuildNr Value="97"/>
+      <BuildNr Value="119"/>
       <StringTable FileDescription="CP/M Image-File Explorer" InternalName="CIFE" OriginalFilename="CIFE"/>
     </VersionInfo>
     <BuildModes>
@@ -444,11 +444,32 @@
       <Unit>
         <Filename Value="Sources/versioninfo.pas"/>
         <IsPartOfProject Value="True"/>
+        <UnitName Value="VersionInfo"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/xmlsettings.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="XMLSettings"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Sources/cifeglobals.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="CifeGlobals"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Sources/cpmdevice.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="CpmDevice"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Sources/cpmfilesystem.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="CpmFileSystem"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Sources/cpmtools.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="CpmTools"/>
       </Unit>
     </Units>
   </ProjectOptions>
