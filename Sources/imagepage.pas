@@ -32,24 +32,24 @@ type
     TFileSystemInfo = record
         FileName: string;
         FileType: string;
-        Tracks: integer;
-        Sectors: integer;
-        SecBytes: integer;
-        BlockSize: integer;
-        MaxDir: integer;
-        BootTracks: integer;
+        Tracks: string;
+        Sectors: string;
+        SecBytes: string;
+        BlockSize: string;
+        MaxDir: string;
+        BootTracks: string;
         Offset: string;
         skew: string;
         System: string;
     end;
 
     TDirStatistics = record
-        TotalBytes: integer;
-        TotalRecords: integer;
-        Total1KBlocks: integer;
-        Filesfound: integer;
-        MaxDirEntries: integer;
-        UsedDirEntries: integer;
+        TotalBytes: string;
+        TotalRecords: string;
+        Total1KBlocks: string;
+        Filesfound: string;
+        MaxDirEntries: string;
+        UsedDirEntries: string;
     end;
 
     TImagePage = class(TTabSheet)
@@ -81,6 +81,7 @@ type
     private   // Methoden
         procedure CreateDirectoryListView;
         procedure DirectoryListResize(ASender: TObject);
+        procedure ClearFileSystemInfo;
 
     end;
 
@@ -132,6 +133,7 @@ end;
 // --------------------------------------------------------------------------------
 destructor TImagePage.Destroy;
 begin
+    ClearFileSystemInfo;
     FreeAndNil(FCpmTools);
     inherited Destroy;
 end;
@@ -222,6 +224,29 @@ begin
     ColWidths := ColWidths + NewWidth;
     dlv.Columns[7].Width := (NewWidth + (ActListViewWidth - Colwidths));
     dlv.EndUpdate;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TImagePage.ClearFileSystemInfo;
+var
+    Info: TFileSystemInfo;
+begin
+    with Info do begin
+        FileName := EmptyStr;
+        FileType := EmptyStr;
+        Tracks := EmptyStr;
+        Sectors := EmptyStr;
+        SecBytes := EmptyStr;
+        BlockSize := EmptyStr;
+        MaxDir := EmptyStr;
+        BootTracks := EmptyStr;
+        Offset := EmptyStr;
+        skew := EmptyStr;
+        System := EmptyStr;
+    end;
+    if Assigned(FFileSystemInfoCallBack) then begin
+        FFileSystemInfoCallBack(Info);
+    end;
 end;
 
 // --------------------------------------------------------------------------------
