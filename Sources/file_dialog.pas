@@ -68,7 +68,7 @@ type
         procedure ShellListViewSelectItem(Sender: TObject; Item: TListItem; Selected: boolean);
         procedure ShellTreeViewClick(Sender: TObject);
     private
-        WildcardsList: TStringArray;
+        FWildcardsList: TStringArray;
         procedure CheckOkButtonState;
 
     public
@@ -114,7 +114,7 @@ var
 begin
     if (Sender is TComboBox) then begin
         cmb := TComboBox(Sender);
-        ShellListView.Mask := WildcardsList[(cmb.ItemIndex * 2) + 1];
+        ShellListView.Mask := FWildcardsList[(cmb.ItemIndex * 2) + 1];
         ShellListView.Refresh;
     end;
 end;
@@ -248,10 +248,10 @@ var
     idx: integer;
 begin
     comboboxFileTypes.Clear;
-    WildcardsList := wildcards.Split('|');
+    FWildcardsList := wildcards.Split('|');
     idx := 0;
-    while (idx < Length(WildcardsList)) do begin
-        comboboxFileTypes.Items.Add(WildcardsList[idx]);
+    while (idx < Length(FWildcardsList)) do begin
+        comboboxFileTypes.Items.Add(FWildcardsList[idx]);
         Inc(idx, 2);
     end;
     comboboxFileTypes.ItemIndex := 0;

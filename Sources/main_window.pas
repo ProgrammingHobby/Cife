@@ -154,7 +154,7 @@ type
         procedure PageControlChange(Sender: TObject);
         procedure PageControlCloseTabClicked(Sender: TObject);
     private
-        m_ImageFileHistory: TImageFileHistory;
+        FImageFileHistory: TImageFileHistory;
         procedure AddImagePage(ImageFile: string; ImageType: string);
         procedure HistoryMenuItemClick(Sender: TObject);
 
@@ -203,7 +203,7 @@ end;
 // --------------------------------------------------------------------------------
 procedure TMainWindow.actionClearHistoryExecute(Sender: TObject);
 begin
-    m_ImageFileHistory.Clear;
+    FImageFileHistory.Clear;
     actionClearHistory.Enabled := False;
 end;
 
@@ -240,7 +240,7 @@ begin
         dialog := TFileDialog.Create(self);
         dialog.SetDialogTitle('Open CP/M Disk Image File');
         dialog.SetRootPath(GetUserDir);
-        HistoryEntry := m_ImageFileHistory.GetHistoryEntry(0);
+        HistoryEntry := FImageFileHistory.GetHistoryEntry(0);
         dialog.SetDefaultPath(ExtractFileDir(HistoryEntry.FileName));
         dialog.SetFileWildcards('Image Files (*.img,*.fdd,*.dsk)|*.img;*.IMG;*.fdd;*.FDD;*.dsk;*.DSK|all Files (*.*)|*');
         if (dialog.ShowModal = mrOk) then begin
@@ -288,8 +288,8 @@ end;
 // --------------------------------------------------------------------------------
 procedure TMainWindow.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
-    m_ImageFileHistory.Save;
-    FreeAndNil(m_ImageFileHistory);
+    FImageFileHistory.Save;
+    FreeAndNil(FImageFileHistory);
     with TXMLSettings.Create(SettingsFile) do begin
         try
             SaveFormState(TForm(self));
@@ -327,9 +327,9 @@ begin
         end;
     end;
     actionClose.Enabled := False;
-    m_ImageFileHistory := TImageFileHistory.Create(menuitemRecentFiles);
-    m_ImageFileHistory.SetHistoryMenuItemsEvent(@HistoryMenuItemClick);
-    actionClearHistory.Enabled := m_ImageFileHistory.Load;
+    FImageFileHistory := TImageFileHistory.Create(menuitemRecentFiles);
+    FImageFileHistory.SetHistoryMenuItemsEvent(@HistoryMenuItemClick);
+    actionClearHistory.Enabled := FImageFileHistory.Load;
 end;
 
 // --------------------------------------------------------------------------------
@@ -370,7 +370,7 @@ begin
             actionClose.Enabled := True;
             actionClearHistory.Enabled := True;
         end;
-        m_ImageFileHistory.AddItem(ImageFile, ImageType);
+        FImageFileHistory.AddItem(ImageFile, ImageType);
     end
     else begin
         FreeAndNil(ImagePage);
@@ -388,7 +388,7 @@ var
 begin
     if (Sender is TMenuItem) then begin
         HistoryMenuItem := TMenuItem(Sender);
-        HistoryEntry := m_ImageFileHistory.GetHistoryEntry(HistoryMenuItem.Tag);
+        HistoryEntry := FImageFileHistory.GetHistoryEntry(HistoryMenuItem.Tag);
         TabExisting := False;
         for Index := 0 to (PageControl.PageCount - 1) do begin
             ImagePage := TImagePage(PageControl.Pages[Index]);

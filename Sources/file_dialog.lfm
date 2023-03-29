@@ -10,6 +10,7 @@ object FileDialog: TFileDialog
   OnShow = FormShow
   Position = poOwnerFormCenter
   ShowHint = True
+  LCLVersion = '2.2.6.0'
   object ButtonPanel: TButtonPanel
     Left = 6
     Height = 34
@@ -185,8 +186,8 @@ object FileDialog: TFileDialog
       BorderSpacing.Right = 4
       BevelOuter = bvNone
       BorderStyle = bsSingle
-      ClientHeight = 168
-      ClientWidth = 512
+      ClientHeight = 170
+      ClientWidth = 514
       DoubleBuffered = True
       ParentDoubleBuffered = False
       TabOrder = 0
