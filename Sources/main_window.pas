@@ -394,9 +394,13 @@ begin
             ImagePage := TImagePage(PageControl.Pages[Index]);
             if (ImagePage.GetFileName = HistoryEntry.FileName) then begin
                 TabExisting := True;
+                break;
             end;
         end;
-        if not TabExisting then begin
+        if TabExisting then begin
+            PageControl.ActivePage:=PageControl.Pages[Index];
+        end
+        else begin
             AddImagePage(HistoryEntry.FileName, HistoryEntry.FileType);
         end;
     end;
