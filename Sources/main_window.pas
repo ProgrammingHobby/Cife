@@ -24,7 +24,7 @@ interface
 
 uses
     Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, ComCtrls,
-    ActnList, ExtCtrls, StdCtrls, ImageFileHistory;
+    ActnList, ExtCtrls, StdCtrls, ImageFileHistory, ImagePage;
 
 type
 
@@ -151,12 +151,12 @@ type
         procedure actionSettingsExecute(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
         procedure FormShow(Sender: TObject);
-        procedure PageControlChange(Sender: TObject);
         procedure PageControlCloseTabClicked(Sender: TObject);
     private
         FImageFileHistory: TImageFileHistory;
         procedure AddImagePage(ImageFile: string; ImageType: string);
         procedure HistoryMenuItemClick(Sender: TObject);
+        procedure ShowImageInfo(const Info: TFileSystemInfo);
 
     public
 
@@ -170,7 +170,7 @@ implementation
 {$R *.lfm}
 
 uses NewImage_Dialog, File_Dialog, RenameFile_Dialog, Characteristics_Dialog, Settings_Dialog,
-    About_Dialog, CifeGlobals, XMLSettings, ImagePage;
+    About_Dialog, CifeGlobals, XMLSettings;
 
 { TMainWindow }
 
@@ -333,20 +333,6 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-procedure TMainWindow.PageControlChange(Sender: TObject);
-var
-    ImagePage: TImagePage;
-    PgCtrl: TPageControl;
-begin
-    if (Sender is TPageControl) then begin
-        PgCtrl := TPageControl(Sender);
-        ImagePage := TImagePage(PgCtrl.Pages[PgCtrl.PageIndex]);
-        labelFile.Caption := ImagePage.GetFileName;
-        labelType.Caption := ImagePage.GetFileType;
-    end;
-end;
-
-// --------------------------------------------------------------------------------
 procedure TMainWindow.PageControlCloseTabClicked(Sender: TObject);
 begin
     if (Sender is TTabSheet) then begin
@@ -362,8 +348,7 @@ begin
     ImagePage := TImagePage.Create(PageControl);
     if (ImagePage.Open(ImageFile, ImageType)) then begin
         ImagePage.Caption := ExtractFileName(ImageFile);
-        labelFile.Caption := ImageFile;
-        labelType.Caption := ImageType;
+        ImagePage.SetFileSystemInfoCallBack(@ShowImageInfo);
         ImagePage.PageControl := PageControl;
         PageControl.ActivePage := ImagePage;
         if (PageControl.PageCount > 0) then begin
@@ -398,12 +383,28 @@ begin
             end;
         end;
         if TabExisting then begin
-            PageControl.ActivePage:=PageControl.Pages[Index];
+            PageControl.ActivePage := PageControl.Pages[Index];
         end
         else begin
             AddImagePage(HistoryEntry.FileName, HistoryEntry.FileType);
         end;
     end;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TMainWindow.ShowImageInfo(const Info: TFileSystemInfo);
+begin
+    labelFile.Caption := Info.FileName;
+    labelType.Caption := Info.FileType;
+    labelTracks.Caption := IntToStr(Info.Tracks);
+    labelSectors.Caption := IntToStr(Info.Sectors);
+    labelSectorBytes.Caption := IntToStr(Info.SecBytes);
+    labelBlocksize.Caption := IntToStr(Info.BlockSize);
+    labelMaxdir.Caption := IntToStr(Info.MaxDir);
+    labelBoottracks.Caption := IntToStr(Info.BootTracks);
+    labelOffset.Caption := Info.Offset;
+    labelSkew.Caption := Info.skew;
+    labelOs.Caption := Info.System;
 end;
 
 // --------------------------------------------------------------------------------

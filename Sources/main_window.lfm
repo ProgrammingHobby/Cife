@@ -607,7 +607,6 @@ object MainWindow: TMainWindow
     BorderSpacing.Left = 4
     BorderSpacing.Right = 4
     TabOrder = 2
-    OnChange = PageControlChange
     OnCloseTabClicked = PageControlCloseTabClicked
     Options = [nboShowCloseButtons]
   end
