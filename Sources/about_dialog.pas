@@ -81,7 +81,7 @@ end;
 procedure TAboutDialog.FormShow(Sender: TObject);
 begin
     labelVersion.Caption := GetFileVersion;
-    labelSystem.Caption := 'Written with Lazarus / Free Pascal' + ^M + ^J + GetLCLVersion + ' && ' +
+    labelSystem.Caption := 'Written with Lazarus / Free Pascal' + ^M + ^J + GetLCLVersion + '   &&   ' +
         GetCompilerInfo + '  ' + IntToStr(SizeOf(PtrUInt) * 8) + 'bit';
     Constraints.MinWidth := Width;
     Constraints.MaxWidth := Width;
