@@ -360,17 +360,21 @@ var
     ImagePage: TImagePage;
 begin
     ImagePage := TImagePage.Create(PageControl);
-    ImagePage.PageControl := PageControl;
-    ImagePage.Caption := ExtractFileName(ImageFile);
-    ImagePage.Open(ImageFile, ImageType);
-    labelFile.Caption := ImageFile;
-    labelType.Caption := ImageType;
-    PageControl.ActivePage := ImagePage;
-    if (PageControl.PageCount > 0) then begin
-        actionClose.Enabled := True;
-        actionClearHistory.Enabled := True;
+    if (ImagePage.Open(ImageFile, ImageType)) then begin
+        ImagePage.Caption := ExtractFileName(ImageFile);
+        labelFile.Caption := ImageFile;
+        labelType.Caption := ImageType;
+        ImagePage.PageControl := PageControl;
+        PageControl.ActivePage := ImagePage;
+        if (PageControl.PageCount > 0) then begin
+            actionClose.Enabled := True;
+            actionClearHistory.Enabled := True;
+        end;
+        m_ImageFileHistory.AddItem(ImageFile, ImageType);
+    end
+    else begin
+        FreeAndNil(ImagePage);
     end;
-    m_ImageFileHistory.AddItem(ImageFile, ImageType);
 end;
 
 // --------------------------------------------------------------------------------
