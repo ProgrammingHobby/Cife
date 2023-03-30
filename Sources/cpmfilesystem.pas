@@ -259,8 +259,286 @@ end;
 
 // --------------------------------------------------------------------------------
 function TCpmFileSystem.DiskdefsReadSuper(const AImageType: string): boolean;
+var
+    DiskDefs: TStringList;
+    FoundDefinition: boolean;
+    DefinitionLine, SkewTabItems: TStringArray;
+    LineNumber: integer;
+    Pass, Sectors, SkewItem: integer;
+    Value: off_t;
+    Multiplier: cardinal;
+    Spezifier: string;
 begin
+    FoundDefinition := False;
+    FDrive.Skew := 1;
+    FDrive.Extents := 0;
+    FDrive.OsType := CPMFS_DR22;
+    FSkewTab := nil;
+    FDrive.Offset := 0;
+    FDrive.BlkSiz := -1;
+    FDrive.BootTrk := -1;
+    FDrive.BootSec := -1;
+    FDrive.SecLength := -1;
+    FDrive.SecTrk := -1;
+    FDrive.Tracks := -1;
+    FDrive.MaxDir := -1;
+    FDrive.DirBlks := 0;
+    Result := True;
+    try
+        DiskDefs := TStringList.Create;
+        DiskDefs.LoadFromFile('diskdefs');
+        for LineNumber := 1 to Diskdefs.Count do begin
+            DefinitionLine := Diskdefs[LineNumber - 1].Trim.Split(' ');
 
+            if (FoundDefinition) then begin
+
+                if ((Length(DefinitionLine) >= 1) and (DefinitionLine[0] = 'end')) then begin
+                    FDrive.Size := ((((FDrive.SecTrk * FDrive.Tracks) - BootOffset) * FDrive.SecLength) div FDrive.BlkSiz);
+
+                    if (FDrive.Extents = 0) then begin
+
+                        if (FDrive.Size > 256) then begin
+                            FDrive.Extents := ((FDrive.BlkSiz * 8) div 16384);
+                        end
+                        else begin
+                            FDrive.Extents := ((FDrive.BlkSiz * 16) div 16384);
+                        end;
+                    end;
+
+                    if (FDrive.Extents = 0) then begin
+                        FDrive.Extents := 1;
+                    end;
+
+                    break;
+                end
+                else if (Length(DefinitionLine) = 2) then begin
+
+                    if (DefinitionLine[0] = 'seclen') then begin
+                        FDrive.SecLength := StrToIntDef(DefinitionLine[1], -1);
+                    end
+                    else if (DefinitionLine[0] = 'tracks') then begin
+                        FDrive.Tracks := StrToIntDef(DefinitionLine[1], -1);
+                    end
+                    else if (DefinitionLine[0] = 'sectrk') then begin
+                        FDrive.SecTrk := StrToIntDef(DefinitionLine[1], -1);
+                    end
+                    else if (DefinitionLine[0] = 'blocksize') then begin
+                        FDrive.BlkSiz := StrToIntDef(DefinitionLine[1], -1);
+
+                        if (FDrive.BlkSiz <= 0) then begin
+                            FFileSystemError :=
+                                Format('invalid blocksize ''%s'' in line %d', [DefinitionLine[1], (LineNumber)]);
+                            Result := False;
+                            break;
+                        end;
+
+                    end
+                    else if (DefinitionLine[0] = 'maxdir') then begin
+                        FDrive.MaxDir := StrToIntDef(DefinitionLine[1], -1);
+                    end
+                    else if (DefinitionLine[0] = 'dirblks') then begin
+                        FDrive.DirBlks := StrToIntDef(DefinitionLine[1], -1);
+                    end
+                    else if (DefinitionLine[0] = 'skew') then begin
+                        FDrive.Skew := StrToIntDef(DefinitionLine[1], -1);
+                    end
+                    else if (DefinitionLine[0] = 'skewtab') then begin
+                        SkewTabItems := DefinitionLine[1].Trim.Split(',');
+
+                        for Pass := 0 to 1 do begin
+
+                            for Sectors := 0 to Length(SkewTabItems) - 1 do begin
+                                SkewItem := StrToIntDef(SkewTabItems[Sectors], -1);
+
+                                if (Pass = 1) then begin
+                                    FSkewTab[Sectors] := SkewItem;
+                                end;
+
+                                if (SkewItem = -1) then begin
+                                    FFileSystemError :=
+                                        Format('invalid skewtab ''%s'' in line %d', [DefinitionLine[1], (LineNumber)]);
+                                    Result := False;
+                                    exit;
+                                end;
+
+                            end;
+
+                            if (Pass = 0) then begin
+                                SetLength(FSkewTab, Sectors + 1);
+                            end;
+
+                        end;
+
+                    end
+                    else if (DefinitionLine[0] = 'boottrk') then begin
+                        FDrive.BootTrk := StrToIntDef(DefinitionLine[1], -1);
+                    end
+                    else if (DefinitionLine[0] = 'bootsec') then begin
+                        FDrive.BootSec := StrToIntDef(DefinitionLine[1], -1);
+                    end
+                    else if (DefinitionLine[0] = 'offset') then begin
+                        Multiplier := 1;
+
+                        if not (DefinitionLine[1][1] in ['0'..'9']) then begin
+                            FFileSystemError :=
+                                Format('offset value ''%s'' is not a number in line %d', [DefinitionLine[1], (LineNumber)]);
+                            Result := False;
+                            break;
+                        end;
+
+                        for Pass := 1 to DefinitionLine[1].Length do begin
+                            if not (DefinitionLine[1][Pass] in ['0'..'9']) then begin
+                                Spezifier := RightStr(DefinitionLine[1], (DefinitionLine[1].Length - Pass + 1));
+                                break;
+                            end;
+                        end;
+
+                        Value := StrToIntDef(LeftStr(DefinitionLine[1], (Pass - 1)), 0);
+
+                        if ((Value >= MaxInt) or (Value <= (not MaxInt))) then begin
+                            FFileSystemError :=
+                                Format('invalid offset value ''%s'' in line %d', [DefinitionLine[1], (LineNumber)]);
+                            Result := False;
+                            break;
+                        end;
+
+
+                        if (not Spezifier.IsEmpty) then begin
+                            case (UpperCase(Spezifier[1])) of
+                                'K': begin
+                                    Multiplier := 1024;
+                                end;
+                                'M': begin
+                                    Multiplier := 1024 * 1024;
+                                end;
+                                'T': begin
+
+                                    if ((FDrive.SecTrk < 0) or (FDrive.Tracks < 0) or (FDrive.SecLength < 0)) then begin
+                                        FFileSystemError :=
+                                            Format('offset must be specified after sectrk, tracks and secLength in line %d',
+                                            [(LineNumber)]);
+                                        Result := False;
+                                        break;
+                                    end;
+
+                                    Multiplier := (FDrive.SecTrk * FDrive.SecLength);
+                                end;
+                                'S': begin
+
+                                    if ((FDrive.SecTrk < 0) or (FDrive.Tracks < 0) or (FDrive.SecLength < 0)) then begin
+                                        FFileSystemError :=
+                                            Format('offset must be specified after sectrk, tracks and secLength in line %d',
+                                            [(LineNumber)]);
+                                        Result := False;
+                                        break;
+                                    end;
+
+                                    Multiplier := FDrive.SecLength;
+                                end;
+                                else begin
+                                    FFileSystemError :=
+                                        Format('unknown unit specifier ''%s'' in line %d',
+                                        [DefinitionLine[1][Pass], (LineNumber)]);
+                                    Result := False;
+                                    break;
+                                end;
+                            end;
+                        end;
+
+                        if ((Value * Multiplier) > MaxInt) then begin
+                            FFileSystemError := Format('effective offset is out of range in line %d', [(LineNumber)]);
+                            Result := False;
+                            break;
+                        end;
+
+                        FDrive.Offset := (Value * Multiplier);
+                    end
+                    else if (DefinitionLine[0] = 'logicalextents') then begin
+                        FDrive.Extents := StrToIntDef(DefinitionLine[1], -1);
+                    end
+                    else if (DefinitionLine[0] = 'os') then begin
+                        case (DefinitionLine[1]) of
+                            '2.2': begin
+                                FDrive.OsType := (FDrive.OsType or CPMFS_DR22);
+                            end;
+                            '3': begin
+                                FDrive.OsType := (FDrive.OsType or CPMFS_DR3);
+                            end;
+                            'isx': begin
+                                FDrive.OsType := (FDrive.OsType or CPMFS_ISX);
+                            end;
+                            'p2dos': begin
+                                FDrive.OsType := (FDrive.OsType or CPMFS_P2DOS);
+                            end;
+                            'zsys': begin
+                                FDrive.OsType := (FDrive.OsType or CPMFS_ZSYS);
+                            end;
+                            else begin
+                                FFileSystemError :=
+                                    Format('invalid OS type ''%s'' in line %d', [DefinitionLine[1], (LineNumber)]);
+                                Result := False;
+                                break;
+                            end;
+                        end;
+                    end;
+                end
+                else if ((Length(DefinitionLine) > 0) and not (DefinitionLine[0][1] = '#') and not (DefinitionLine[0][1] = ';'))
+                then begin
+                    FFileSystemError := Format('invalid keyword ''%s'' in line %d', [DefinitionLine[0], (LineNumber)]);
+                    Result := False;
+                    break;
+                end;
+            end
+            else if ((Length(DefinitionLine) >= 2) and (DefinitionLine[0] = 'diskdef') and (DefinitionLine[1] = AImageType)) then
+            begin
+                FoundDefinition := True;
+            end;
+        end;
+    finally
+        FreeAndNil(DiskDefs);
+    end;
+
+    if (not FoundDefinition) then begin
+        FFileSystemError := Format('unknown format %s', [AImageType]);
+        Result := False;
+        exit;
+    end;
+
+    if ((FDrive.BootTrk < 0) and (FDrive.BootSec < 0)) then begin
+        FFileSystemError := 'boottrk/bootsec parameter invalid or missing from diskdef';
+        Result := False;
+        exit;
+    end;
+
+    if (FDrive.SecLength < 0) then begin
+        FFileSystemError := 'secLength parameter invalid or missing from diskdef';
+        Result := False;
+        exit;
+    end;
+
+    if (FDrive.SecTrk < 0) then begin
+        FFileSystemError := 'sectrk parameter invalid or missing from diskdef';
+        Result := False;
+        exit;
+    end;
+
+    if (FDrive.Tracks < 0) then begin
+        FFileSystemError := 'tracks parameter invalid or missing from diskdef';
+        Result := False;
+        exit;
+    end;
+
+    if (FDrive.BlkSiz < 0) then begin
+        FFileSystemError := 'blocksize parameter invalid or missing from diskdef';
+        Result := False;
+        exit;
+    end;
+
+    if (FDrive.MaxDir < 0) then begin
+        FFileSystemError := 'maxdir parameter invalid or missing from diskdef';
+        Result := False;
+        exit;
+    end;
 end;
 
 // --------------------------------------------------------------------------------
