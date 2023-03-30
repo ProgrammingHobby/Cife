@@ -70,6 +70,7 @@ type
 
     public    // Methoden
         function ReadDiskdefData(const AImageType: string): boolean;
+        function InitDriveData(AUpperCase: boolean): boolean;
         function GetErrorMsg: string;
 
     public  // Konstruktor/Destruktor
@@ -175,6 +176,12 @@ begin
     else begin
         Result := DiskdefsReadSuper(AImageType);
     end;
+end;
+
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.InitDriveData(AUpperCase: boolean): boolean;
+begin
+
 end;
 
 // --------------------------------------------------------------------------------
