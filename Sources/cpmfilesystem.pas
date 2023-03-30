@@ -70,6 +70,7 @@ type
 
     public    // Methoden
         function ReadDiskdefData(const AImageType: string): boolean;
+        function GetErrorMsg: string;
 
     public  // Konstruktor/Destruktor
         constructor Create(ACpmDevice: TCpmDevice); overload;
@@ -174,6 +175,12 @@ begin
     else begin
         Result := DiskdefsReadSuper(AImageType);
     end;
+end;
+
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.GetErrorMsg: string;
+begin
+    Result := FFileSystemError;
 end;
 
 // --------------------------------------------------------------------------------
