@@ -198,7 +198,12 @@ end;
 // --------------------------------------------------------------------------------
 function TCpmFileSystem.BootOffset: integer;
 begin
-
+    if (FDrive.BootSec >= 0) then begin
+        Result := FDrive.BootSec;
+    end
+    else begin
+        Result := (FDrive.BootTrk * FDrive.SecTrk);
+    end;
 end;
 
 // --------------------------------------------------------------------------------
