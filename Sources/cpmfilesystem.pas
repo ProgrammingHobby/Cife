@@ -23,9 +23,45 @@ unit CpmFileSystem;
 interface
 
 uses
-    Classes, SysUtils, CpmDevice;
+    Classes, SysUtils, CpmDevice, CpmDefs;
 
 type
+
+    TCpmInode = record
+        Ino: ino_t;
+        Mode: mode_t;
+        Size: off_t;
+        Attr: cpm_attr_t;
+        ATime: time_t;
+        MTime: time_t;
+        CTime: time_t;
+    end;
+
+    TCpmStat = record
+        Ino: ino_t;
+        Mode: mode_t;
+        Size: off_t;
+        ATime: time_t;
+        MTime: time_t;
+        CTime: time_t;
+    end;
+
+    TCpmStatFS = record
+        F_BSize: longint;
+        F_Blocks: longint;
+        F_BFree: longint;
+        F_BUsed: longint;
+        F_BAvail: longint;
+        F_Files: longint;
+        F_FFree: longint;
+        F_NameLen: longint;
+    end;
+
+    TCpmFile = record
+        Mode: mode_t;
+        Pos: off_t;
+        Ino: array of TCpmInode;
+    end;
 
     { TCpmFileSystem }
 
@@ -43,7 +79,78 @@ type
     protected // Methoden
 
     private   // Attribute
+    type
+        TCpmDirent = record
+            Ino: ino_t;
+            Off: off_t;
+            RecLen: size_t;
+            Name: string[14];
+        end;
+
+        TPhysDirectoryEntry = record
+            Status: byte;
+            Name: string[8];
+            Ext: string[3];
+            Extnol: byte;
+            Lrc: byte;
+            Extnoh: byte;
+            Blkcnt: byte;
+            Pointers: array[0..15] of byte;
+        end;
+
+        TDsEntry = record
+            Year: byte;
+            Month: byte;
+            Day: byte;
+            Hour: byte;
+            Minute: byte;
+        end;
+
+        TDateStamperDate = record
+            Create: TDsEntry;
+            Access: TDsEntry;
+            Modify: TDsEntry;
+            CheckSum: byte;
+        end;
+
+        TCpmSuperBlock = record
+            UpperCase: boolean;
+            SecLength: integer;
+            Tracks: integer;
+            SecTrk: integer;
+            BlkSiz: integer;
+            MaxDir: integer;
+            DirBlks: integer;
+            Skew: integer;
+            BootSec: integer;
+            BootTrk: integer;
+            Offset: off_t;
+            OsType: integer;
+            Size: integer;
+            Extents: integer; { logical extents per physical extent }
+            AlvSize: integer;
+            CnotaTime: integer;
+            DiskLabel: string[8];
+            LabelLength: size_t;
+            Passwd: string[8];
+            PasswdLength: size_t;
+            DirtyDirectory: boolean;
+            DirtyDs: boolean;
+        end;
+
+        TIntArray = array of integer;
+        TByteArray = array of byte;
+        TDirArray = array of TPhysDirectoryEntry;
+        TDsArray = array of TDateStamperDate;
+
+    var
         FCpmDevice: TCpmDevice;
+        FFileSystemError: string;
+        FDrive: TCpmSuperBlock;
+        FSkewTab: TIntArray;
+        FDirectory: TDirArray;
+        FAllocationVector: TIntArray;
+        FDateStamper: TDsArray;
 
     private   // Methoden
 
