@@ -575,8 +575,57 @@ end;
 
 // --------------------------------------------------------------------------------
 function TCpmFileSystem.ReadBlock(ABlockNr: integer; var ABuffer: TByteArray; AStart, AEnd: integer): boolean;
+var
+    Sect, Track, Counter: integer;
+    SectorBuffer: array of byte = nil;
 begin
+    // allocate sector buffer
+    try
+        SetLength(SectorBuffer, FDrive.SecLength);
+    except
+        on e: Exception do begin
+            FFileSystemError := e.Message;
+            Result := False;
+            exit;
+        end;
+    end;
 
+    if (ABlockNr >= FDrive.Size) then begin
+        FFileSystemError := 'attempting to access block beyond end of disk';
+        Result := False;
+        exit;
+    end;
+
+    if (AEnd < 0) then begin
+        AEnd := ((FDrive.BlkSiz div FDrive.SecLength) - 1);
+    end;
+
+    Sect := (((ABlockNr * (FDrive.BlkSiz div FDrive.SecLength)) + BootOffset) mod FDrive.SecTrk);
+    Track := (((ABlockNr * (FDrive.BlkSiz div FDrive.SecLength)) + BootOffset) div FDrive.SecTrk);
+
+    for Counter := 0 to AEnd do begin
+
+        if (Counter >= AStart) then begin
+
+            if not (FCpmDevice.ReadSector(Track, FSkewTab[Sect], SectorBuffer)) then begin
+                FFileSystemError := FCpmDevice.GetErrorMsg;
+                Result := False;
+                exit;
+            end;
+
+            ABuffer := Concat(ABuffer, SectorBuffer);
+        end;
+
+        Inc(Sect);
+
+        if (Sect >= FDrive.SecTrk) then begin
+            Sect := 0;
+            Inc(Track);
+        end;
+
+    end;
+
+    Result := True;
 end;
 
 // --------------------------------------------------------------------------------
