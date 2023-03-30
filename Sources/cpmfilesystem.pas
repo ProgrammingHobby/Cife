@@ -185,8 +185,76 @@ end;
 
 // --------------------------------------------------------------------------------
 function TCpmFileSystem.AmstradReadSuper: boolean;
+var
+    BootSector: array[0..511] of byte;
+    BootSpec: integer;
+    IDString1, IDString2, IDString3: string;
 begin
+    Result := True;
+    FCpmDevice.SetGeometry(512, 9, 40, 0);
 
+    if (not (FCpmDevice.ReadSector(0, 0, BootSector))) then begin
+        FFileSystemError := Format('Failed to read Amstrad superblock  (%s)', [FCpmDevice.GetErrorMsg()]);
+        Result := False;
+        Exit;
+    end;
+
+    if ((BootSector[0] = 0) or (BootSector[0] = 3)) then begin
+        BootSpec := 0;
+    end
+    else begin
+        BootSpec := -1;
+    end;
+
+    { Check for JCE's extension to allow Amstrad and MSDOS superblocks
+      in the same sector (for the PCW16) }
+    SetString(IDString1, pansichar(@BootSector[$2B]), 4);
+    SetString(IDString2, pansichar(@BootSector[$33]), 3);
+    SetString(IDString3, pansichar(@BootSector[$7C]), 4);
+
+    if (((BootSector[0] = $E9) or (BootSector[0] = $EB)) and (IDString1 = 'CP/M') and
+        (IDString2 = 'DSK') and (IDString3 = 'CP/M')) then begin
+        BootSpec := 128;
+    end;
+
+    if (BootSpec = -1) then begin
+        FFileSystemError := 'Amstrad superblock not present';
+        Result := False;
+        exit;
+    end;
+
+    { boot_spec[0] = format number: 0 for SS SD, 3 for DS DD
+               [1] = single/double sided and density flags
+               [2] = cylinders per side
+               [3] = sectors per cylinder
+               [4] = Physical sector shift, 2 => 512
+               [5] = Reserved track count
+               [6] = Block shift
+               [7] = No. of directory blocks }
+
+    FDrive.OsType := CPMFS_DR3;  // Amstrads are CP/M 3 systems
+    FDrive.SecLength := (128 shl BootSector[BootSpec + 4]);
+    FDrive.Tracks := BootSector[BootSpec + 2];
+
+    if ((BootSector[BootSpec + 1] and 3) <> 0) then begin
+        FDrive.Tracks := FDrive.Tracks * 2;
+    end;
+
+    FDrive.SecTrk := BootSector[BootSpec + 3];
+    FDrive.BlkSiz := (128 shl BootSector[BootSpec + 6]);
+    FDrive.MaxDir := ((FDrive.BlkSiz div 32) * BootSector[BootSpec + 7]);
+    FDrive.DirBlks := 0;
+    FDrive.Skew := 1;  // Amstrads skew at the controller level
+    FSkewTab := nil;
+    FDrive.BootTrk := BootSector[BootSpec + 5];
+    FDrive.Offset := 0;
+    FDrive.Size := ((FDrive.SecLength * FDrive.SecTrk * (FDrive.Tracks - FDrive.BootTrk)) div FDrive.BlkSiz);
+    if (FDrive.Size > 256) then begin
+        FDrive.Extents := ((FDrive.BlkSiz * 8) div 16384);
+    end
+    else begin
+        FDrive.Extents := ((FDrive.BlkSiz * 16) div 16384);
+    end;
 end;
 
 // --------------------------------------------------------------------------------
