@@ -29,13 +29,13 @@ type
 
     { TCpmFileSystem }
 
-    TCpmFileSystem = class(TCpmDevice)
+    TCpmFileSystem = class
     public    // Attribute
 
     public    // Methoden
 
     public  // Konstruktor/Destruktor
-        constructor Create; overload;
+        constructor Create(ACpmDevice: TCpmDevice); overload;
         destructor Destroy; override;
 
     protected // Attribute
@@ -43,6 +43,7 @@ type
     protected // Methoden
 
     private   // Attribute
+        FCpmDevice: TCpmDevice;
 
     private   // Methoden
 
@@ -53,9 +54,10 @@ implementation
 { TCpmFileSystem }
 
 // --------------------------------------------------------------------------------
-constructor TCpmFileSystem.Create;
+constructor TCpmFileSystem.Create(ACpmDevice: TCpmDevice);
 begin
     inherited Create;
+    FCpmDevice := ACpmDevice;
 end;
 
 // --------------------------------------------------------------------------------

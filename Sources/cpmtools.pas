@@ -23,13 +23,13 @@ unit CpmTools;
 interface
 
 uses
-    Classes, SysUtils, CpmFileSystem;
+    Classes, SysUtils, CpmFileSystem, CpmDevice;
 
 type
 
     { TCpmTools }
 
-    TCpmTools = class(TCpmFileSystem)
+    TCpmTools = class
     public    // Attribute
 
     public    // Methoden
@@ -46,6 +46,8 @@ type
     protected // Methoden
 
     private   // Attribute
+        FCpmDevice: TCpmDevice;
+        FCpmFileSystem: TCpmFileSystem;
         FFileName: string;
         FFileType: string;
 
@@ -81,11 +83,15 @@ end;
 constructor TCpmTools.Create;
 begin
     inherited Create;
+    FCpmDevice := TCpmDevice.Create;
+    FCpmFileSystem := TCpmFileSystem.Create(FCpmDevice);
 end;
 
 // --------------------------------------------------------------------------------
 destructor TCpmTools.Destroy;
 begin
+    FreeAndNil(FCpmFileSystem);
+    FreeAndNil(FCpmDevice);
     inherited Destroy;
 end;
 
