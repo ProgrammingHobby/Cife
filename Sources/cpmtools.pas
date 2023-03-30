@@ -59,11 +59,36 @@ implementation
 
 { TCpmTools }
 
+uses Dialogs, Controls;
+
 // --------------------------------------------------------------------------------
 function TCpmTools.OpenImage(const AFileName: string; const AFileType: string; AUpperCase: boolean): boolean;
 begin
     FFileName := AFileName;
     FFileType := AFileType;
+    Result := False;
+
+    if not (FCpmDevice.Open(AFileName, dmOpenReadWrite)) then begin
+        if MessageDlg(Format('cannot open %s' + LineEnding + '(%s)', [ExtractFileName(AFileName), FCpmDevice.GetErrorMsg()])
+            , mtError, [mbOK], 0) = mrOk then begin
+            Exit;
+        end;
+    end;
+
+    if not (FCpmFileSystem.ReadDiskdefData(AFileType)) then begin
+        if MessageDlg(Format('cannot read superblock' + LineEnding + '(%s)', [FCpmFileSystem.GetErrorMsg()])
+            , mtError, [mbOK], 0) = mrOk then begin
+            Exit;
+        end;
+    end;
+
+    if not (FCpmFileSystem.InitDriveData(AUpperCase)) then begin
+        if MessageDlg(Format('cannot init filesystem' + LineEnding + '(%s)', [FCpmFileSystem.GetErrorMsg()])
+            , mtError, [mbOK], 0) = mrOk then begin
+            Exit;
+        end;
+    end;
+
     Result := True;
 end;
 
