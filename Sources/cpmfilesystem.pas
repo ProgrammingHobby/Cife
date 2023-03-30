@@ -159,6 +159,7 @@ type
         function AmstradReadSuper(): boolean;
         function DiskdefsReadSuper(const AImageType: string): boolean;
         function BootOffset: integer;
+        function ReadBlock(ABlockNr: integer; var ABuffer: TByteArray; AStart, AEnd: integer): boolean;
 
     end;
 
@@ -570,6 +571,12 @@ begin
     else begin
         Result := (FDrive.BootTrk * FDrive.SecTrk);
     end;
+end;
+
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.ReadBlock(ABlockNr: integer; var ABuffer: TByteArray; AStart, AEnd: integer): boolean;
+begin
+
 end;
 
 // --------------------------------------------------------------------------------
