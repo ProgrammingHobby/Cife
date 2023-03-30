@@ -167,7 +167,13 @@ implementation
 // --------------------------------------------------------------------------------
 function TCpmFileSystem.ReadDiskdefData(const AImageType: string): boolean;
 begin
-
+    Result := False;
+    if (AImageType.Contains('Amstrad (PCW16)')) then begin
+        Result := AmstradReadSuper();
+    end
+    else begin
+        Result := DiskdefsReadSuper(AImageType);
+    end;
 end;
 
 // --------------------------------------------------------------------------------
