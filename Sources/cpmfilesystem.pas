@@ -69,6 +69,7 @@ type
     public    // Attribute
 
     public    // Methoden
+        function ReadDiskdefData(const AImageType: string): boolean;
 
     public  // Konstruktor/Destruktor
         constructor Create(ACpmDevice: TCpmDevice); overload;
@@ -153,12 +154,21 @@ type
         FDateStamper: TDsArray;
 
     private   // Methoden
+        function AmstradReadSuper(): boolean;
+        function DiskdefsReadSuper(const AImageType: string): boolean;
+        function BootOffset: integer;
 
     end;
 
 implementation
 
 { TCpmFileSystem }
+
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.ReadDiskdefData(const AImageType: string): boolean;
+begin
+
+end;
 
 // --------------------------------------------------------------------------------
 constructor TCpmFileSystem.Create(ACpmDevice: TCpmDevice);
@@ -171,6 +181,24 @@ end;
 destructor TCpmFileSystem.Destroy;
 begin
     inherited Destroy;
+end;
+
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.AmstradReadSuper: boolean;
+begin
+
+end;
+
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.DiskdefsReadSuper(const AImageType: string): boolean;
+begin
+
+end;
+
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.BootOffset: integer;
+begin
+
 end;
 
 // --------------------------------------------------------------------------------
