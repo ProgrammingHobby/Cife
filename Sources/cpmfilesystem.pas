@@ -87,13 +87,13 @@ type
             Ino: ino_t;
             Off: off_t;
             RecLen: size_t;
-            Name: string[14];
+            Name: array[0..13] of char;
         end;
 
-        TPhysDirectoryEntry = record
+        TPhysDirectoryEntry = packed record
             Status: byte;
-            Name: string[8];
-            Ext: string[3];
+            Name: array[0..7] of char;
+            Ext: array[0..2] of char;
             Extnol: byte;
             Lrc: byte;
             Extnoh: byte;
@@ -133,9 +133,9 @@ type
             Extents: integer; { logical extents per physical extent }
             AlvSize: integer;
             CnotaTime: integer;
-            DiskLabel: string[8];
+            DiskLabel: array[0..7] of char;
             LabelLength: size_t;
-            Passwd: string[8];
+            Passwd: array[0..7] of char;
             PasswdLength: size_t;
             DirtyDirectory: boolean;
             DirtyDateStamp: boolean;
