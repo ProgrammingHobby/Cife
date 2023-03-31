@@ -233,6 +233,20 @@ begin
         end;
     end;
 
+    // initialise allocation vector bitmap
+    FDrive.AlvSize := (((((FDrive.SecTrk * FDrive.Tracks) - BootOffset) * FDrive.SecLength) div FDrive.BlkSiz) +
+        INTBITS - 1) div INTBITS;
+
+    try
+        SetLength(FAllocationVector, FDrive.AlvSize);
+    except
+        on e: Exception do begin
+            FFileSystemError := e.Message;
+            Result := False;
+            exit;
+        end;
+    end;
+
 end;
 
 // --------------------------------------------------------------------------------
