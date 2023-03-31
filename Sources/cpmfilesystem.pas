@@ -138,7 +138,7 @@ type
             Passwd: string[8];
             PasswdLength: size_t;
             DirtyDirectory: boolean;
-            DirtyDs: boolean;
+            DirtyDateStamp: boolean;
         end;
 
         TIntArray = array of integer;
@@ -182,7 +182,13 @@ end;
 // --------------------------------------------------------------------------------
 function TCpmFileSystem.InitDriveData(AUpperCase: boolean): boolean;
 begin
+    Result := True;
+    FDrive.UpperCase := AUpperCase;
 
+    // optional field, compute based on directory size
+    if (FDrive.DirBlks = 0) then begin
+        FDrive.DirBlks := ((FDrive.MaxDir * 32 + (FDrive.BlkSiz - 1)) div FDrive.BlkSiz);
+    end;
 end;
 
 // --------------------------------------------------------------------------------
