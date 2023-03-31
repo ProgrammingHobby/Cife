@@ -181,6 +181,8 @@ end;
 
 // --------------------------------------------------------------------------------
 function TCpmFileSystem.InitDriveData(AUpperCase: boolean): boolean;
+var
+    IndexI, IndexK, Value: integer;
 begin
     Result := True;
     FDrive.UpperCase := AUpperCase;
@@ -189,6 +191,48 @@ begin
     if (FDrive.DirBlks = 0) then begin
         FDrive.DirBlks := ((FDrive.MaxDir * 32 + (FDrive.BlkSiz - 1)) div FDrive.BlkSiz);
     end;
+
+    FCpmDevice.SetGeometry(FDrive.SecLength, FDrive.SecTrk, FDrive.Tracks, FDrive.Offset);
+
+    // generate skew table
+    if (FSkewTab = nil) then begin
+
+        try
+            SetLength(FSkewTab, FDrive.SecTrk);
+        except
+            on e: Exception do begin
+                FFileSystemError := e.Message;
+                Result := False;
+                exit;
+            end;
+        end;
+
+        Value := 0;
+
+        for IndexI := 0 to FDrive.SecTrk - 1 do begin
+
+            while (True) do begin
+
+                IndexK := 0;
+
+                while ((IndexK < IndexI) and (FSkewTab[IndexK] <> Value)) do begin
+                    Inc(IndexK);
+                end;
+
+                if (IndexK < IndexI) then begin
+                    Value := ((Value + 1) mod FDrive.SecTrk);
+                end
+                else begin
+                    break;
+                end;
+
+            end;
+
+            FSkewTab[IndexI] := Value;
+            Value := ((Value + FDrive.Skew) mod FDrive.SecTrk);
+        end;
+    end;
+
 end;
 
 // --------------------------------------------------------------------------------
