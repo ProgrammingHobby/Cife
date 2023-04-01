@@ -183,6 +183,8 @@ end;
 function TCpmFileSystem.InitDriveData(AUpperCase: boolean): boolean;
 var
     IndexI, IndexK, Value: integer;
+    Blocks: integer;
+    DirectoryBuffer: TByteArray = nil;
 begin
     Result := True;
     FDrive.UpperCase := AUpperCase;
@@ -246,6 +248,81 @@ begin
             exit;
         end;
     end;
+
+    // initialize temporarly Directory buffer
+    if not (FCpmDevice.IsOpen) then begin // create empty directory in core
+
+        try
+            SetLength(DirectoryBuffer, ((((FDrive.MaxDir * 32) + FDrive.BlkSiz - 1) div FDrive.BlkSiz) * FDrive.BlkSiz));
+        except
+            on e: Exception do begin
+                FFileSystemError := e.Message;
+                Result := False;
+                exit;
+            end;
+        end;
+
+        for IndexI := Low(DirectoryBuffer) to High(DirectoryBuffer) do begin
+            DirectoryBuffer[IndexI] := $E5;
+        end;
+
+    end
+    else begin  // read directory in core
+        SetLength(DirectoryBuffer, 0);
+        Blocks := (((FDrive.MaxDir * 32) + FDrive.BlkSiz - 1) div FDrive.BlkSiz);
+
+        for IndexI := 0 to Blocks - 1 do begin
+
+            if not (ReadBlock(IndexI, DirectoryBuffer, 0, -1)) then begin
+                Result := False;
+                exit;
+            end;
+
+        end;
+
+    end;
+
+    // copy Directory buffer to Directory Record-Array
+    try
+        SetLength(FDirectory, (Length(DirectoryBuffer) div SizeOf(TPhysDirectoryEntry)));
+    except
+        on e: Exception do begin
+            FFileSystemError := e.Message;
+            Result := False;
+            exit;
+        end;
+    end;
+
+    IndexI := Low(DirectoryBuffer);
+
+    while (IndexI <= High(DirectoryBuffer)) do begin
+
+        with (FDirectory[(IndexI div SizeOf(TPhysDirectoryEntry))]) do begin
+            Status := DirectoryBuffer[IndexI + 0];
+
+            for IndexK := 0 to 7 do begin
+                Name[IndexK] := char(DirectoryBuffer[IndexI + 1 + IndexK]);
+            end;
+
+            for IndexK := 0 to 2 do begin
+                Ext[IndexK] := char(DirectoryBuffer[IndexI + 9 + IndexK]);
+            end;
+
+            Extnol := DirectoryBuffer[IndexI + 12];
+            Lrc := DirectoryBuffer[IndexI + 13];
+            Extnoh := DirectoryBuffer[IndexI + 14];
+            Blkcnt := DirectoryBuffer[IndexI + 15];
+
+            for IndexK := 0 to 15 do begin
+                Pointers[IndexK] := DirectoryBuffer[IndexI + 16 + IndexK];
+            end;
+
+            Inc(IndexI, SizeOf(TPhysDirectoryEntry));
+        end;
+
+    end;
+
+    SetLength(DirectoryBuffer, 0);
 
 end;
 
