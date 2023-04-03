@@ -133,9 +133,9 @@ type
             Extents: integer; { logical extents per physical extent }
             AlvSize: integer;
             CnotaTime: integer;
-            DiskLabel: array[0..7] of char;
+            DiskLabel: array of char;
             LabelLength: size_t;
-            Passwd: array[0..7] of char;
+            Passwd: array of char;
             PasswdLength: size_t;
             DirtyDirectory: boolean;
             DirtyDateStamp: boolean;
@@ -150,10 +150,13 @@ type
         FCpmDevice: TCpmDevice;
         FFileSystemError: string;
         FDrive: TCpmSuperBlock;
+        FRoot: TCpmInode;
         FSkewTab: TIntArray;
         FDirectory: TDirArray;
         FAllocationVector: TIntArray;
         FDateStamper: TDsArray;
+        FS_Ifdir: mode_t;
+        FS_Ifreg: mode_t;
 
     private   // Methoden
         procedure AlvInit;
@@ -161,6 +164,7 @@ type
         function DiskdefsReadSuper(const AImageType: string): boolean;
         function BootOffset: integer;
         function ReadBlock(ABlockNr: integer; var ABuffer: TByteArray; AStart, AEnd: integer): boolean;
+        function CheckDateStamper: boolean;
 
     end;
 
@@ -184,7 +188,7 @@ end;
 function TCpmFileSystem.InitDriveData(AUpperCase: boolean): boolean;
 var
     IndexI, IndexK, Value: integer;
-    Blocks: integer;
+    Blocks, Passwords: integer;
     DirectoryBuffer: TByteArray = nil;
 begin
     Result := True;
@@ -323,115 +327,140 @@ begin
 
     end;
 
-    SetLength(DirectoryBuffer, 0);
-
-    //alvInit();
     AlvInit;
 
-    //if (drive.type & CPMFS_CPM3_OTHER) { /* read additional superblock information */
-    //    int i;
-    //    /* passwords */
-    //    {
-    //        int passwords = 0;
+    // read additional superblock information
+    if ((FDrive.OsType and CPMFS_CPM3_OTHER) <> 0) then begin
+        // passwords
+        Passwords := 0;
 
-    //        for (i = 0; i < drive.maxdir; ++i)
-    //            if (drive.dir[i].status >= 16 && drive.dir[i].status <= 31) {
-    //                ++passwords;
-    //            }
+        for IndexI := 0 to FDrive.MaxDir - 1 do begin
 
-    //        if ((drive.passwdLength = passwords * PASSWD_RECLEN)) {
-    //            if ((drive.passwd = (char *) malloc(drive.passwdLength)) == (char *) 0) {
-    //                fserr = "out of memory";
-    //                return (-1);
-    //            }
+            if ((FDirectory[IndexI].Status >= 16) and (FDirectory[IndexI].Status <= 31)) then begin
+                Inc(Passwords);
+            end;
 
-    //            for (i = 0, passwords = 0; i < drive.maxdir; ++i)
-    //                if (drive.dir[i].status >= 16 && drive.dir[i].status <= 31) {
-    //                    int j, pb;
-    //                    char *p = drive.passwd + (passwords++ * PASSWD_RECLEN);
-    //                    p[0] = '0' + (drive.dir[i].status - 16) / 10;
-    //                    p[1] = '0' + (drive.dir[i].status - 16) % 10;
+        end;
 
-    //                    for (j = 0; j < 8; ++j) {
-    //                        p[2 + j] = drive.dir[i].name[j] & 0x7f;
-    //                    }
+        FDrive.PasswdLength := (Passwords * PASSWD_RECLEN);
 
-    //                    p[10] = (drive.dir[i].ext[0] & 0x7f) == ' ' ? ' ' : '.';
+        if (FDrive.PasswdLength > 0) then begin
 
-    //                    for (j = 0; j < 3; ++j) {
-    //                        p[11 + j] = drive.dir[i].ext[j] & 0x7f;
-    //                    }
+            try
+                SetLength(FDrive.Passwd, FDrive.PasswdLength);
+            except
+                on e: Exception do begin
+                    FFileSystemError := e.Message;
+                    Result := False;
+                    exit;
+                end;
+            end;
 
-    //                    p[14] = ' ';
-    //                    pb = (unsigned char) drive.dir[i].lrc;
+            Passwords := 0;
+            for IndexI := 0 to FDrive.MaxDir - 1 do begin
 
-    //                    for (j = 0; j < 8; ++j) {
-    //                        p[15 + j] = ((unsigned char) drive.dir[i].pointers[7 - j]) ^ pb;
-    //                    }
+                if ((FDirectory[IndexI].Status >= 16) and (FDirectory[IndexI].Status <= 31)) then begin
+                    Value := (Passwords * PASSWD_RECLEN);
+                    Inc(Passwords);
+                    FDrive.Passwd[Value + 0] := char(Ord('0') + ((FDirectory[IndexI].Status - 16) div 10));
+                    FDrive.Passwd[Value + 1] := char(Ord('0') + ((FDirectory[IndexI].Status - 16) mod 10));
 
-    //                    p[23] = '\n';
-    //                }
-    //        }
-    //    }
+                    for IndexK := 0 to 7 do begin
+                        FDrive.Passwd[Value + 2 + IndexK] := char((Ord(FDirectory[IndexI].Name[IndexK]) and $7F));
+                    end;
 
-    //    /* disc label */
-    //    for (i = 0; i < drive.maxdir; ++i)
-    //        if (drive.dir[i].status == (char) 0x20) {
-    //            int j;
-    //            drive.cnotatime = drive.dir[i].extnol & 0x10;
+                    if ((Ord(FDirectory[IndexI].Ext[0]) and $7F) <> 0) then begin
+                        FDrive.Passwd[Value + 10] := '.';
+                    end
+                    else begin
+                        FDrive.Passwd[Value + 10] := ' ';
+                    end;
 
-    //            if (drive.dir[i].extnol & 0x1) {
-    //                drive.labelLength = 12;
+                    for IndexK := 0 to 2 do begin
+                        FDrive.Passwd[Value + 11 + IndexK] := char((Ord(FDirectory[IndexI].Ext[IndexK]) and $7F));
+                    end;
 
-    //                if ((drive.label = (char *) malloc(drive.labelLength)) == (char *) 0) {
-    //                    fserr = "out of memory";
-    //                    return -1;
-    //                }
+                    FDrive.Passwd[Value + 14] := ' ';
 
-    //                for (j = 0; j < 8; ++j) {
-    //                    drive.label[j] = drive.dir[i].name[j] & 0x7f;
-    //                }
+                    for IndexK := 0 to 7 do begin
+                        FDrive.Passwd[Value + 15 + IndexK] :=
+                            char(FDirectory[IndexI].Pointers[7 - IndexK] xor FDirectory[IndexI].Lrc);
+                    end;
 
-    //                for (j = 0; j < 3; ++j) {
-    //                    drive.label[8 + j] = drive.dir[i].ext[j] & 0x7f;
-    //                }
+                    FDrive.Passwd[Value + 23] := char(13);
+                end;
 
-    //                drive.label[11] = '\n';
-    //            }
-    //            else {
-    //                drive.labelLength = 0;
-    //            }
+            end;
 
-    //            break;
-    //        }
+        end;
 
-    //    if (i == drive.maxdir) {
-    //        drive.cnotatime = 1;
-    //        drive.labelLength = 0;
-    //    }
-    //}
-    //else {
-    //    drive.passwdLength = 0;
-    //    drive.cnotatime = 1;
-    //    drive.labelLength = 0;
-    //}
+        // disc label
+        for IndexI := 0 to FDrive.MaxDir - 1 do begin
 
-    //drive.dirtyDirectory = 0;
-    //root.ino = drive.maxdir;
-    //root.mode = (s_ifdir | 0777);
-    //root.size = 0;
-    //root.atime = root.mtime = root.ctime = 0;
-    //drive.dirtyDs = 0;
+            if (FDirectory[IndexI].Status = $20) then begin
+                FDrive.CnotaTime := (FDirectory[IndexI].Extnol and $10);
 
-    //if (cpmCheckDs() == 0) {
-    //    drive.type |= CPMFS_DS_DATES;
-    //}
-    //else {
-    //    drive.ds = (DsDate_t *) 0;
-    //}
+                if ((FDirectory[IndexI].Extnol and $01) <> 0) then begin
+                    FDrive.LabelLength := 12;
 
-    //return (0);
+                    try
+                        SetLength(FDrive.DiskLabel, FDrive.LabelLength);
+                    except
+                        on e: Exception do begin
+                            FFileSystemError := e.Message;
+                            Result := False;
+                            exit;
+                        end;
+                    end;
 
+                    for IndexK := 0 to 7 do begin
+                        FDrive.DiskLabel[IndexK] := char(Ord(FDirectory[IndexI].Name[IndexK]) and $7F);
+                    end;
+
+                    for IndexK := 0 to 2 do begin
+                        FDrive.DiskLabel[IndexK + 8] := char(Ord(FDirectory[IndexI].Ext[IndexK]) and $7F);
+                    end;
+
+                    FDrive.DiskLabel[11] := char(13);
+                end
+                else begin
+                    FDrive.LabelLength := 0;
+                end;
+
+                break;
+            end;
+
+        end;
+
+        if (IndexI = FDrive.MaxDir) then begin
+            FDrive.CnotaTime := 1;
+            FDrive.LabelLength := 0;
+        end;
+
+    end
+    else begin
+        FDrive.PasswdLength := 0;
+        FDrive.CnotaTime := 1;
+        FDrive.LabelLength := 0;
+    end;
+
+    FDrive.DirtyDirectory := False;
+    FRoot.Ino := FDrive.MaxDir;
+    FRoot.Mode := (FS_Ifdir or &0777);
+    FRoot.Size := 0;
+    FRoot.ATime := 0;
+    FRoot.MTime := 0;
+    FRoot.CTime := 0;
+    FDrive.DirtyDateStamp := False;
+
+    if (CheckDateStamper) then begin
+        FDrive.OsType := (FDrive.OsType or CPMFS_DS_DATES);
+    end
+    else begin
+        FDateStamper := nil;
+    end;
+
+    Result := True;
 end;
 
 // --------------------------------------------------------------------------------
@@ -445,6 +474,8 @@ constructor TCpmFileSystem.Create(ACpmDevice: TCpmDevice);
 begin
     inherited Create;
     FCpmDevice := ACpmDevice;
+    FS_Ifdir := 1;
+    FS_Ifreg := 1;
 end;
 
 // --------------------------------------------------------------------------------
@@ -936,6 +967,12 @@ begin
     end;
 
     Result := True;
+end;
+
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.CheckDateStamper: boolean;
+begin
+
 end;
 
 // --------------------------------------------------------------------------------
