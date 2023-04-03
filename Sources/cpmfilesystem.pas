@@ -155,8 +155,6 @@ type
         FDirectory: TDirArray;
         FAllocationVector: TIntArray;
         FDateStamper: TDsArray;
-        FS_Ifdir: mode_t;
-        FS_Ifreg: mode_t;
 
     private   // Methoden
         procedure AlvInit;
@@ -176,6 +174,7 @@ implementation
 function TCpmFileSystem.ReadDiskdefData(const AImageType: string): boolean;
 begin
     Result := False;
+
     if (AImageType.Contains('Amstrad (PCW16)')) then begin
         Result := AmstradReadSuper();
     end
@@ -446,7 +445,7 @@ begin
 
     FDrive.DirtyDirectory := False;
     FRoot.Ino := FDrive.MaxDir;
-    FRoot.Mode := (FS_Ifdir or &0777);
+    FRoot.Mode := (S_IFDIR or &0777);
     FRoot.Size := 0;
     FRoot.ATime := 0;
     FRoot.MTime := 0;
@@ -474,8 +473,6 @@ constructor TCpmFileSystem.Create(ACpmDevice: TCpmDevice);
 begin
     inherited Create;
     FCpmDevice := ACpmDevice;
-    FS_Ifdir := 1;
-    FS_Ifreg := 1;
 end;
 
 // --------------------------------------------------------------------------------
@@ -524,7 +521,7 @@ begin
                     Block := Block + (FDirectory[IndexI].Pointers[IndexJ] shl 8);
                 end;
 
-                if ((Block > 0) and (Block < FDrive.Size)) then begin
+                if ((Block <> 0) and (Block < FDrive.Size)) then begin
                     Offset := (Block div INTBITS);
                     FAllocationVector[Offset] := FAllocationVector[Offset] or (1 shl (Block mod INTBITS));
                 end;
