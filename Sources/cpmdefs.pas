@@ -67,6 +67,9 @@ const
     MODIFIED = 1;
     BROKEN = 2;
 
+    S_IFDIR = 16384;
+    S_IFREG = 32768;
+
     C0 = 'G';
     C1 = 'E';
     C2 = 'H';
@@ -96,4 +99,3 @@ const
 implementation
 
 end.
-
