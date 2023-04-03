@@ -156,6 +156,7 @@ type
         FDateStamper: TDsArray;
 
     private   // Methoden
+        procedure AlvInit;
         function AmstradReadSuper(): boolean;
         function DiskdefsReadSuper(const AImageType: string): boolean;
         function BootOffset: integer;
@@ -324,6 +325,113 @@ begin
 
     SetLength(DirectoryBuffer, 0);
 
+    //alvInit();
+    AlvInit;
+
+    //if (drive.type & CPMFS_CPM3_OTHER) { /* read additional superblock information */
+    //    int i;
+    //    /* passwords */
+    //    {
+    //        int passwords = 0;
+
+    //        for (i = 0; i < drive.maxdir; ++i)
+    //            if (drive.dir[i].status >= 16 && drive.dir[i].status <= 31) {
+    //                ++passwords;
+    //            }
+
+    //        if ((drive.passwdLength = passwords * PASSWD_RECLEN)) {
+    //            if ((drive.passwd = (char *) malloc(drive.passwdLength)) == (char *) 0) {
+    //                fserr = "out of memory";
+    //                return (-1);
+    //            }
+
+    //            for (i = 0, passwords = 0; i < drive.maxdir; ++i)
+    //                if (drive.dir[i].status >= 16 && drive.dir[i].status <= 31) {
+    //                    int j, pb;
+    //                    char *p = drive.passwd + (passwords++ * PASSWD_RECLEN);
+    //                    p[0] = '0' + (drive.dir[i].status - 16) / 10;
+    //                    p[1] = '0' + (drive.dir[i].status - 16) % 10;
+
+    //                    for (j = 0; j < 8; ++j) {
+    //                        p[2 + j] = drive.dir[i].name[j] & 0x7f;
+    //                    }
+
+    //                    p[10] = (drive.dir[i].ext[0] & 0x7f) == ' ' ? ' ' : '.';
+
+    //                    for (j = 0; j < 3; ++j) {
+    //                        p[11 + j] = drive.dir[i].ext[j] & 0x7f;
+    //                    }
+
+    //                    p[14] = ' ';
+    //                    pb = (unsigned char) drive.dir[i].lrc;
+
+    //                    for (j = 0; j < 8; ++j) {
+    //                        p[15 + j] = ((unsigned char) drive.dir[i].pointers[7 - j]) ^ pb;
+    //                    }
+
+    //                    p[23] = '\n';
+    //                }
+    //        }
+    //    }
+
+    //    /* disc label */
+    //    for (i = 0; i < drive.maxdir; ++i)
+    //        if (drive.dir[i].status == (char) 0x20) {
+    //            int j;
+    //            drive.cnotatime = drive.dir[i].extnol & 0x10;
+
+    //            if (drive.dir[i].extnol & 0x1) {
+    //                drive.labelLength = 12;
+
+    //                if ((drive.label = (char *) malloc(drive.labelLength)) == (char *) 0) {
+    //                    fserr = "out of memory";
+    //                    return -1;
+    //                }
+
+    //                for (j = 0; j < 8; ++j) {
+    //                    drive.label[j] = drive.dir[i].name[j] & 0x7f;
+    //                }
+
+    //                for (j = 0; j < 3; ++j) {
+    //                    drive.label[8 + j] = drive.dir[i].ext[j] & 0x7f;
+    //                }
+
+    //                drive.label[11] = '\n';
+    //            }
+    //            else {
+    //                drive.labelLength = 0;
+    //            }
+
+    //            break;
+    //        }
+
+    //    if (i == drive.maxdir) {
+    //        drive.cnotatime = 1;
+    //        drive.labelLength = 0;
+    //    }
+    //}
+    //else {
+    //    drive.passwdLength = 0;
+    //    drive.cnotatime = 1;
+    //    drive.labelLength = 0;
+    //}
+
+    //drive.dirtyDirectory = 0;
+    //root.ino = drive.maxdir;
+    //root.mode = (s_ifdir | 0777);
+    //root.size = 0;
+    //root.atime = root.mtime = root.ctime = 0;
+    //drive.dirtyDs = 0;
+
+    //if (cpmCheckDs() == 0) {
+    //    drive.type |= CPMFS_DS_DATES;
+    //}
+    //else {
+    //    drive.ds = (DsDate_t *) 0;
+    //}
+
+    //return (0);
+
 end;
 
 // --------------------------------------------------------------------------------
@@ -343,6 +451,60 @@ end;
 destructor TCpmFileSystem.Destroy;
 begin
     inherited Destroy;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TCpmFileSystem.AlvInit;
+var
+    IndexI, IndexJ: integer;
+    Offset, Block: integer;
+    MaxUser: integer;
+begin
+    // clean bitmap
+    for IndexI := Low(FAllocationVector) to High(FAllocationVector) do begin
+        FAllocationVector[IndexI] := 0;
+    end;
+
+    // mark directory blocks as used
+    // A directory may cover more blocks than an int may hold bits, so a loop is needed.
+    for Block := 0 to FDrive.DirBlks - 1 do begin
+        Offset := (Block div INTBITS);
+        FAllocationVector[Offset] := (FAllocationVector[Offset] or (1 shl (Block mod INTBITS)));
+    end;
+
+    if ((FDrive.OsType and CPMFS_HI_USER) <> 0) then begin
+        MaxUser := 31;
+    end
+    else begin
+        MaxUser := 15;
+    end;
+
+    // mark file blocks as used
+    for IndexI := 0 to FDrive.MaxDir - 1 do begin
+
+        if ((FDirectory[IndexI].Status >= 0) and (FDirectory[IndexI].Status <= MaxUser)) then begin
+            IndexJ := 0;
+
+            while (IndexJ < 16) do begin
+                Block := FDirectory[IndexI].Pointers[IndexJ];
+
+                if (FDrive.Size > 256) then begin
+                    Inc(IndexJ);
+                    Block := Block + (FDirectory[IndexI].Pointers[IndexJ] shl 8);
+                end;
+
+                if ((Block > 0) and (Block < FDrive.Size)) then begin
+                    Offset := (Block div INTBITS);
+                    FAllocationVector[Offset] := FAllocationVector[Offset] or (1 shl (Block mod INTBITS));
+                end;
+
+                Inc(IndexJ);
+            end;
+
+        end;
+
+    end;
+
 end;
 
 // --------------------------------------------------------------------------------
@@ -465,6 +627,7 @@ begin
                         else begin
                             FDrive.Extents := ((FDrive.BlkSiz * 16) div 16384);
                         end;
+
                     end;
 
                     if (FDrive.Extents = 0) then begin
@@ -549,10 +712,12 @@ begin
                         end;
 
                         for Pass := 1 to DefinitionLine[1].Length do begin
+
                             if not (DefinitionLine[1][Pass] in ['0'..'9']) then begin
                                 Spezifier := RightStr(DefinitionLine[1], (DefinitionLine[1].Length - Pass + 1));
                                 break;
                             end;
+
                         end;
 
                         Value := StrToIntDef(LeftStr(DefinitionLine[1], (Pass - 1)), 0);
@@ -566,6 +731,7 @@ begin
 
 
                         if (not Spezifier.IsEmpty) then begin
+
                             case (UpperCase(Spezifier[1])) of
                                 'K': begin
                                     Multiplier := 1024;
@@ -605,6 +771,7 @@ begin
                                     break;
                                 end;
                             end;
+
                         end;
 
                         if ((Value * Multiplier) > MaxInt) then begin
@@ -619,6 +786,7 @@ begin
                         FDrive.Extents := StrToIntDef(DefinitionLine[1], -1);
                     end
                     else if (DefinitionLine[0] = 'os') then begin
+
                         case (DefinitionLine[1]) of
                             '2.2': begin
                                 FDrive.OsType := (FDrive.OsType or CPMFS_DR22);
@@ -642,6 +810,7 @@ begin
                                 break;
                             end;
                         end;
+
                     end;
                 end
                 else if ((Length(DefinitionLine) > 0) and not (DefinitionLine[0][1] = '#') and not (DefinitionLine[0][1] = ';'))
