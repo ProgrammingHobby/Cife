@@ -165,6 +165,7 @@ type
         function DiskdefsReadSuper(const AImageType: string): boolean;
         function BootOffset: integer;
         function ReadBlock(ABlockNr: integer; var ABuffer: TByteArray; AStart, AEnd: integer): boolean;
+        function WriteBlock(ABlockNr:integer; const ABuffer:array of byte; AStart, AEnd:integer):Boolean;
         function CheckDateStamps: boolean;
         function IsMatching(AUser1: integer; const AName1: array of char; const AExt1: array of char;
             AUser2: integer; const AName2: array of char; const AExt2: array of char): boolean;
@@ -1069,6 +1070,38 @@ begin
     end;
 
     Result := True;
+end;
+
+// --------------------------------------------------------------------------------
+//  -- write a (partial) block
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.WriteBlock(ABlockNr: integer; const ABuffer: array of byte; AStart, AEnd: integer): Boolean;
+begin
+    //int sect, track, counter;
+
+    //if (end < 0) {
+    //    end = drive.blksiz / drive.secLength - 1;
+    //}
+
+    //sect = (blockno * (drive.blksiz / drive.secLength) + bootOffset()) % drive.sectrk;
+    //track = (blockno * (drive.blksiz / drive.secLength) + bootOffset()) / drive.sectrk;
+
+    //for (counter = 0; counter <= end; ++counter) {
+    //    if (counter >= start && (!cpmdevice->WriteSector(track, drive.skewtab[sect],
+    //                             buffer + (drive.secLength * counter)))) {
+    //        fserr = cpmdevice->getErrorMsg();
+    //        return (-1);
+    //    }
+
+    //    ++sect;
+
+    //    if (sect >= drive.sectrk) {
+    //        sect = 0;
+    //        ++track;
+    //    }
+    //}
+
+    //return (0);
 end;
 
 // --------------------------------------------------------------------------------
