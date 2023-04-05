@@ -109,6 +109,7 @@ end;
 // --------------------------------------------------------------------------------
 destructor TImagePage.Destroy;
 begin
+    FCpmTools.CloseImage;
     ClearFileSystemInfo;
     FreeAndNil(FCpmTools);
     inherited Destroy;
