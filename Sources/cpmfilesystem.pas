@@ -71,8 +71,8 @@ type
     public    // Methoden
         function ReadDiskdefData(const AImageType: string): boolean;
         function InitDriveData(AUpperCase: boolean): boolean;
-        function Unmount:Boolean;
-        function Sync:Boolean;
+        function Unmount: boolean;
+        function Sync: boolean;
         function GetErrorMsg: string;
         function GetFileSystemInfo: TFileSystemInfo;
 
@@ -168,6 +168,7 @@ type
         function CheckDateStamper: boolean;
         function IsMatching(AUser1: integer; const AName1: array of char; const AExt1: array of char;
             AUser2: integer; const AName2: array of char; const AExt2: array of char): boolean;
+        function SyncDateStamps: boolean;
     end;
 
 implementation
@@ -473,7 +474,7 @@ end;
 // --------------------------------------------------------------------------------
 //  -- free actual drive
 // --------------------------------------------------------------------------------
-function TCpmFileSystem.Unmount: Boolean;
+function TCpmFileSystem.Unmount: boolean;
 begin
     //int errSync = sync();
 
@@ -509,7 +510,7 @@ end;
 // --------------------------------------------------------------------------------
 //  -- write directory back
 // --------------------------------------------------------------------------------
-function TCpmFileSystem.Sync: Boolean;
+function TCpmFileSystem.Sync: boolean;
 begin
     //if (drive.dirtyDirectory) {
     //     int i, blocks, entry;
@@ -1197,6 +1198,46 @@ begin
     end;
 
     Result := True;
+end;
+
+// --------------------------------------------------------------------------------
+//  -- write all datestamper timestamps
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.SyncDateStamps: boolean;
+begin
+    //if (drive.dirtyDs) {
+    //     int dsoffset, dsblks, dsrecs, off, i;
+    //     unsigned char *buf;
+    //     dsrecs = (drive.maxdir + 7) / 8;
+    //     /* Re-calculate checksums */
+    //     buf = (unsigned char *) drive.ds;
+
+    //     for (i = 0; i < dsrecs; i++) {
+    //         unsigned cksum, j;
+    //         cksum = 0;
+
+    //         for (j = 0; j < 127; j++) {
+    //             cksum += buf[j];
+    //         }
+
+    //         buf[j] = cksum & 0xff;
+    //         buf += 128;
+    //     }
+
+    //     dsoffset = (drive.maxdir * 32 + (drive.blksiz - 1)) / drive.blksiz;
+    //     dsblks = (dsrecs * 128 + (drive.blksiz - 1)) / drive.blksiz;
+    //     off = 0;
+
+    //     for (i = dsoffset; i < dsoffset + dsblks; i++) {
+    //         if (writeBlock(i, ((char *)(drive.ds)) + off, 0, -1) == -1) {
+    //             return (-1);
+    //         }
+
+    //         off += drive.blksiz;
+    //     }
+    // }
+
+    // return (0);
 end;
 
 // --------------------------------------------------------------------------------
