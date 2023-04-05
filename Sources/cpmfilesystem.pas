@@ -112,7 +112,7 @@ type
             Minute: byte;
         end;
 
-        TDateStamperDate = record
+        TDateStamps = record
             Create: TDsEntry;
             Access: TDsEntry;
             Modify: TDsEntry;
@@ -147,7 +147,7 @@ type
         TIntArray = array of integer;
         TByteArray = array of byte;
         TDirArray = array of TPhysDirectoryEntry;
-        TDsArray = array of TDateStamperDate;
+        TDsArray = array of TDateStamps;
 
     var
         FCpmDevice: TCpmDevice;
@@ -157,7 +157,7 @@ type
         FSkewTab: TIntArray;
         FDirectory: TDirArray;
         FAllocationVector: TIntArray;
-        FDateStamper: TDsArray;
+        FDateStamps: TDsArray;
 
     private   // Methoden
         procedure AlvInit;
@@ -165,7 +165,7 @@ type
         function DiskdefsReadSuper(const AImageType: string): boolean;
         function BootOffset: integer;
         function ReadBlock(ABlockNr: integer; var ABuffer: TByteArray; AStart, AEnd: integer): boolean;
-        function CheckDateStamper: boolean;
+        function CheckDateStamps: boolean;
         function IsMatching(AUser1: integer; const AName1: array of char; const AExt1: array of char;
             AUser2: integer; const AName2: array of char; const AExt2: array of char): boolean;
         function SyncDateStamps: boolean;
@@ -461,11 +461,11 @@ begin
     FRoot.CTime := 0;
     FDrive.DirtyDateStamp := False;
 
-    if (CheckDateStamper) then begin
+    if (CheckDateStamps) then begin
         FDrive.OsType := (FDrive.OsType or CPMFS_DS_DATES);
     end
     else begin
-        FDateStamper := nil;
+        FDateStamps := nil;
     end;
 
     Result := True;
@@ -1079,7 +1079,7 @@ end;
 // --------------------------------------------------------------------------------
 //  -- read all datestamper timestamps
 // --------------------------------------------------------------------------------
-function TCpmFileSystem.CheckDateStamper: boolean;
+function TCpmFileSystem.CheckDateStamps: boolean;
 var
     DSOffset, DSBlocks, DSRecords: integer;
     IndexI, IndexJ, CheckSum, Offset: integer;
@@ -1098,7 +1098,7 @@ begin
 
     // Allocate buffer
     try
-        SetLength(FDateStamper, (DSBlocks * FDrive.BlkSiz));
+        SetLength(FDateStamps, (DSBlocks * FDrive.BlkSiz));
     except
         on e: Exception do begin
             FFileSystemError := e.Message;
@@ -1119,7 +1119,7 @@ begin
 
     while (IndexI <= High(Buffer)) do begin
 
-        with (FDateStamper[(IndexI div SizeOf(TDateStamperDate))]) do begin
+        with (FDateStamps[(IndexI div SizeOf(TDateStamps))]) do begin
             Create.Year := Buffer[IndexI + 0];
             Create.Month := Buffer[IndexI + 1];
             Create.Day := Buffer[IndexI + 2];
@@ -1136,7 +1136,7 @@ begin
             Modify.Hour := Buffer[IndexI + 13];
             Modify.Minute := Buffer[IndexI + 14];
             CheckSum := Buffer[IndexI + 15];
-            Inc(IndexI, SizeOf(TDateStamperDate));
+            Inc(IndexI, SizeOf(TDateStamps));
         end;
 
     end;
@@ -1153,8 +1153,8 @@ begin
         end;
 
         if (Buffer[IndexJ + Offset + 1] <> (CheckSum and $FF)) then begin
-            SetLength(FDateStamper, 0);
-            FDateStamper := nil;
+            SetLength(FDateStamps, 0);
+            FDateStamps := nil;
             Result := False;
             exit;
         end;
