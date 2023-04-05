@@ -23,7 +23,7 @@ unit CpmTools;
 interface
 
 uses
-    Classes, SysUtils, CpmFileSystem, CpmDevice;
+    Classes, SysUtils, CpmFileSystem, CpmDevice, CommonStructures;
 
 type
 
@@ -34,8 +34,7 @@ type
 
     public    // Methoden
         function OpenImage(const AFileName: string; const AFileType: string; AUpperCase: boolean): boolean;
-        function GetFileName: string;
-        function GetFileType: string;
+        function GetFileSystemInfo: TFileSystemInfo;
 
     public  // Konstruktor/Destruktor
         constructor Create; overload;
@@ -93,15 +92,14 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-function TCpmTools.GetFileName: string;
+function TCpmTools.GetFileSystemInfo: TFileSystemInfo;
+var
+    Info: TFileSystemInfo;
 begin
-    Result := FFileName;
-end;
-
-// --------------------------------------------------------------------------------
-function TCpmTools.GetFileType: string;
-begin
-    Result := FFileType;
+    Info := FCpmFileSystem.GetFileSystemInfo;
+    Info.FileName := FFileName;
+    Info.FileType := FFileType;
+    Result := Info;
 end;
 
 // --------------------------------------------------------------------------------

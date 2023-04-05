@@ -23,34 +23,11 @@ unit ImagePage;
 interface
 
 uses
-    Classes, SysUtils, ComCtrls, CpmTools;
+    Classes, SysUtils, ComCtrls, CpmTools, CommonStructures;
 
 type
 
     { TImagePage }
-
-    TFileSystemInfo = record
-        FileName: string;
-        FileType: string;
-        Tracks: string;
-        Sectors: string;
-        SecBytes: string;
-        BlockSize: string;
-        MaxDir: string;
-        BootTracks: string;
-        Offset: string;
-        skew: string;
-        System: string;
-    end;
-
-    TDirStatistics = record
-        TotalBytes: string;
-        TotalRecords: string;
-        Total1KBlocks: string;
-        Filesfound: string;
-        MaxDirEntries: string;
-        UsedDirEntries: string;
-    end;
 
     TImagePage = class(TTabSheet)
     public    // Attribute
@@ -97,8 +74,7 @@ var
     Info: TFileSystemInfo;
 begin
     inherited DoShow;
-    Info.FileName := FCpmTools.GetFileName;
-    Info.FileType := FCpmTools.GetFileType;
+    Info := FCpmTools.GetFileSystemInfo;
     if Assigned(FFileSystemInfoCallBack) then begin
         FFileSystemInfoCallBack(Info);
     end;
@@ -119,7 +95,7 @@ end;
 // --------------------------------------------------------------------------------
 function TImagePage.GetFileName: string;
 begin
-    Result := FCpmTools.GetFileName;
+    Result := FCpmTools.GetFileSystemInfo.FileName;
 end;
 
 // --------------------------------------------------------------------------------
@@ -239,7 +215,7 @@ begin
         SecBytes := EmptyStr;
         BlockSize := EmptyStr;
         MaxDir := EmptyStr;
-        BootTracks := EmptyStr;
+        BootSectors := EmptyStr;
         Offset := EmptyStr;
         skew := EmptyStr;
         System := EmptyStr;

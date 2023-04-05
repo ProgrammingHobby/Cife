@@ -23,7 +23,7 @@ unit CpmFileSystem;
 interface
 
 uses
-    Classes, SysUtils, CpmDevice, CpmDefs;
+    Classes, SysUtils, CpmDevice, CpmDefs, CommonStructures;
 
 type
 
@@ -72,6 +72,7 @@ type
         function ReadDiskdefData(const AImageType: string): boolean;
         function InitDriveData(AUpperCase: boolean): boolean;
         function GetErrorMsg: string;
+        function GetFileSystemInfo: TFileSystemInfo;
 
     public  // Konstruktor/Destruktor
         constructor Create(ACpmDevice: TCpmDevice); overload;
@@ -470,6 +471,35 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
+function TCpmFileSystem.GetFileSystemInfo: TFileSystemInfo;
+var
+    Info: TFileSystemInfo;
+begin
+
+    with (Info) do begin
+        Tracks := IntToStr(FDrive.Tracks);
+        Sectors := IntToStr(FDrive.SecTrk);
+        SecBytes := IntToStr(FDrive.SecLength);
+        BlockSize := IntToStr(FDrive.BlkSiz);
+        MaxDir := IntToStr(FDrive.MaxDir);
+        BootSectors := IntToStr(BootOffset);
+        Offset := IntToStr(FDrive.Offset);
+        skew := IntToStr(FDrive.Skew);
+
+        case (FDrive.OsType) of
+            CPMFS_DR22: System := 'CP/M 2.2';
+            CPMFS_DR3: System := 'CP/M 3  ';
+            CPMFS_ISX: System := 'ISX     ';
+            CPMFS_P2DOS: System := 'P2DOS   ';
+            else System := 'unknown ';
+        end;
+
+    end;
+
+    Result := Info;
+end;
+
+// --------------------------------------------------------------------------------
 constructor TCpmFileSystem.Create(ACpmDevice: TCpmDevice);
 begin
     inherited Create;
@@ -625,7 +655,7 @@ begin
     FoundDefinition := False;
     FDrive.Skew := 1;
     FDrive.Extents := 0;
-    FDrive.OsType := CPMFS_DR22;
+    FDrive.OsType := 0;
     FSkewTab := nil;
     FDrive.Offset := 0;
     FDrive.BlkSiz := -1;
