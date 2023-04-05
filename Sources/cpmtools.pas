@@ -34,6 +34,7 @@ type
 
     public    // Methoden
         function OpenImage(const AFileName: string; const AFileType: string; AUpperCase: boolean): boolean;
+        function CloseImage: boolean;
         function GetFileSystemInfo: TFileSystemInfo;
 
     public  // Konstruktor/Destruktor
@@ -65,11 +66,11 @@ function TCpmTools.OpenImage(const AFileName: string; const AFileType: string; A
 begin
     FFileName := AFileName;
     FFileType := AFileType;
-    Result := False;
 
     if not (FCpmDevice.Open(AFileName, dmOpenReadWrite)) then begin
         if MessageDlg(Format('cannot open %s' + LineEnding + '(%s)', [ExtractFileName(AFileName), FCpmDevice.GetErrorMsg()])
             , mtError, [mbOK], 0) = mrOk then begin
+            Result := False;
             Exit;
         end;
     end;
@@ -77,6 +78,7 @@ begin
     if not (FCpmFileSystem.ReadDiskdefData(AFileType)) then begin
         if MessageDlg(Format('cannot read superblock' + LineEnding + '(%s)', [FCpmFileSystem.GetErrorMsg()])
             , mtError, [mbOK], 0) = mrOk then begin
+            Result := False;
             Exit;
         end;
     end;
@@ -84,8 +86,33 @@ begin
     if not (FCpmFileSystem.InitDriveData(AUpperCase)) then begin
         if MessageDlg(Format('cannot init filesystem' + LineEnding + '(%s)', [FCpmFileSystem.GetErrorMsg()])
             , mtError, [mbOK], 0) = mrOk then begin
+            Result := False;
             Exit;
         end;
+    end;
+
+    Result := True;
+end;
+
+// --------------------------------------------------------------------------------
+function TCpmTools.CloseImage: boolean;
+begin
+
+    if not (FCpmFileSystem.Unmount) then begin
+        if MessageDlg('error write back filesystem directory', mtError, [mbOK], 0) = mrOk then begin
+            Result := False;
+            Exit;
+        end;
+    end;
+
+    if not (FCpmDevice.Close) then begin
+
+        if MessageDlg(Format('cannot close image %s' + LineEnding + '(%s)',
+            [ExtractFileName(FFileName), FCpmFileSystem.GetErrorMsg()]), mtError, [mbOK], 0) = mrOk then begin
+            Result := False;
+            Exit;
+        end;
+
     end;
 
     Result := True;
