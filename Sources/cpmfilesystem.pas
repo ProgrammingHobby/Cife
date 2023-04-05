@@ -71,6 +71,8 @@ type
     public    // Methoden
         function ReadDiskdefData(const AImageType: string): boolean;
         function InitDriveData(AUpperCase: boolean): boolean;
+        function Unmount:Boolean;
+        function Sync:Boolean;
         function GetErrorMsg: string;
         function GetFileSystemInfo: TFileSystemInfo;
 
@@ -173,6 +175,8 @@ implementation
 { TCpmFileSystem }
 
 // --------------------------------------------------------------------------------
+//  -- get DPB
+// --------------------------------------------------------------------------------
 function TCpmFileSystem.ReadDiskdefData(const AImageType: string): boolean;
 begin
     Result := False;
@@ -185,6 +189,8 @@ begin
     end;
 end;
 
+// --------------------------------------------------------------------------------
+//  -- init in-core data for drive
 // --------------------------------------------------------------------------------
 function TCpmFileSystem.InitDriveData(AUpperCase: boolean): boolean;
 var
@@ -465,6 +471,70 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
+//  -- free actual drive
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.Unmount: Boolean;
+begin
+    //int errSync = sync();
+
+    //if (drive.type & CPMFS_DS_DATES) {
+    //    free(drive.ds);
+    //    drive.ds = nullptr;
+    //}
+
+    //free(drive.alv);
+    //drive.alv = nullptr;
+    //free(drive.skewtab);
+    //drive.skewtab = nullptr;
+    //free(drive.dir);
+    //drive.dir = nullptr;
+
+    //if (drive.passwdLength) {
+    //    free(drive.passwd);
+    //    drive.passwd = nullptr;
+    //}
+
+    //if (drive.labelLength) {
+    //    free(drive.label);
+    //    drive.label = nullptr;
+    //}
+
+    //if (errSync == -1) {
+    //    return (errSync);
+    //}
+
+    //return (0);
+end;
+
+// --------------------------------------------------------------------------------
+//  -- write directory back
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.Sync: Boolean;
+begin
+    //if (drive.dirtyDirectory) {
+    //     int i, blocks, entry;
+    //     blocks = (drive.maxdir * 32 + drive.blksiz - 1) / drive.blksiz;
+    //     entry = 0;
+
+    //     for (i = 0; i < blocks; ++i) {
+    //         if (writeBlock(i, (char *)(drive.dir + entry), 0, -1) == -1) {
+    //             return (-1);
+    //         }
+
+    //         entry += (drive.blksiz / 32);
+    //     }
+
+    //     drive.dirtyDirectory = 0;
+    // }
+
+    // if (drive.type & CPMFS_DS_DATES) {
+    //     syncDs();
+    // }
+
+    // return (0);
+end;
+
+// --------------------------------------------------------------------------------
 function TCpmFileSystem.GetErrorMsg: string;
 begin
     Result := FFileSystemError;
@@ -567,6 +637,8 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
+//  -- read super block from amstrad disk
+// --------------------------------------------------------------------------------
 function TCpmFileSystem.AmstradReadSuper: boolean;
 var
     BootSector: array[0..511] of byte;
@@ -640,6 +712,8 @@ begin
     end;
 end;
 
+// --------------------------------------------------------------------------------
+//  -- read super block from diskdefs file
 // --------------------------------------------------------------------------------
 function TCpmFileSystem.DiskdefsReadSuper(const AImageType: string): boolean;
 var
@@ -932,6 +1006,8 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
+//  -- find the logical sector number of the CP/M directory
+// --------------------------------------------------------------------------------
 function TCpmFileSystem.BootOffset: integer;
 begin
     if (FDrive.BootSec >= 0) then begin
@@ -942,6 +1018,8 @@ begin
     end;
 end;
 
+// --------------------------------------------------------------------------------
+//  -- read a (partial) block
 // --------------------------------------------------------------------------------
 function TCpmFileSystem.ReadBlock(ABlockNr: integer; var ABuffer: TByteArray; AStart, AEnd: integer): boolean;
 var
@@ -997,6 +1075,8 @@ begin
     Result := True;
 end;
 
+// --------------------------------------------------------------------------------
+//  -- read all datestamper timestamps
 // --------------------------------------------------------------------------------
 function TCpmFileSystem.CheckDateStamper: boolean;
 var
@@ -1084,6 +1164,8 @@ begin
     Result := True;
 end;
 
+// --------------------------------------------------------------------------------
+//  -- do two file names match?
 // --------------------------------------------------------------------------------
 function TCpmFileSystem.IsMatching(AUser1: integer; const AName1: array of char; const AExt1: array of char;
     AUser2: integer; const AName2: array of char; const AExt2: array of char): boolean;
