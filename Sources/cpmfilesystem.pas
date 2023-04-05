@@ -163,7 +163,8 @@ type
         function BootOffset: integer;
         function ReadBlock(ABlockNr: integer; var ABuffer: TByteArray; AStart, AEnd: integer): boolean;
         function CheckDateStamper: boolean;
-
+        function IsMatching(AUser1: integer; const AName1: array of char; const AExt1: array of char;
+            AUser2: integer; const AName2: array of char; const AExt2: array of char): boolean;
     end;
 
 implementation
@@ -968,8 +969,122 @@ end;
 
 // --------------------------------------------------------------------------------
 function TCpmFileSystem.CheckDateStamper: boolean;
+var
+    DSOffset, DSBlocks, DSRecords: integer;
+    IndexI, IndexJ, CheckSum, Offset: integer;
+    Buffer: array of byte;
 begin
 
+    if (not IsMatching(0, '!!!TIME&', 'DAT', FDirectory[0].Status, FDirectory[0].Name, FDirectory[0].Ext)) then begin
+        Result := False;
+        exit;
+    end;
+
+    // Offset to ds file in alloc blocks
+    DSOffset := (((FDrive.MaxDir * 32) + (FDrive.BlkSiz - 1)) div FDrive.BlkSiz);
+    DSRecords := ((FDrive.MaxDir + 7) div 8);
+    DSBlocks := (((DSRecords * 128) + (FDrive.BlkSiz - 1)) div FDrive.BlkSiz);
+
+    // Allocate buffer
+    try
+        SetLength(FDateStamper, (DSBlocks * FDrive.BlkSiz));
+    except
+        on e: Exception do begin
+            FFileSystemError := e.Message;
+            Result := False;
+            exit;
+        end;
+    end;
+
+    // Read ds file in its entirety
+    for IndexI := DSOffset to (DSOffset + DSBlocks) - 1 do begin
+        if (not ReadBlock(IndexI, Buffer, 0, -1)) then begin
+            Result := False;
+            exit;
+        end;
+    end;
+
+    IndexI := Low(Buffer);
+
+    while (IndexI <= High(Buffer)) do begin
+
+        with (FDateStamper[(IndexI div SizeOf(TDateStamperDate))]) do begin
+            Create.Year := Buffer[IndexI + 0];
+            Create.Month := Buffer[IndexI + 1];
+            Create.Day := Buffer[IndexI + 2];
+            Create.Hour := Buffer[IndexI + 3];
+            Create.Minute := Buffer[IndexI + 4];
+            Access.Year := Buffer[IndexI + 5];
+            Access.Month := Buffer[IndexI + 6];
+            Access.Day := Buffer[IndexI + 7];
+            Access.Hour := Buffer[IndexI + 8];
+            Access.Minute := Buffer[IndexI + 9];
+            Modify.Year := Buffer[IndexI + 10];
+            Modify.Month := Buffer[IndexI + 11];
+            Modify.Day := Buffer[IndexI + 12];
+            Modify.Hour := Buffer[IndexI + 13];
+            Modify.Minute := Buffer[IndexI + 14];
+            CheckSum := Buffer[IndexI + 15];
+            Inc(IndexI, SizeOf(TDateStamperDate));
+        end;
+
+    end;
+
+
+    // Verify checksums
+    Offset := 0;
+
+    for IndexI := 0 to DSRecords - 1 do begin
+        CheckSum := 0;
+
+        for IndexJ := 0 to 126 do begin
+            CheckSum := CheckSum + Buffer[IndexJ + Offset];
+        end;
+
+        if (Buffer[IndexJ + Offset + 1] <> (CheckSum and $FF)) then begin
+            SetLength(FDateStamper, 0);
+            FDateStamper := nil;
+            Result := False;
+            exit;
+        end;
+
+        Inc(Offset, 128);
+    end;
+
+    Result := True;
+end;
+
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.IsMatching(AUser1: integer; const AName1: array of char; const AExt1: array of char;
+    AUser2: integer; const AName2: array of char; const AExt2: array of char): boolean;
+var
+    IndexI: integer;
+begin
+
+    if (AUser1 <> AUser2) then begin
+        Result := False;
+        exit;
+    end;
+
+    for IndexI := Low(AName1) to High(AName1) do begin
+
+        if ((Ord(AName1[IndexI]) and $7F) <> (Ord(AName2[IndexI]) and $7F)) then begin
+            Result := False;
+            exit;
+        end;
+
+    end;
+
+    for IndexI := Low(AExt1) to High(AExt2) do begin
+
+        if ((Ord(AExt1[IndexI]) and $7F) <> (Ord(AExt2[IndexI]) and $7F)) then begin
+            Result := False;
+            exit;
+        end;
+
+    end;
+
+    Result := True;
 end;
 
 // --------------------------------------------------------------------------------
