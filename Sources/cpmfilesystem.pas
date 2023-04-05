@@ -476,35 +476,30 @@ end;
 // --------------------------------------------------------------------------------
 function TCpmFileSystem.Unmount: boolean;
 begin
-    //int errSync = sync();
+    Result := Sync;
 
-    //if (drive.type & CPMFS_DS_DATES) {
-    //    free(drive.ds);
-    //    drive.ds = nullptr;
-    //}
+    if ((FDrive.OsType and CPMFS_DS_DATES) <> 0) then begin
+        SetLength(FDateStamps, 0);
+        FDateStamps := nil;
+    end;
 
-    //free(drive.alv);
-    //drive.alv = nullptr;
-    //free(drive.skewtab);
-    //drive.skewtab = nullptr;
-    //free(drive.dir);
-    //drive.dir = nullptr;
+    SetLength(FAllocationVector, 0);
+    FAllocationVector := nil;
+    SetLength(FSkewTab, 0);
+    FSkewTab := nil;
+    SetLength(FDirectory, 0);
+    FDirectory := nil;
 
-    //if (drive.passwdLength) {
-    //    free(drive.passwd);
-    //    drive.passwd = nullptr;
-    //}
+    if (FDrive.PasswdLength > 0) then begin
+        SetLength(FDrive.Passwd, 0);
+        FDrive.Passwd := nil;
+    end;
+    if (FDrive.LabelLength > 0) then begin
+        SetLength(FDrive.DiskLabel, 0);
+        FDrive.DiskLabel := nil;
+    end;
 
-    //if (drive.labelLength) {
-    //    free(drive.label);
-    //    drive.label = nullptr;
-    //}
-
-    //if (errSync == -1) {
-    //    return (errSync);
-    //}
-
-    //return (0);
+    Result := True;
 end;
 
 // --------------------------------------------------------------------------------
