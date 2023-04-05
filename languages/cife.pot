@@ -255,7 +255,7 @@ msgid "MaxDir :"
 msgstr ""
 
 #: tmainwindow.label6.caption
-msgid "Boot Tracks :"
+msgid "Boot Sectors :"
 msgstr ""
 
 #: tmainwindow.label7.caption

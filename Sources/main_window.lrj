@@ -16,7 +16,7 @@
 {"hash":185009162,"name":"tmainwindow.label3.caption","sourcebytes":[66,121,116,101,115,47,83,101,99,116,111,114,32,58],"value":"Bytes/Sector :"},
 {"hash":48902810,"name":"tmainwindow.label4.caption","sourcebytes":[66,108,111,99,107,115,105,122,101,32,58],"value":"Blocksize :"},
 {"hash":147521802,"name":"tmainwindow.label5.caption","sourcebytes":[77,97,120,68,105,114,32,58],"value":"MaxDir :"},
-{"hash":18890954,"name":"tmainwindow.label6.caption","sourcebytes":[66,111,111,116,32,84,114,97,99,107,115,32,58],"value":"Boot Tracks :"},
+{"hash":215009306,"name":"tmainwindow.label6.caption","sourcebytes":[66,111,111,116,32,83,101,99,116,111,114,115,32,58],"value":"Boot Sectors :"},
 {"hash":215597930,"name":"tmainwindow.label7.caption","sourcebytes":[79,102,102,115,101,116,32,58],"value":"Offset :"},
 {"hash":94488890,"name":"tmainwindow.label8.caption","sourcebytes":[83,107,101,119,32,58],"value":"Skew :"},
 {"hash":345402,"name":"tmainwindow.label9.caption","sourcebytes":[79,83,32,58],"value":"OS :"},

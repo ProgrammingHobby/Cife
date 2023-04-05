@@ -24,7 +24,7 @@ interface
 
 uses
     Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, ComCtrls,
-    ActnList, ExtCtrls, StdCtrls, ImageFileHistory, ImagePage;
+    ActnList, ExtCtrls, StdCtrls, ImageFileHistory, ImagePage, CommonStructures;
 
 type
 
@@ -81,7 +81,7 @@ type
         Label9: TLabel;
         labelSkew: TLabel;
         labelOffset: TLabel;
-        labelBoottracks: TLabel;
+        labelBootsectors: TLabel;
         labelMaxdir: TLabel;
         labelBlocksize: TLabel;
         labelSectorBytes: TLabel;
@@ -401,7 +401,7 @@ begin
     labelSectorBytes.Caption := Info.SecBytes;
     labelBlocksize.Caption := Info.BlockSize;
     labelMaxdir.Caption := Info.MaxDir;
-    labelBoottracks.Caption := Info.BootTracks;
+    labelBootsectors.Caption := Info.BootSectors;
     labelOffset.Caption := Info.Offset;
     labelSkew.Caption := Info.skew;
     labelOs.Caption := Info.System;

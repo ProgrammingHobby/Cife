@@ -9,7 +9,6 @@ object MainWindow: TMainWindow
   Menu = MainMenu
   OnClose = FormClose
   OnShow = FormShow
-  LCLVersion = '2.2.6.0'
   object StatusBar1: TStatusBar
     Left = 0
     Height = 21
@@ -375,7 +374,7 @@ object MainWindow: TMainWindow
       ChildSizing.EnlargeVertical = crsHomogenousChildResize
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
       ChildSizing.ControlsPerLine = 2
-      ClientHeight = 143
+      ClientHeight = 144
       ClientWidth = 94
       Font.Height = -13
       Font.Name = 'Sans'
@@ -505,16 +504,16 @@ object MainWindow: TMainWindow
         Left = 6
         Height = 16
         Top = 80
-        Width = 71
+        Width = 76
         BorderSpacing.CellAlignHorizontal = ccaLeftTop
-        Caption = 'Boot Tracks :'
+        Caption = 'Boot Sectors :'
         Font.Height = -11
         Font.Style = [fsBold]
         Layout = tlCenter
         ParentColor = False
         ParentFont = False
       end
-      object labelBoottracks: TLabel
+      object labelBootsectors: TLabel
         Left = 87
         Height = 16
         Top = 80
