@@ -23,7 +23,7 @@ unit ImagePage;
 interface
 
 uses
-    Classes, SysUtils, ComCtrls, CpmTools, CommonStructures;
+    Classes, SysUtils, ComCtrls, CpmTools, CifeGlobals;
 
 type
 

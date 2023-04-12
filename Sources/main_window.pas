@@ -24,7 +24,7 @@ interface
 
 uses
     Classes, SysUtils, Forms, Controls, Graphics, Dialogs, Menus, ComCtrls,
-    ActnList, ExtCtrls, StdCtrls, ImageFileHistory, ImagePage, CommonStructures;
+    ActnList, ExtCtrls, StdCtrls, ImageFileHistory, ImagePage, CifeGlobals;
 
 type
 
@@ -170,7 +170,7 @@ implementation
 {$R *.lfm}
 
 uses NewImage_Dialog, File_Dialog, RenameFile_Dialog, Characteristics_Dialog, Settings_Dialog,
-    About_Dialog, CifeGlobals, XMLSettings;
+    About_Dialog, XMLSettings;
 
 { TMainWindow }
 

@@ -23,7 +23,7 @@ unit CpmTools;
 interface
 
 uses
-    Classes, SysUtils, CpmFileSystem, CpmDevice, CommonStructures;
+    Classes, SysUtils, CpmFileSystem, CpmDevice, CifeGlobals;
 
 type
 
