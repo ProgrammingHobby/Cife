@@ -23,7 +23,7 @@ unit CpmFileSystem;
 interface
 
 uses
-    Classes, SysUtils, CpmDevice, CpmDefs, CommonStructures;
+    Classes, SysUtils, CpmDevice, CpmDefs, CifeGlobals;
 
 type
 
@@ -165,7 +165,7 @@ type
         function DiskdefsReadSuper(const AImageType: string): boolean;
         function BootOffset: integer;
         function ReadBlock(ABlockNr: integer; var ABuffer: TByteArray; AStart, AEnd: integer): boolean;
-        function WriteBlock(ABlockNr:integer; const ABuffer:array of byte; AStart, AEnd:integer):Boolean;
+        function WriteBlock(ABlockNr: integer; const ABuffer: array of byte; AStart, AEnd: integer): boolean;
         function CheckDateStamps: boolean;
         function IsMatching(AUser1: integer; const AName1: array of char; const AExt1: array of char;
             AUser2: integer; const AName2: array of char; const AExt2: array of char): boolean;
@@ -265,7 +265,7 @@ begin
 
     // initialize temporarly Directory buffer
     if not (FCpmDevice.IsOpen) then begin // create empty directory in core
-
+        //TODO: directorybuffer vor if initialisieren
         try
             SetLength(DirectoryBuffer, ((((FDrive.MaxDir * 32) + FDrive.BlkSiz - 1) div FDrive.BlkSiz) * FDrive.BlkSiz));
         except
@@ -282,6 +282,7 @@ begin
 
     end
     else begin  // read directory in core
+        //TODO: entfernen.
         SetLength(DirectoryBuffer, 0);
         Blocks := (((FDrive.MaxDir * 32) + FDrive.BlkSiz - 1) div FDrive.BlkSiz);
 
@@ -507,28 +508,91 @@ end;
 //  -- write directory back
 // --------------------------------------------------------------------------------
 function TCpmFileSystem.Sync: boolean;
+var
+    IndexI, IndexJ, Offset, Blocks: integer;
+    DirectoryBuffer: array of byte = nil;
+    BlockBuffer: array of byte = nil;
 begin
-    //if (drive.dirtyDirectory) {
-    //     int i, blocks, entry;
-    //     blocks = (drive.maxdir * 32 + drive.blksiz - 1) / drive.blksiz;
-    //     entry = 0;
 
-    //     for (i = 0; i < blocks; ++i) {
-    //         if (writeBlock(i, (char *)(drive.dir + entry), 0, -1) == -1) {
-    //             return (-1);
-    //         }
+    if not (FDrive.DirtyDirectory) then begin
 
-    //         entry += (drive.blksiz / 32);
-    //     }
+        // allocate directory buffer
+        try
+            SetLength(DirectoryBuffer, ((((FDrive.MaxDir * 32) + FDrive.BlkSiz - 1) div FDrive.BlkSiz) * FDrive.BlkSiz));
+        except
+            on e: Exception do begin
+                FFileSystemError := e.Message;
+                Result := False;
+                exit;
+            end;
+        end;
 
-    //     drive.dirtyDirectory = 0;
-    // }
+        // copy directory entries into buffer
+        IndexI := Low(DirectoryBuffer);
 
-    // if (drive.type & CPMFS_DS_DATES) {
-    //     syncDs();
-    // }
+        while (IndexI <= High(DirectoryBuffer)) do begin
 
-    // return (0);
+            with (FDirectory[(IndexI div SizeOf(TPhysDirectoryEntry))]) do begin
+                DirectoryBuffer[IndexI + 0] := Status;
+
+                for IndexJ := 0 to 7 do begin
+                    DirectoryBuffer[IndexI + 1 + IndexJ] := Ord(Name[IndexJ]);
+                end;
+
+                for IndexJ := 0 to 2 do begin
+                    DirectoryBuffer[IndexI + 9 + IndexJ] := Ord(Ext[IndexJ]);
+                end;
+
+                DirectoryBuffer[IndexI + 12] := Extnol;
+                DirectoryBuffer[IndexI + 13] := Lrc;
+                DirectoryBuffer[IndexI + 14] := Extnoh;
+                DirectoryBuffer[IndexI + 15] := Blkcnt;
+
+                for IndexJ := 0 to 15 do begin
+                    DirectoryBuffer[IndexI + 16 + IndexJ] := Pointers[IndexJ];
+                end;
+
+                Inc(IndexI, SizeOf(TPhysDirectoryEntry));
+            end;
+
+        end;
+
+        // allocate block buffer
+        try
+            SetLength(BlockBuffer, FDrive.BlkSiz);
+        except
+            on e: Exception do begin
+                FFileSystemError := e.Message;
+                Result := False;
+                exit;
+            end;
+        end;
+
+        Blocks := (((FDrive.MaxDir * 32) + (FDrive.BlkSiz - 1)) div FDrive.BlkSiz);
+
+        for IndexI := 0 to Blocks - 1 do begin
+            Offset := (IndexI * FDrive.BlkSiz);
+
+            for IndexJ := 0 to FDrive.BlkSiz - 1 do begin
+                BlockBuffer[IndexJ] := DirectoryBuffer[IndexJ + Offset];
+            end;
+
+            if not (WriteBlock(IndexI, BlockBuffer, 0, -1)) then begin
+                Result := False;
+                exit;
+            end;
+
+        end;
+
+        FDrive.DirtyDirectory := False;
+
+    end;
+
+    if ((FDrive.OsType and CPMFS_DS_DATES) <> 0) then begin
+        SyncDateStamps;
+    end;
+
+    Result := True;
 end;
 
 // --------------------------------------------------------------------------------
@@ -553,7 +617,7 @@ begin
         Offset := IntToStr(FDrive.Offset);
         skew := IntToStr(FDrive.Skew);
 
-        case (FDrive.OsType) of
+        case (FDrive.OsType and CPMFS_DR3) of
             CPMFS_DR22: System := 'CP/M 2.2';
             CPMFS_DR3: System := 'CP/M 3  ';
             CPMFS_ISX: System := 'ISX     ';
@@ -1056,7 +1120,7 @@ begin
                 Result := False;
                 exit;
             end;
-
+            //TODO: nicht concat, for loop zum kopieren.
             ABuffer := Concat(ABuffer, SectorBuffer);
         end;
 
@@ -1075,33 +1139,57 @@ end;
 // --------------------------------------------------------------------------------
 //  -- write a (partial) block
 // --------------------------------------------------------------------------------
-function TCpmFileSystem.WriteBlock(ABlockNr: integer; const ABuffer: array of byte; AStart, AEnd: integer): Boolean;
+function TCpmFileSystem.WriteBlock(ABlockNr: integer; const ABuffer: array of byte; AStart, AEnd: integer): boolean;
+var
+    Sect, Track, IndexI, IndexJ, Offset: integer;
+    SectorBuffer: array of byte = nil;
 begin
-    //int sect, track, counter;
 
-    //if (end < 0) {
-    //    end = drive.blksiz / drive.secLength - 1;
-    //}
+    // allocate sector buffer
+    try
+        SetLength(SectorBuffer, FDrive.SecLength);
+    except
+        on e: Exception do begin
+            FFileSystemError := e.Message;
+            Result := False;
+            exit;
+        end;
+    end;
 
-    //sect = (blockno * (drive.blksiz / drive.secLength) + bootOffset()) % drive.sectrk;
-    //track = (blockno * (drive.blksiz / drive.secLength) + bootOffset()) / drive.sectrk;
+    if (AEnd < 0) then begin
+        AEnd := ((FDrive.BlkSiz div FDrive.SecLength) - 1);
+    end;
 
-    //for (counter = 0; counter <= end; ++counter) {
-    //    if (counter >= start && (!cpmdevice->WriteSector(track, drive.skewtab[sect],
-    //                             buffer + (drive.secLength * counter)))) {
-    //        fserr = cpmdevice->getErrorMsg();
-    //        return (-1);
-    //    }
+    Sect := (((ABlockNr * (FDrive.BlkSiz div FDrive.SecLength)) + BootOffset) mod FDrive.SecTrk);
+    Track := (((ABlockNr * (FDrive.BlkSiz div FDrive.SecLength)) + BootOffset) div FDrive.SecTrk);
 
-    //    ++sect;
+    for IndexI := 0 to AEnd do begin
+        Offset := (IndexI * FDrive.SecLength);
 
-    //    if (sect >= drive.sectrk) {
-    //        sect = 0;
-    //        ++track;
-    //    }
-    //}
+        for IndexJ := 0 to FDrive.SecLength - 1 do begin
+            SectorBuffer[IndexJ] := ABuffer[IndexJ + Offset];
+        end;
 
-    //return (0);
+        if (IndexI >= AStart) then begin
+
+            if not (FCpmDevice.WriteSector(Track, FSkewTab[Sect], SectorBuffer)) then begin
+                FFileSystemError := FCpmDevice.GetErrorMsg;
+                Result := False;
+                exit;
+            end;
+
+        end;
+
+        Inc(Sect);
+
+        if (Sect >= FDrive.SecTrk) then begin
+            Sect := 0;
+            Inc(Track);
+        end;
+
+    end;
+
+    Result := True;
 end;
 
 // --------------------------------------------------------------------------------
@@ -1126,7 +1214,7 @@ begin
 
     // Allocate buffer
     try
-        SetLength(FDateStamps, (DSBlocks * FDrive.BlkSiz));
+        SetLength(FDateStamps, FDrive.MaxDir);
     except
         on e: Exception do begin
             FFileSystemError := e.Message;
@@ -1134,6 +1222,8 @@ begin
             exit;
         end;
     end;
+
+    //TODO: Buffer allocate!!!
 
     // Read ds file in its entirety
     for IndexI := DSOffset to (DSOffset + DSBlocks) - 1 do begin
@@ -1232,40 +1322,100 @@ end;
 //  -- write all datestamper timestamps
 // --------------------------------------------------------------------------------
 function TCpmFileSystem.SyncDateStamps: boolean;
+var
+    DSOffset, DSBlocks, DSRecords: integer;
+    IndexI, IndexJ, CheckSum, Offset: integer;
+    DateStampsBuffer: array of byte;
+    BlockBuffer: array of byte;
 begin
-    //if (drive.dirtyDs) {
-    //     int dsoffset, dsblks, dsrecs, off, i;
-    //     unsigned char *buf;
-    //     dsrecs = (drive.maxdir + 7) / 8;
-    //     /* Re-calculate checksums */
-    //     buf = (unsigned char *) drive.ds;
 
-    //     for (i = 0; i < dsrecs; i++) {
-    //         unsigned cksum, j;
-    //         cksum = 0;
+    if (FDrive.DirtyDateStamp) then begin
 
-    //         for (j = 0; j < 127; j++) {
-    //             cksum += buf[j];
-    //         }
+        DSOffset := (((FDrive.MaxDir * 32) + (FDrive.BlkSiz - 1)) div FDrive.BlkSiz);
+        DSRecords := ((FDrive.MaxDir + 7) div 8);
+        DSBlocks := (((DSRecords * 128) + (FDrive.BlkSiz - 1)) div FDrive.BlkSiz);
 
-    //         buf[j] = cksum & 0xff;
-    //         buf += 128;
-    //     }
+        // allocate DateStamps buffer
+        try
+            SetLength(DateStampsBuffer, (FDrive.MaxDir * DSRecords));
+        except
+            on e: Exception do begin
+                FFileSystemError := e.Message;
+                Result := False;
+                exit;
+            end;
+        end;
 
-    //     dsoffset = (drive.maxdir * 32 + (drive.blksiz - 1)) / drive.blksiz;
-    //     dsblks = (dsrecs * 128 + (drive.blksiz - 1)) / drive.blksiz;
-    //     off = 0;
+        // copy DateStamps into buffer
+        IndexI := Low(DateStampsBuffer);
 
-    //     for (i = dsoffset; i < dsoffset + dsblks; i++) {
-    //         if (writeBlock(i, ((char *)(drive.ds)) + off, 0, -1) == -1) {
-    //             return (-1);
-    //         }
+        while (IndexI <= High(DateStampsBuffer)) do begin
 
-    //         off += drive.blksiz;
-    //     }
-    // }
+            with (FDateStamps[(IndexI div SizeOf(TDateStamps))]) do begin
+                DateStampsBuffer[IndexI + 0] := Create.Year;
+                DateStampsBuffer[IndexI + 1] := Create.Month;
+                DateStampsBuffer[IndexI + 2] := Create.Day;
+                DateStampsBuffer[IndexI + 3] := Create.Hour;
+                DateStampsBuffer[IndexI + 4] := Create.Minute;
+                DateStampsBuffer[IndexI + 5] := Access.Year;
+                DateStampsBuffer[IndexI + 6] := Access.Month;
+                DateStampsBuffer[IndexI + 7] := Access.Day;
+                DateStampsBuffer[IndexI + 8] := Access.Hour;
+                DateStampsBuffer[IndexI + 9] := Access.Minute;
+                DateStampsBuffer[IndexI + 10] := Modify.Year;
+                DateStampsBuffer[IndexI + 11] := Modify.Month;
+                DateStampsBuffer[IndexI + 12] := Modify.Day;
+                DateStampsBuffer[IndexI + 13] := Modify.Hour;
+                DateStampsBuffer[IndexI + 14] := Modify.Minute;
+                DateStampsBuffer[IndexI + 15] := CheckSum;
+                Inc(IndexI, SizeOf(TDateStamps));
+            end;
 
-    // return (0);
+        end;
+
+        // Re-calculate checksums
+        Offset := 0;
+
+        for IndexI := 0 to DSRecords - 1 do begin
+            CheckSum := 0;
+
+            for IndexJ := 0 to 126 do begin
+                CheckSum := CheckSum + DateStampsBuffer[IndexJ + Offset];
+            end;
+
+            DateStampsBuffer[IndexJ + Offset + 1] := (CheckSum and $FF);
+            Inc(Offset, 128);
+
+        end;
+
+        // allocate block buffer
+        try
+            SetLength(BlockBuffer, FDrive.BlkSiz);
+        except
+            on e: Exception do begin
+                FFileSystemError := e.Message;
+                Result := False;
+                exit;
+            end;
+        end;
+
+        for IndexI := DSOffset to (DSOffset + DSBlocks) - 1 do begin
+            Offset := ((IndexI - DSOffset) * FDrive.BlkSiz);
+
+            for IndexJ := 0 to FDrive.BlkSiz - 1 do begin
+                BlockBuffer[IndexJ] := DateStampsBuffer[IndexJ + Offset];
+            end;
+
+            if not (WriteBlock(IndexI, BlockBuffer, 0, -1)) then begin
+                Result := False;
+                exit;
+            end;
+
+        end;
+
+    end;
+
+    Result := True;
 end;
 
 // --------------------------------------------------------------------------------
