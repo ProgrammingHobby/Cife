@@ -25,6 +25,30 @@ interface
 uses
     Classes, SysUtils;
 
+type
+    TFileSystemInfo = record
+        FileName: string;
+        FileType: string;
+        Tracks: string;
+        Sectors: string;
+        SecBytes: string;
+        BlockSize: string;
+        MaxDir: string;
+        BootSectors: string;
+        Offset: string;
+        skew: string;
+        System: string;
+    end;
+
+    TDirStatistics = record
+        TotalBytes: string;
+        TotalRecords: string;
+        Total1KBlocks: string;
+        Filesfound: string;
+        MaxDirEntries: string;
+        UsedDirEntries: string;
+    end;
+
 function SettingsFile: string;
 procedure GetDiskDefsList(DiskDefsList: TStrings);
 
