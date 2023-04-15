@@ -306,13 +306,28 @@ var
     LabelWidth: integer;
 begin
 
-    LabelWidth := labelTotalBytes.Canvas.GetTextWidth('######');
+    LabelWidth := labelTotalBytes.Canvas.GetTextWidth('#######');
     labelTotalBytes.Constraints.MinWidth := LabelWidth;
+    labelTotal1kBlocks.Constraints.MinWidth := LabelWidth;
+    Panel3.AutoSize := False;
     labelTotalRecords.Constraints.MinWidth := LabelWidth;
+    labelFilesFound.Constraints.MinWidth := LabelWidth;
+    Panel4.AutoSize := False;
     labelMaxDirEntries.Constraints.MinWidth := LabelWidth;
+    labelUsedDirEntries.Constraints.MinWidth := LabelWidth;
+    Panel5.AutoSize := False;
 
-    LabelWidth := labelTracks.Canvas.GetTextWidth('######');
+    LabelWidth := labelTracks.Canvas.GetTextWidth('#######');
     labelTracks.Constraints.MinWidth := LabelWidth;
+    labelSectors.Constraints.MinWidth := LabelWidth;
+    labelSectorBytes.Constraints.MinWidth := LabelWidth;
+    labelBlocksize.Constraints.MinWidth := LabelWidth;
+    labelMaxdir.Constraints.MinWidth := LabelWidth;
+    labelBootsectors.Constraints.MinWidth := LabelWidth;
+    labelOffset.Constraints.MinWidth := LabelWidth;
+    labelSkew.Constraints.MinWidth := LabelWidth;
+    labelOs.Constraints.MinWidth := LabelWidth;
+    groupDriveData.AutoSize := False;
 
     SetAutoSize(True);
     Constraints.MinWidth := Width;
