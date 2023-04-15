@@ -163,8 +163,8 @@ type
         function AmstradReadSuper(): boolean;
         function DiskdefsReadSuper(const AImageType: string): boolean;
         function BootOffset: integer;
-        function ReadBlock(ABlockNr: integer; var ABuffer: array of byte; AStart, AEnd: integer): boolean;
-        function WriteBlock(ABlockNr: integer; const ABuffer: array of byte; AStart, AEnd: integer): boolean;
+        function ReadBlock(ABlockNr: integer; ABuffer: pbyte; AStart, AEnd: integer): boolean;
+        function WriteBlock(ABlockNr: integer; const ABuffer: pbyte; AStart, AEnd: integer): boolean;
         function CheckDateStamps: boolean;
         function IsMatching(AUser1: integer; const AName1: array of char; const AExt1: array of char;
             AUser2: integer; const AName2: array of char; const AExt2: array of char): boolean;
@@ -195,10 +195,9 @@ end;
 // --------------------------------------------------------------------------------
 function TCpmFileSystem.InitDriveData(AUpperCase: boolean): boolean;
 var
-    IndexI, IndexJ, Value, Offset: integer;
+    IndexI, IndexJ, Value: integer;
     Blocks, Passwords: integer;
     DirectoryBuffer: array of byte = nil;
-    BlockBuffer: array of byte = nil;
 begin
     Result := True;
     FDrive.UpperCase := AUpperCase;
@@ -284,27 +283,11 @@ begin
     else begin  // read directory in core
         Blocks := (((FDrive.MaxDir * 32) + FDrive.BlkSiz - 1) div FDrive.BlkSiz);
 
-        // allocate block buffer
-        try
-            SetLength(BlockBuffer, FDrive.BlkSiz);
-        except
-            on e: Exception do begin
-                FFileSystemError := e.Message;
-                Result := False;
-                exit;
-            end;
-        end;
-
         for IndexI := 0 to Blocks - 1 do begin
-            Offset := (IndexI * FDrive.BlkSiz);
 
-            if not (ReadBlock(IndexI, BlockBuffer, 0, -1)) then begin
+            if not (ReadBlock(IndexI, @DirectoryBuffer[IndexI * FDrive.BlkSiz], 0, -1)) then begin
                 Result := False;
                 exit;
-            end;
-
-            for IndexJ := 0 to FDrive.BlkSiz - 1 do begin
-                DirectoryBuffer[IndexJ + Offset] := BlockBuffer[IndexJ];
             end;
 
         end;
@@ -523,9 +506,8 @@ end;
 // --------------------------------------------------------------------------------
 function TCpmFileSystem.Sync: boolean;
 var
-    IndexI, IndexJ, Offset, Blocks: integer;
+    IndexI, IndexJ, Blocks: integer;
     DirectoryBuffer: array of byte = nil;
-    BlockBuffer: array of byte = nil;
 begin
 
     if (FDrive.DirtyDirectory) then begin
@@ -571,27 +553,11 @@ begin
 
         end;
 
-        // allocate block buffer
-        try
-            SetLength(BlockBuffer, FDrive.BlkSiz);
-        except
-            on e: Exception do begin
-                FFileSystemError := e.Message;
-                Result := False;
-                exit;
-            end;
-        end;
-
         Blocks := (((FDrive.MaxDir * 32) + (FDrive.BlkSiz - 1)) div FDrive.BlkSiz);
 
         for IndexI := 0 to Blocks - 1 do begin
-            Offset := (IndexI * FDrive.BlkSiz);
 
-            for IndexJ := 0 to FDrive.BlkSiz - 1 do begin
-                BlockBuffer[IndexJ] := DirectoryBuffer[IndexJ + Offset];
-            end;
-
-            if not (WriteBlock(IndexI, BlockBuffer, 0, -1)) then begin
+            if not (WriteBlock(IndexI, @DirectoryBuffer[IndexI * FDrive.BlkSiz], 0, -1)) then begin
                 Result := False;
                 exit;
             end;
@@ -633,10 +599,10 @@ begin
 
         case (FDrive.OsType and CPMFS_DR3) of
             CPMFS_DR22: System := 'CP/M 2.2';
-            CPMFS_DR3: System := 'CP/M 3  ';
-            CPMFS_ISX: System := 'ISX     ';
-            CPMFS_P2DOS: System := 'P2DOS   ';
-            else System := 'unknown ';
+            CPMFS_DR3: System := 'CP/M 3';
+            CPMFS_ISX: System := 'ISX';
+            CPMFS_P2DOS: System := 'P2DOS';
+            else System := 'unknown';
         end;
 
     end;
@@ -1096,22 +1062,10 @@ end;
 // --------------------------------------------------------------------------------
 //  -- read a (partial) block
 // --------------------------------------------------------------------------------
-function TCpmFileSystem.ReadBlock(ABlockNr: integer; var ABuffer: array of byte; AStart, AEnd: integer): boolean;
+function TCpmFileSystem.ReadBlock(ABlockNr: integer; ABuffer: pbyte; AStart, AEnd: integer): boolean;
 var
-    Sect, Track, Counter, IndexI, Offset: integer;
-    SectorBuffer: array of byte = nil;
+    Sect, Track, Counter: integer;
 begin
-
-    // allocate sector buffer
-    try
-        SetLength(SectorBuffer, FDrive.SecLength);
-    except
-        on e: Exception do begin
-            FFileSystemError := e.Message;
-            Result := False;
-            exit;
-        end;
-    end;
 
     if (ABlockNr >= FDrive.Size) then begin
         FFileSystemError := 'attempting to access block beyond end of disk';
@@ -1125,26 +1079,20 @@ begin
 
     Sect := (((ABlockNr * (FDrive.BlkSiz div FDrive.SecLength)) + BootOffset) mod FDrive.SecTrk);
     Track := (((ABlockNr * (FDrive.BlkSiz div FDrive.SecLength)) + BootOffset) div FDrive.SecTrk);
-    Offset := 0;
 
     for Counter := 0 to AEnd do begin
 
         if (Counter >= AStart) then begin
 
-            if not (FCpmDevice.ReadSector(Track, FSkewTab[Sect], SectorBuffer)) then begin
+            if not (FCpmDevice.ReadSector(Track, FSkewTab[Sect], ABuffer[FDrive.SecLength * Counter])) then begin
                 FFileSystemError := FCpmDevice.GetErrorMsg;
                 Result := False;
                 exit;
             end;
 
-            for IndexI := 0 to FDrive.SecLength - 1 do begin
-                ABuffer[IndexI + Offset] := SectorBuffer[IndexI];
-            end;
-
         end;
 
         Inc(Sect);
-        Inc(Offset, FDrive.SecLength);
 
         if (Sect >= FDrive.SecTrk) then begin
             Sect := 0;
@@ -1159,22 +1107,10 @@ end;
 // --------------------------------------------------------------------------------
 //  -- write a (partial) block
 // --------------------------------------------------------------------------------
-function TCpmFileSystem.WriteBlock(ABlockNr: integer; const ABuffer: array of byte; AStart, AEnd: integer): boolean;
+function TCpmFileSystem.WriteBlock(ABlockNr: integer; const ABuffer: pbyte; AStart, AEnd: integer): boolean;
 var
-    Sect, Track, IndexI, IndexJ, Offset: integer;
-    SectorBuffer: array of byte = nil;
+    Sect, Track, Counter: integer;
 begin
-
-    // allocate sector buffer
-    try
-        SetLength(SectorBuffer, FDrive.SecLength);
-    except
-        on e: Exception do begin
-            FFileSystemError := e.Message;
-            Result := False;
-            exit;
-        end;
-    end;
 
     if (AEnd < 0) then begin
         AEnd := ((FDrive.BlkSiz div FDrive.SecLength) - 1);
@@ -1182,17 +1118,12 @@ begin
 
     Sect := (((ABlockNr * (FDrive.BlkSiz div FDrive.SecLength)) + BootOffset) mod FDrive.SecTrk);
     Track := (((ABlockNr * (FDrive.BlkSiz div FDrive.SecLength)) + BootOffset) div FDrive.SecTrk);
-    Offset := 0;
 
-    for IndexI := 0 to AEnd do begin
+    for Counter := 0 to AEnd do begin
 
-        for IndexJ := 0 to FDrive.SecLength - 1 do begin
-            SectorBuffer[IndexJ] := ABuffer[IndexJ + Offset];
-        end;
+        if (Counter >= AStart) then begin
 
-        if (IndexI >= AStart) then begin
-
-            if not (FCpmDevice.WriteSector(Track, FSkewTab[Sect], SectorBuffer)) then begin
+            if not (FCpmDevice.WriteSector(Track, FSkewTab[Sect], ABuffer[FDrive.SecLength * Counter])) then begin
                 FFileSystemError := FCpmDevice.GetErrorMsg;
                 Result := False;
                 exit;
@@ -1201,7 +1132,6 @@ begin
         end;
 
         Inc(Sect);
-        Inc(Offset, FDrive.SecLength);
 
         if (Sect >= FDrive.SecTrk) then begin
             Sect := 0;
@@ -1221,7 +1151,6 @@ var
     DSOffset, DSBlocks, DSRecords: integer;
     IndexI, IndexJ, CheckSum, Offset: integer;
     DateStampsBuffer: array of byte = nil;
-    BlockBuffer: array of byte = nil;
 begin
 
     if (not IsMatching(0, '!!!TIME&', 'DAT', FDirectory[0].Status, FDirectory[0].Name, FDirectory[0].Ext)) then begin
@@ -1245,29 +1174,14 @@ begin
         end;
     end;
 
-    // allocate block buffer
-    try
-        SetLength(BlockBuffer, FDrive.BlkSiz);
-    except
-        on e: Exception do begin
-            FFileSystemError := e.Message;
-            Result := False;
-            exit;
-        end;
-    end;
-
     Offset := 0;
 
     // Read ds file in its entirety
     for IndexI := DSOffset to (DSOffset + DSBlocks) - 1 do begin
 
-        if (not ReadBlock(IndexI, BlockBuffer, 0, -1)) then begin
+        if (not ReadBlock(IndexI, @DateStampsBuffer[Offset], 0, -1)) then begin
             Result := False;
             exit;
-        end;
-
-        for IndexJ := 0 to FDrive.BlkSiz - 1 do begin
-            DateStampsBuffer[IndexJ + Offset] := BlockBuffer[IndexJ];
         end;
 
         Inc(Offset, FDrive.BlkSiz);
@@ -1349,7 +1263,7 @@ begin
         exit;
     end;
 
-    for IndexI := Low(AName1) to High(AName1) do begin
+    for IndexI := Low(AName1) to High(AName2) do begin
 
         if ((Ord(AName1[IndexI]) and $7F) <> (Ord(AName2[IndexI]) and $7F)) then begin
             Result := False;
@@ -1378,7 +1292,6 @@ var
     DSOffset, DSBlocks, DSRecords: integer;
     IndexI, IndexJ, CheckSum, Offset: integer;
     DateStampsBuffer: array of byte = nil;
-    BlockBuffer: array of byte = nil;
 begin
 
     if (FDrive.DirtyDateStamp) then begin
@@ -1440,28 +1353,16 @@ begin
 
         end;
 
-        // allocate block buffer
-        try
-            SetLength(BlockBuffer, FDrive.BlkSiz);
-        except
-            on e: Exception do begin
-                FFileSystemError := e.Message;
-                Result := False;
-                exit;
-            end;
-        end;
+        Offset := 0;
 
         for IndexI := DSOffset to (DSOffset + DSBlocks) - 1 do begin
-            Offset := ((IndexI - DSOffset) * FDrive.BlkSiz);
 
-            for IndexJ := 0 to FDrive.BlkSiz - 1 do begin
-                BlockBuffer[IndexJ] := DateStampsBuffer[IndexJ + Offset];
-            end;
-
-            if not (WriteBlock(IndexI, BlockBuffer, 0, -1)) then begin
+            if not (WriteBlock(IndexI, @DateStampsBuffer[Offset], 0, -1)) then begin
                 Result := False;
                 exit;
             end;
+
+            Inc(Offset, FDrive.BlkSiz);
 
         end;
 
