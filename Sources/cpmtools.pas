@@ -35,6 +35,7 @@ type
     public    // Methoden
         function OpenImage(const AFileName: string; const AFileType: string; AUpperCase: boolean): boolean;
         function CloseImage: boolean;
+        procedure ShowDirectory;
         function GetFileSystemInfo: TFileSystemInfo;
 
     public  // Konstruktor/Destruktor
@@ -116,6 +117,12 @@ begin
     end;
 
     Result := True;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TCpmTools.ShowDirectory;
+begin
+
 end;
 
 // --------------------------------------------------------------------------------

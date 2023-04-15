@@ -75,6 +75,7 @@ var
 begin
     inherited DoShow;
     Info := FCpmTools.GetFileSystemInfo;
+
     if Assigned(FFileSystemInfoCallBack) then begin
         FFileSystemInfoCallBack(Info);
     end;
@@ -90,6 +91,10 @@ end;
 function TImagePage.Open(const AFileName: string; const AFileType: string; AUpperCase: boolean): boolean;
 begin
     Result := FCpmTools.OpenImage(AFileName, AFileType, AUpperCase);
+
+    if (Result) then begin
+        FCpmTools.ShowDirectory;
+    end;
 end;
 
 // --------------------------------------------------------------------------------
@@ -120,6 +125,7 @@ var
     DirColumn: TListColumn;
 begin
     FDirectoryList := TListView.Create(self);
+
     with FDirectoryList do begin
         Parent := self;
         Align := alClient;
@@ -208,6 +214,7 @@ procedure TImagePage.ClearFileSystemInfo;
 var
     Info: TFileSystemInfo;
 begin
+
     with Info do begin
         FileName := EmptyStr;
         FileType := EmptyStr;
@@ -221,6 +228,7 @@ begin
         skew := EmptyStr;
         System := EmptyStr;
     end;
+
     if Assigned(FFileSystemInfoCallBack) then begin
         FFileSystemInfoCallBack(Info);
     end;
