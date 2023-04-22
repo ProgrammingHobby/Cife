@@ -156,7 +156,8 @@ type
         FImageFileHistory: TImageFileHistory;
         procedure AddImagePage(ImageFile: string; ImageType: string);
         procedure HistoryMenuItemClick(Sender: TObject);
-        procedure ShowImageInfo(const Info: TFileSystemInfo);
+        procedure ShowImageInfo(Info: TFileSystemInfo);
+        procedure ShowDirectoryStatistics(Statistics: TDirStatistics);
 
     public
 
@@ -407,7 +408,7 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-procedure TMainWindow.ShowImageInfo(const Info: TFileSystemInfo);
+procedure TMainWindow.ShowImageInfo(Info: TFileSystemInfo);
 begin
     labelFile.Caption := Info.FileName;
     labelType.Caption := Info.FileType;
@@ -420,6 +421,17 @@ begin
     labelOffset.Caption := Info.Offset;
     labelSkew.Caption := Info.skew;
     labelOs.Caption := Info.System;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TMainWindow.ShowDirectoryStatistics(Statistics: TDirStatistics);
+begin
+    labelTotalBytes.Caption := Statistics.TotalBytes;
+    labelTotal1kBlocks.Caption := Statistics.Total1KBlocks;
+    labelTotalRecords.Caption := Statistics.TotalRecords;
+    labelFilesFound.Caption := Statistics.FilesFound;
+    labelMaxDirEntries.Caption := Statistics.MaxDirEntries;
+    labelUsedDirEntries.Caption := Statistics.UsedDirEntries;
 end;
 
 // --------------------------------------------------------------------------------
