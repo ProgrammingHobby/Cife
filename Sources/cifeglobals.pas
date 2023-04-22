@@ -44,7 +44,7 @@ type
         TotalBytes: string;
         TotalRecords: string;
         Total1KBlocks: string;
-        Filesfound: string;
+        FilesFound: string;
         MaxDirEntries: string;
         UsedDirEntries: string;
     end;
