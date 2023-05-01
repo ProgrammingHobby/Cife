@@ -27,13 +27,13 @@ uses
 
 type
 
+    TFileSystemInfoCB = procedure(AInfo: TFileSystemInfo) of object;
+    TDirectoryStatisticsCB = procedure(AStatistics: TDirStatistics) of object;
+
     { TImagePage }
 
     TImagePage = class(TTabSheet)
     public    // Attribute
-        type
-            TFileSystemInfoCB = procedure (const Info:TFileSystemInfo) of object;
-            TDirectoryStatisticsCB = procedure (const Statistics:TDirStatistics) of object;
 
     public    // Methoden
         procedure DoShow; override;
@@ -59,6 +59,7 @@ type
         procedure CreateDirectoryListView;
         procedure DirectoryListResize(ASender: TObject);
         procedure ClearFileSystemInfo;
+        procedure PrintDirectoryEntry(AColumn: integer; ARow: integer; AData: string);
 
     end;
 
@@ -109,6 +110,7 @@ begin
     inherited Create(ATheOwner);
     CreateDirectoryListView;
     FCpmTools := TCpmTools.Create;
+    FCpmTools.SetPrintDirectoryEntryCallBack(@PrintDirectoryEntry);
 end;
 
 // --------------------------------------------------------------------------------
@@ -133,6 +135,7 @@ begin
         ReadOnly := True;
         ScrollBars := ssAutoVertical;
         ViewStyle := vsReport;
+        AutoSort := False;
         GridLines := True;
         ColumnClick := False;
         SortDirection := sdAscending;
@@ -165,6 +168,7 @@ begin
         EndUpdate;
         OnResize := @DirectoryListResize;
     end;
+
 end;
 
 // --------------------------------------------------------------------------------
@@ -177,11 +181,7 @@ begin
     ColWidths := 0;
     dlv := TListView(ASender);
     dlv.BeginUpdate;
-{$ifdef Windows}
-    ActListViewWidth := (ClientWidth - 4);
-{$else}
-    ActListViewWidth := (ClientWidth - 1);
-{$endif}
+    ActListViewWidth := dlv.ClientWidth;
     NewWidth := Round(ActListViewWidth * 0.151);
     ColWidths := ColWidths + NewWidth;
     dlv.Columns[0].Width := NewWidth;
@@ -232,6 +232,25 @@ begin
     if Assigned(FFileSystemInfoCallBack) then begin
         FFileSystemInfoCallBack(Info);
     end;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TImagePage.PrintDirectoryEntry(AColumn: integer; ARow: integer; AData: string);
+var
+    Item: TListItem;
+    IndexI: integer;
+begin
+    if (FDirectoryList.Items.Count < ARow) then begin
+        Item := FDirectoryList.Items.Add;
+        Item.Caption := AData;
+        for IndexI := 1 to 7 do begin
+            Item.SubItems.Add('');
+        end;
+    end
+    else begin
+        FDirectoryList.Items.Item[ARow - 1].SubItems[AColumn - 1] := AData;
+    end;
+
 end;
 
 // --------------------------------------------------------------------------------
