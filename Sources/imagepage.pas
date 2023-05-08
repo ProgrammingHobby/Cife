@@ -28,7 +28,7 @@ uses
 type
 
     TFileSystemInfoCB = procedure(AInfo: TFileSystemInfo) of object;
-    TDirectoryStatisticsCB = procedure(AStatistics: TDirStatistics) of object;
+    TDirectoryStatisticCB = procedure(AStatistic: TDirStatistic) of object;
 
     { TImagePage }
 
@@ -38,6 +38,7 @@ type
     public    // Methoden
         procedure DoShow; override;
         procedure SetFileSystemInfoCallBack(AFileSystemInfoCB: TFileSystemInfoCB);
+        procedure SetDirectoryStatisticCallBack(ADirectoryStatisticCB: TDirectoryStatisticCB);
         function Open(const AFileName: string; const AFileType: string; AUpperCase: boolean = False): boolean;
         function GetFileName: string;
 
@@ -53,7 +54,7 @@ type
         FDirectoryList: TListView;
         FCpmTools: TCpmTools;
         FFileSystemInfoCallBack: TFileSystemInfoCB;
-        FDirStatisticsCallBack: TDirectoryStatisticsCB;
+        FDirStatisticCallBack: TDirectoryStatisticCB;
 
     private   // Methoden
         procedure CreateDirectoryListView;
@@ -71,14 +72,16 @@ uses Controls, StdCtrls;
 
 // --------------------------------------------------------------------------------
 procedure TImagePage.DoShow;
-var
-    Info: TFileSystemInfo;
 begin
     inherited DoShow;
-    Info := FCpmTools.GetFileSystemInfo;
+    FDirectoryList.Clear;
+    FCpmTools.ShowDirectory;
 
     if Assigned(FFileSystemInfoCallBack) then begin
-        FFileSystemInfoCallBack(Info);
+        FFileSystemInfoCallBack(FCpmTools.GetFileSystemInfo);
+    end;
+    if Assigned(FDirStatisticCallBack) then begin
+        FDirStatisticCallBack(FCpmTools.GetDirectoryStatistic);
     end;
 end;
 
@@ -89,13 +92,15 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
+procedure TImagePage.SetDirectoryStatisticCallBack(ADirectoryStatisticCB: TDirectoryStatisticCB);
+begin
+    FDirStatisticCallBack := ADirectoryStatisticCB;
+end;
+
+// --------------------------------------------------------------------------------
 function TImagePage.Open(const AFileName: string; const AFileType: string; AUpperCase: boolean): boolean;
 begin
     Result := FCpmTools.OpenImage(AFileName, AFileType, AUpperCase);
-
-    if (Result) then begin
-        FCpmTools.ShowDirectory;
-    end;
 end;
 
 // --------------------------------------------------------------------------------
