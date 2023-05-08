@@ -60,7 +60,7 @@ type
     TCpmFile = record
         Mode: mode_t;
         Pos: off_t;
-        Ino: array of TCpmInode;
+        Ino: TCpmInode;
     end;
 
     { TCpmFileSystem }
@@ -71,6 +71,11 @@ type
     public    // Methoden
         function ReadDiskdefData(const AImageType: string): boolean;
         function InitDriveData(AUpperCase: boolean): boolean;
+        procedure Glob(const AArgv: PChar; var AGargc: integer; var AGargv: TStringList);
+        procedure StatFs(var ABuffer: TCpmStatFS);
+        function Name2Inode(const AFilename: PChar; var AInode: TCpmInode): boolean;
+        procedure Stat(const AInode: TCpmInode; var ABuffer: TCpmStat);
+        procedure AttrGet(const AInode: TCpmInode; var AAttrib: cpm_attr_t);
         function Unmount: boolean;
         function Sync: boolean;
         function GetErrorMsg: string;
@@ -165,15 +170,30 @@ type
         function BootOffset: integer;
         function ReadBlock(ABlockNr: integer; ABuffer: pbyte; AStart, AEnd: integer): boolean;
         function WriteBlock(ABlockNr: integer; const ABuffer: pbyte; AStart, AEnd: integer): boolean;
+        function FindFileExtent(AUser: integer; const AName: array of char; const AExt: array of char;
+            AStart: integer; AExtNo: integer): integer;
+        function ReadTimeStamps(var AInode: TCpmInode; ALowestExt: integer): integer;
+        procedure ReadDsStamps(var AInode: TCpmInode; ALowestExt: integer);
         function CheckDateStamps: boolean;
+        function SplitFilename(AFullname: PChar; AOsType: integer; var AName: array of char;
+            var AExt: array of char; var AUser: integer): boolean;
+        function RecMatch(AEntry: PChar; APattern: PChar): boolean;
+        function Match(const AEntry: PChar; APattern: PChar): boolean;
         function IsMatching(AUser1: integer; const AName1: array of char; const AExt1: array of char;
             AUser2: integer; const AName2: array of char; const AExt2: array of char): boolean;
+        function Cpm2UnixTime(ADays: integer; AHour: integer; AMin: integer): time_t;
+        function Ds2UnixTime(const AEntry: TDsEntry): time_t;
         function SyncDateStamps: boolean;
+        function OpenDir(var ADir: TCpmFile): boolean;
+        function ReadDir(var ADir: TCpmFile; var AEnt: TCpmDirent): boolean;
+
     end;
 
 implementation
 
 { TCpmFileSystem }
+
+uses Character, StrUtils, DateUtils;
 
 // --------------------------------------------------------------------------------
 //  -- get DPB
@@ -468,6 +488,315 @@ begin
     end;
 
     Result := True;
+end;
+
+// --------------------------------------------------------------------------------
+//  -- expand CP/M style wildcards
+// --------------------------------------------------------------------------------
+procedure TCpmFileSystem.Glob(const AArgv: PChar; var AGargc: integer; var AGargv: TStringList);
+var
+    Dir: TCpmFile;
+    DirEnt: array of TCpmDirent = nil;
+    Entries, DirSize: integer;
+    IndexJ: integer;
+begin
+    AGargc := 0;
+    OpenDir(Dir);
+    Entries := 0;
+    DirSize := 8;
+
+    // allocate DirEntrys array
+    try
+        SetLength(DirEnt, DirSize);
+    except
+        on e: Exception do begin
+            FFileSystemError := e.Message;
+            exit;
+        end;
+    end;
+
+    while (ReadDir(Dir, DirEnt[Entries])) do begin
+        Inc(Entries);
+
+        if (Entries = DirSize) then begin
+            DirSize := (DirSize * 2);
+            SetLength(DirEnt, DirSize);
+        end;
+
+    end;
+
+    for IndexJ := 0 to Entries - 1 do begin
+
+        if (Match(DirEnt[IndexJ].Name, AArgv)) then begin
+            AGargv.Add(DirEnt[IndexJ].Name);
+            Inc(AGargc);
+        end;
+
+    end;
+
+end;
+
+// --------------------------------------------------------------------------------
+//  -- statfs
+// --------------------------------------------------------------------------------
+procedure TCpmFileSystem.StatFs(var ABuffer: TCpmStatFS);
+var
+    IndexI, IndexJ, Temp: integer;
+begin
+    ABuffer.F_BSize := FDrive.BlkSiz;
+    ABuffer.F_Blocks := FDrive.Size;
+    ABuffer.F_BFree := 0;
+    ABuffer.F_BUsed := -(FDrive.DirBlks);
+
+    for IndexI := 0 to FDrive.AlvSize - 1 do begin
+        Temp := FAllocationVector[IndexI];
+
+        for IndexJ := 0 to INTBITS - 1 do begin
+
+            if (((IndexI * INTBITS) + IndexJ) < FDrive.Size) then begin
+
+                if ((1 and temp) <> 0) then begin
+                    Inc(ABuffer.F_BUsed);
+                end
+                else begin
+                    Inc(ABuffer.F_BFree);
+                end;
+
+            end;
+
+            Temp := (Temp shr 1);
+        end;
+
+    end;
+
+    ABuffer.F_BAvail := ABuffer.F_BFree;
+    ABuffer.F_Files := FDrive.MaxDir;
+    ABuffer.F_FFree := 0;
+
+    for IndexI := 0 to FDrive.MaxDir - 1 do begin
+
+        if (FDirectory[IndexI].Status = $E5) then begin
+            Inc(ABuffer.F_FFree);
+        end;
+
+    end;
+
+    ABuffer.F_NameLen := 11;
+end;
+
+// --------------------------------------------------------------------------------
+//  -- map name to inode
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.Name2Inode(const AFilename: PChar; var AInode: TCpmInode): boolean;
+var
+    User, ProtectMode, Ext, ExtNo, Block: integer;
+    HighestExtno, HighestExt, LowestExtno, LowestExt: integer;
+    Name: array[0..7] of char;
+    Extension: array[0..2] of char;
+begin
+    HighestExt := -1;
+    LowestExt := -1;
+    ProtectMode := 0;
+
+    if not (S_ISDIR(FRoot.Mode)) then begin
+        FFileSystemError := 'no such file';
+        Result := False;
+        exit;
+    end;
+
+    // root directory
+    if ((AFilename = '.') or (AFilename = '..')) then begin
+        AInode := FRoot;
+        Result := True;
+        exit;
+    end
+    // access password
+    else if ((AFilename = '[passwd]') and (FDrive.PasswdLength > 0)) then begin
+        AInode.Attr := 0;
+        AInode.Ino := (FDrive.MaxDir + 1);
+        AInode.Mode := (S_IFREG or &0444);
+        AInode.ATime := 0;
+        AInode.MTime := 0;
+        AInode.CTime := 0;
+        AInode.Size := FDrive.PasswdLength;
+        Result := True;
+        exit;
+    end
+    // access label
+    else if ((AFilename = '[label]') and (FDrive.LabelLength > 0)) then begin
+        AInode.Attr := 0;
+        AInode.Ino := (FDrive.MaxDir + 2);
+        AInode.Mode := (S_IFREG or &0444);
+        AInode.ATime := 0;
+        AInode.MTime := 0;
+        AInode.CTime := 0;
+        AInode.Size := FDrive.LabelLength;
+        Result := True;
+        exit;
+    end;
+
+    if not (SplitFilename(AFilename, FDrive.OsType, Name, Extension, User)) then begin
+        Result := False;
+        exit;
+    end;
+
+    // find highest and lowest extent
+    AInode.Size := 0;
+    Ext := -1;
+    HighestExtno := -1;
+    LowestExtno := 2049;
+    Ext := FindFileExtent(User, Name, Extension, Ext + 1, -1);
+
+    while (Ext <> -1) do begin
+        ExtNo := EXTENT(FDirectory[Ext].Extnol, FDirectory[Ext].Extnoh);
+
+        if (ExtNo > HighestExtno) then begin
+            HighestExtno := ExtNo;
+            HighestExt := Ext;
+        end;
+
+        if (ExtNo < LowestExtno) then begin
+            LowestExtno := ExtNo;
+            LowestExt := Ext;
+        end;
+
+        Ext := FindFileExtent(User, Name, Extension, Ext + 1, -1);
+    end;
+
+    if (HighestExtno = -1) then begin
+        Result := False;
+        exit;
+    end;
+
+    // calculate size
+    AInode.Size := (HighestExtno * 16384);
+
+    if (FDrive.Size <= 256) then begin
+
+        for Block := 15 downto 0 do begin
+
+            if (FDirectory[HighestExt].Pointers[Block] <> 0) then begin
+                break;
+            end;
+
+        end;
+
+    end
+    else begin
+
+        for Block := 7 downto 0 do begin
+
+            if ((FDirectory[HighestExt].Pointers[2 * Block] <> 0) or (FDirectory[HighestExt].Pointers[(2 * Block) + 1] <> 0))
+            then begin
+                break;
+            end;
+
+        end;
+
+    end;
+
+    if (FDirectory[HighestExt].Blkcnt <> 0) then begin
+        AInode.Size := AInode.Size + (((FDirectory[HighestExt].Blkcnt and $FF) - 1) * 128);
+
+        if ((FDrive.OsType and CPMFS_ISX) <> 0) then begin
+            AInode.Size := AInode.Size + (128 - FDirectory[HighestExt].Lrc);
+        end
+        else begin
+
+            if (FDirectory[HighestExt].Lrc <> 0) then begin
+                AInode.Size := AInode.Size + (FDirectory[HighestExt].Lrc and $FF);
+            end
+            else begin
+                AInode.Size := AInode.Size + 128;
+            end;
+
+        end;
+
+    end;
+
+    AInode.Ino := LowestExt;
+    AInode.Mode := S_IFREG;
+    // read timestamps
+    ProtectMode := ReadTimeStamps(AInode, LowestExt);
+    AInode.Attr := 0;
+
+    if ((Ord(FDirectory[LowestExt].Name[0]) and $80) <> 0) then begin
+        AInode.Attr := AInode.Attr or CPM_ATTR_F1;
+    end;
+
+    if ((Ord(FDirectory[LowestExt].Name[1]) and $80) <> 0) then begin
+        AInode.Attr := AInode.Attr or CPM_ATTR_F2;
+    end;
+
+    if ((Ord(FDirectory[LowestExt].Name[2]) and $80) <> 0) then begin
+        AInode.Attr := AInode.Attr or CPM_ATTR_F3;
+    end;
+
+    if ((Ord(FDirectory[LowestExt].Name[3]) and $80) <> 0) then begin
+        AInode.Attr := AInode.Attr or CPM_ATTR_F4;
+    end;
+
+    if ((Ord(FDirectory[LowestExt].Ext[0]) and $80) <> 0) then begin
+        AInode.Attr := AInode.Attr or CPM_ATTR_RO;
+    end;
+
+    if ((Ord(FDirectory[LowestExt].Ext[1]) and $80) <> 0) then begin
+        AInode.Attr := AInode.Attr or CPM_ATTR_SYS;
+    end;
+
+    if ((Ord(FDirectory[LowestExt].Ext[2]) and $80) <> 0) then begin
+        AInode.Attr := AInode.Attr or CPM_ATTR_ARCV;
+    end;
+
+    if ((ProtectMode and $20) <> 0) then begin
+        AInode.Attr := AInode.Attr or CPM_ATTR_PWDEL;
+    end;
+
+    if ((ProtectMode and $40) <> 0) then begin
+        AInode.Attr := AInode.Attr or CPM_ATTR_PWWRITE;
+    end;
+
+    if ((ProtectMode and $80) <> 0) then begin
+        AInode.Attr := AInode.Attr or CPM_ATTR_PWREAD;
+    end;
+
+    if ((Ord(FDirectory[LowestExt].Ext[1]) and $80) <> 0) then begin
+        AInode.Mode := AInode.Mode or &01000;
+    end;
+
+    AInode.Mode := AInode.Mode or &0444;
+
+    if not ((Ord(FDirectory[LowestExt].Ext[0]) and $80) <> 0) then begin
+        AInode.Mode := AInode.Mode or &0222;
+    end;
+
+    if ((Extension[0] = 'C') and (Extension[1] = 'O') and (Extension[2] = 'M')) then begin
+        AInode.Mode := AInode.Mode or &0111;
+    end;
+
+    ReadDsStamps(AInode, LowestExt);
+    Result := True;
+end;
+
+// --------------------------------------------------------------------------------
+//  -- stat
+// --------------------------------------------------------------------------------
+procedure TCpmFileSystem.Stat(const AInode: TCpmInode; var ABuffer: TCpmStat);
+begin
+    ABuffer.Ino := AInode.Ino;
+    ABuffer.Mode := AInode.Mode;
+    ABuffer.Size := AInode.Size;
+    ABuffer.ATime := AInode.ATime;
+    ABuffer.MTime := AInode.MTime;
+    ABuffer.CTime := AInode.CTime;
+end;
+
+// --------------------------------------------------------------------------------
+//  -- get CP/M attributes
+// --------------------------------------------------------------------------------
+procedure TCpmFileSystem.AttrGet(const AInode: TCpmInode; var AAttrib: cpm_attr_t);
+begin
+    AAttrib := AInode.Attr;
 end;
 
 // --------------------------------------------------------------------------------
@@ -1144,6 +1473,135 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
+//  -- find first/next extent for a file
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.FindFileExtent(AUser: integer; const AName: array of char; const AExt: array of char;
+    AStart: integer; AExtNo: integer): integer;
+var
+    MaxUser: integer;
+begin
+    FFileSystemError := 'file already exists';
+
+    if ((FDrive.OsType and CPMFS_HI_USER) <> 0) then begin
+        MaxUser := 32;
+    end
+    else begin
+        MaxUser := 16;
+    end;
+
+    while (AStart < FDrive.MaxDir) do begin
+
+        if ((FDirectory[AStart].Status <= MaxUser) and ((AExtNo = -1) or
+            ((EXTENT(FDirectory[AStart].Extnol, FDirectory[AStart].Extnoh) div FDrive.Extents) =
+            (AExtNo div FDrive.Extents))) and IsMatching(AUser, AName, AExt, FDirectory[AStart].Status,
+            FDirectory[AStart].Name, FDirectory[AStart].Ext)) then begin
+            Result := (AStart);
+            exit;
+        end;
+
+        Inc(AStart);
+    end;
+
+    FFileSystemError := 'file not found';
+    Result := (-1);
+end;
+
+// --------------------------------------------------------------------------------
+//  -- read CP/M time stamp
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.ReadTimeStamps(var AInode: TCpmInode; ALowestExt: integer): integer;
+var
+    DirDate: TPhysDirectoryEntry;
+    U_Days, U_Hour, U_Min: integer;
+    Ca_Days, Ca_Hour, Ca_Min: integer;
+    ProtectMode: integer;
+begin
+    U_Days := 0;
+    U_Hour := 0;
+    U_Min := 0;
+    Ca_Days := 0;
+    Ca_Hour := 0;
+    Ca_Min := 0;
+    ProtectMode := 0;
+
+    DirDate := FDirectory[ALowestExt or 3];
+
+    if (((FDrive.OsType and CPMFS_CPM3_DATES) <> 0) and (DirDate.Status = $21)) then begin
+
+        case (ALowestExt and 3) of
+            // first entry of the four
+            0: begin
+                Ca_Days := (Ord(DirDate.Name[0]) + (Ord(DirDate.Name[1]) shl 8));
+                Ca_Hour := Ord(DirDate.Name[2]);
+                Ca_Min := Ord(DirDate.Name[3]);
+                U_Days := (Ord(DirDate.Name[4]) + (Ord(DirDate.Name[5]) shl 8));
+                U_Hour := Ord(DirDate.Name[6]);
+                U_Min := Ord(DirDate.Name[7]);
+                ProtectMode := Ord(DirDate.Ext[0]);
+            end;
+            // second entry
+            1: begin
+                Ca_Days := (Ord(DirDate.Ext[2]) + (Ord(DirDate.Extnol) shl 8));
+                Ca_Hour := DirDate.Lrc;
+                Ca_Min := DirDate.Extnoh;
+                U_Days := (DirDate.Blkcnt + (DirDate.Pointers[0] shl 8));
+                U_Hour := DirDate.Pointers[1];
+                U_Min := DirDate.Pointers[2];
+                ProtectMode := DirDate.Pointers[3];
+            end;
+            // third one
+            2: begin
+                Ca_Days := (DirDate.Pointers[5] + (DirDate.Pointers[6] shl 8));
+                Ca_Hour := DirDate.Pointers[7];
+                Ca_Min := DirDate.Pointers[8];
+                U_Days := (DirDate.Pointers[9] + (DirDate.Pointers[10] shl 8));
+                U_Hour := DirDate.Pointers[11];
+                U_Min := DirDate.Pointers[12];
+                ProtectMode := DirDate.Pointers[13];
+            end;
+        end;
+
+        if (FDrive.CnotaTime <> 0) then begin
+            AInode.CTime := Cpm2UnixTime(Ca_Days, Ca_Hour, Ca_Min);
+            AInode.ATime := 0;
+        end
+        else begin
+            AInode.CTime := 0;
+            AInode.ATime := Cpm2UnixTime(Ca_Days, Ca_Hour, Ca_Min);
+        end;
+
+        AInode.MTime := Cpm2UnixTime(U_Days, U_Hour, U_Min);
+    end
+    else begin
+        AInode.ATime := 0;
+        AInode.MTime := 0;
+        AInode.CTime := 0;
+        ProtectMode := 0;
+    end;
+
+    Result := (ProtectMode);
+end;
+
+// --------------------------------------------------------------------------------
+//  -- read datestamper time stamp
+// --------------------------------------------------------------------------------
+procedure TCpmFileSystem.ReadDsStamps(var AInode: TCpmInode; ALowestExt: integer);
+var
+    Stamp: TDateStamps;
+begin
+
+    if not ((FDrive.OsType and CPMFS_DS_DATES) <> 0) then begin
+        exit;
+    end;
+
+    // Get datestamp
+    Stamp := FDateStamps[ALowestExt];
+    AInode.MTime := Ds2UnixTime(Stamp.Modify);
+    AInode.CTime := Ds2UnixTime(Stamp.Create);
+    AInode.ATime := Ds2UnixTime(Stamp.Access);
+end;
+
+// --------------------------------------------------------------------------------
 //  -- read all datestamper timestamps
 // --------------------------------------------------------------------------------
 function TCpmFileSystem.CheckDateStamps: boolean;
@@ -1250,6 +1708,182 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
+//  -- split file name into name and extension
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.SplitFilename(AFullname: PChar; AOsType: integer; var AName: array of char;
+    var AExt: array of char; var AUser: integer): boolean;
+var
+    IndexI, IndexJ, MaxUser: integer;
+begin
+    FillChar(AName, 8, ' ');
+    FillChar(AExt, 3, ' ');
+
+    if ((not IsDigit(AFullname[0])) and (not IsDigit(AFullname[1]))) then begin
+        FFileSystemError := 'illegal CP/M filename';
+        Result := False;
+        exit;
+    end;
+
+    AUser := (10 * (Ord(AFullname[0]) - Ord('0'))) + (Ord(AFullname[1]) - Ord('0'));
+    AFullname := AFullname + 2;
+
+    if ((AOsType and CPMFS_HI_USER) <> 0) then begin
+        MaxUser := 32;
+    end
+    else begin
+        MaxUser := 16;
+    end;
+
+    if ((AFullname[0] = Chr(0)) or (AUser >= MaxUser)) then begin
+        FFileSystemError := 'illegal CP/M filename';
+        Result := False;
+        exit;
+    end;
+
+    IndexI := 0;
+
+    while ((IndexI < 8) and (AFullname[IndexI] <> char(0)) and (AFullname[IndexI] <> '.')) do begin
+
+        if not (ISFILECHAR(IndexI, AFullname[IndexI])) then begin
+            FFileSystemError := 'illegal CP/M filename';
+            Result := False;
+            exit;
+        end
+        else begin
+            AName[IndexI] := ToUpper(AFullname[IndexI]);
+        end;
+
+        Inc(IndexI);
+    end;
+
+    if (AFullname[IndexI] = '.') then begin
+        Inc(IndexI);
+        IndexJ := 0;
+
+        while ((IndexJ < 3) and (AFullname[IndexI] <> char(0))) do begin
+
+            if not (ISFILECHAR(1, AFullname[IndexI])) then begin
+                FFileSystemError := 'illegal CP/M filename';
+                Result := False;
+                exit;
+            end
+            else begin
+                AExt[IndexJ] := ToUpper(AFullname[IndexI]);
+            end;
+
+            Inc(IndexI);
+            Inc(IndexJ);
+        end;
+
+        if ((IndexI = 1) and (IndexJ = 0)) then begin
+            FFileSystemError := 'illegal CP/M filename';
+            Result := False;
+            exit;
+        end;
+
+    end;
+
+    Result := True;
+end;
+
+// --------------------------------------------------------------------------------
+//  -- match filename against a pattern
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.RecMatch(AEntry: PChar; APattern: PChar): boolean;
+var
+    First: integer;
+begin
+    First := 1;
+
+    while (APattern[0] <> CHR(0)) do begin
+
+        case (APattern[0]) of
+            '*': begin
+
+                if ((AEntry[0] = '.') and (First <> 0)) then begin
+                    Result := True;
+                    exit;
+                end;
+
+                APattern := APattern + 1;
+
+                while (AEntry[0] <> '\0') do begin
+
+                    if (RecMatch(AEntry, APattern)) then begin
+                        Result := True;
+                        exit;
+                    end
+                    else begin
+                        AEntry := AEntry + 1;
+                    end;
+                end;
+
+            end;
+            '?': begin
+
+                if (AEntry[0] <> Chr(0)) then begin
+                    AEntry := AEntry + 1;
+                    APattern := APattern + 1;
+                end
+                else begin
+                    Result := False;
+                    exit;
+                end;
+
+            end;
+            else begin
+
+                if (strlower(AEntry) = strlower(APattern)) then begin
+                    AEntry := AEntry + 1;
+                    APattern := APattern + 1;
+                end
+                else begin
+                    Result := False;
+                    exit;
+                end;
+
+            end;
+
+        end;
+
+        First := 0;
+    end;
+
+    Result := ((APattern[0] = Chr(0)) and (AEntry[0] = Chr(0)));
+end;
+
+// --------------------------------------------------------------------------------
+//  -- match filename against a pattern
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.Match(const AEntry: PChar; APattern: PChar): boolean;
+var
+    User: integer;
+    Pat: PChar;
+begin
+
+    if (IsDigit(APattern[0]) and (APattern[1] = ':')) then begin
+        User := StrToIntDef(APattern[0], -1);
+        APattern := APattern + 2;
+    end
+    else if (IsDigit(APattern[0]) and IsDigit(APattern[1]) and (APattern[2] = ':')) then begin
+        User := StrToIntDef(APattern[0] + APattern[1], -1);
+        APattern := APattern + 3;
+    end
+    else begin
+        User := -1;
+    end;
+
+    if (User = -1) then begin
+        Pat := PChar(Format('??%s', [APattern]));
+    end
+    else begin
+        Pat := PChar(Format('%02d%s', [User, APattern]));
+    end;
+
+    Result := (RecMatch(AEntry, Pat));
+end;
+
+// --------------------------------------------------------------------------------
 //  -- do two file names match?
 // --------------------------------------------------------------------------------
 function TCpmFileSystem.IsMatching(AUser1: integer; const AName1: array of char; const AExt1: array of char;
@@ -1263,7 +1897,7 @@ begin
         exit;
     end;
 
-    for IndexI := Low(AName1) to High(AName2) do begin
+    for IndexI := 0 to 7 do begin
 
         if ((Ord(AName1[IndexI]) and $7F) <> (Ord(AName2[IndexI]) and $7F)) then begin
             Result := False;
@@ -1272,7 +1906,7 @@ begin
 
     end;
 
-    for IndexI := Low(AExt1) to High(AExt2) do begin
+    for IndexI := 0 to 2 do begin
 
         if ((Ord(AExt1[IndexI]) and $7F) <> (Ord(AExt2[IndexI]) and $7F)) then begin
             Result := False;
@@ -1282,6 +1916,45 @@ begin
     end;
 
     Result := True;
+end;
+
+// --------------------------------------------------------------------------------
+//  -- convert CP/M time to UTC
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.Cpm2UnixTime(ADays: integer; AHour: integer; AMin: integer): time_t;
+var
+    DateTime: TDateTime;
+begin
+    ///* CP/M stores timestamps in local time.  We don't know which     */
+    ///* timezone was used and if DST was in effect.  Assuming it was   */
+    ///* the current offset from UTC is most sensible, but not perfect. */
+    DateTime := EncodeDate(1978, 1, 1);
+    DateTime := IncDay(DateTime, ADays);
+    DateTime := IncHour(DateTime, BCDToInt(AHour));
+    Result := IncMinute(DateTime, BCDToInt(AMin));
+end;
+
+// --------------------------------------------------------------------------------
+//  -- convert DateStamper to Unix time
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.Ds2UnixTime(const AEntry: TDsEntry): time_t;
+var
+    Year: integer;
+begin
+
+    if ((AEntry.Minute = 0) and (AEntry.Hour = 0) and (AEntry.Day = 0) and (AEntry.Month = 0) and (AEntry.Year = 0)) then begin
+        Result := (0);
+        exit;
+    end;
+
+    Year := BCDToInt(AEntry.Year);
+
+    if (Year < 70) then begin
+        Inc(Year, 2000);
+    end;
+
+    Result := EncodeDateTime(Year, BCDToInt(AEntry.Month), BCDToInt(AEntry.Day), BCDToInt(AEntry.Hour),
+        BCDToInt(AEntry.Minute), 0, 0);
 end;
 
 // --------------------------------------------------------------------------------
@@ -1369,6 +2042,185 @@ begin
     end;
 
     Result := True;
+end;
+
+// --------------------------------------------------------------------------------
+//  -- opendir
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.OpenDir(var ADir: TCpmFile): boolean;
+begin
+
+    if not (S_ISDIR(FRoot.Mode)) then begin
+        FFileSystemError := 'no such file';
+        Result := False;
+        exit;
+    end;
+
+    ADir.Ino := FRoot;
+    ADir.Pos := 0;
+    ADir.Mode := O_RDONLY;
+    Result := True;
+end;
+
+// --------------------------------------------------------------------------------
+//  -- readdir
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.ReadDir(var ADir: TCpmFile; var AEnt: TCpmDirent): boolean;
+var
+    IndexI, First, MaxUser: integer;
+    Current: TPhysDirectoryEntry;
+    Buffer: array[0..13] of char;
+    BufferIndex: integer;
+    HasExt: boolean;
+begin
+
+    if not (S_ISDIR(ADir.Ino.Mode)) then begin
+        FFileSystemError := 'not a directory';
+        Result := False;
+        exit;
+    end;
+
+    while (True) do begin
+        FillChar(Buffer, Length(Buffer), 0);
+
+        // first entry is .
+        if (ADir.Pos = 0) then begin
+            AEnt.Ino := FDrive.MaxDir;
+            AEnt.RecLen := 1;
+            StrPCopy(AEnt.Name, '.');
+            AEnt.Off := ADir.Pos;
+            Inc(ADir.Pos);
+            Result := True;
+            break;
+        end
+        // next entry is ..
+        else if (ADir.Pos = 1) then begin
+            AEnt.Ino := FDrive.MaxDir;
+            AEnt.RecLen := 2;
+            StrPCopy(AEnt.Name, '..');
+            AEnt.Off := ADir.Pos;
+            Inc(ADir.Pos);
+            Result := True;
+            break;
+        end
+        else if (ADir.Pos = 2) then begin
+
+            // next entry is [passwd]
+            if (FDrive.PasswdLength > 0) then begin
+                AEnt.Ino := (FDrive.MaxDir + 1);
+                AEnt.RecLen := 8;
+                StrPCopy(AEnt.Name, '[passwd]');
+                AEnt.Off := ADir.Pos;
+                Inc(ADir.Pos);
+                Result := True;
+                break;
+            end;
+
+        end
+        else if (ADir.Pos = 3) then begin
+
+            // next entry is [label]
+            if (FDrive.LabelLength > 0) then begin
+                AEnt.Ino := (FDrive.MaxDir + 2);
+                AEnt.RecLen := 7;
+                StrPCopy(AEnt.Name, '[label]');
+                AEnt.Off := ADir.Pos;
+                Inc(ADir.Pos);
+                Result := True;
+                break;
+            end;
+
+        end
+        else if ((ADir.Pos >= RESERVED_ENTRIES) and (ADir.Pos < (FDrive.MaxDir + RESERVED_ENTRIES))) then begin
+            First := (ADir.Pos - RESERVED_ENTRIES);
+            Current := FDirectory[ADir.Pos - RESERVED_ENTRIES];
+
+            if ((FDrive.OsType and CPMFS_HI_USER) <> 0) then begin
+                MaxUser := 31;
+            end
+            else begin
+                MaxUser := 15;
+            end;
+
+            if ((Current.Status >= 0) and (Current.Status <= MaxUser)) then begin
+
+                // determine first extent for the current file
+                for IndexI := 0 to FDrive.MaxDir - 1 do begin
+
+                    if (IndexI <> (ADir.Pos - RESERVED_ENTRIES)) then begin
+
+                        if (IsMatching(Current.Status, Current.Name, Current.Ext, FDirectory[IndexI].Status,
+                            FDirectory[IndexI].Name, FDirectory[IndexI].Ext) and
+                            (EXTENT(Current.Extnol, Current.Extnoh) > EXTENT(FDirectory[IndexI].Extnol,
+                            FDirectory[IndexI].Extnoh))) then begin
+                            First := IndexI;
+                        end;
+
+                    end;
+
+                end;
+
+                if (First = (ADir.Pos - RESERVED_ENTRIES)) then begin
+                    AEnt.Ino := (ADir.Pos - RESERVED_ENTRIES);
+                    // convert file name to UNIX style
+                    Buffer[0] := Chr(Ord('0') + (Current.Status div 10));
+                    Buffer[1] := Chr(Ord('0') + (Current.Status mod 10));
+                    BufferIndex := 2;
+                    IndexI := 0;
+
+                    while ((IndexI < 8) and ((Ord(Current.Name[IndexI]) and $7F) <> Ord(' '))) do begin
+
+                        if (FDrive.UpperCase) then begin
+                            Buffer[BufferIndex] := Chr(Ord(Current.Name[IndexI]) and $7F);
+                        end
+                        else begin
+                            Buffer[BufferIndex] := LowerCase(Chr(Ord(Current.Name[IndexI]) and $7F));
+                        end;
+
+                        Inc(BufferIndex);
+                        Inc(IndexI);
+                    end;
+
+                    HasExt := False;
+                    IndexI := 0;
+
+                    while ((IndexI < 3) and ((Ord(Current.Ext[IndexI]) and $7F) <> Ord(' '))) do begin
+
+                        if not (HasExt) then begin
+                            Buffer[BufferIndex] := '.';
+                            Inc(BufferIndex);
+                            HasExt := True;
+                        end;
+
+                        if (FDrive.UpperCase) then begin
+                            Buffer[BufferIndex] := Chr(Ord(Current.Ext[IndexI]) and $7F);
+                        end
+                        else begin
+                            Buffer[BufferIndex] := LowerCase(Chr(Ord(Current.Ext[IndexI]) and $7F));
+                        end;
+
+                        Inc(BufferIndex);
+                        Inc(IndexI);
+                    end;
+
+                    AEnt.RecLen := BufferIndex;
+                    StrPCopy(AEnt.Name, Buffer);
+                    AEnt.Off := ADir.Pos;
+                    Inc(ADir.Pos);
+                    Result := True;
+                    break;
+                end;
+
+            end;
+
+        end
+        else begin
+            Result := False;
+            break;
+        end;
+
+        Inc(ADir.Pos);
+    end;
 end;
 
 // --------------------------------------------------------------------------------
