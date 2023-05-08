@@ -22,7 +22,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="1"/>
-      <BuildNr Value="331"/>
+      <BuildNr Value="831"/>
       <StringTable FileDescription="CP/M Image-File Explorer" InternalName="CIFE" OriginalFilename="CIFE"/>
     </VersionInfo>
     <BuildModes>
@@ -475,6 +475,11 @@
         <Filename Value="Sources/cpmdefs.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="CpmDefs"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Sources/quicksort.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="QuickSort"/>
       </Unit>
     </Units>
   </ProjectOptions>

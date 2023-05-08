@@ -8,8 +8,8 @@
         <Filename Value="cife.lpr"/>
         <IsPartOfProject Value="True"/>
         <EditorIndex Value="-1"/>
-        <CursorPos X="17" Y="33"/>
-        <UsageCount Value="82"/>
+        <CursorPos X="16" Y="33"/>
+        <UsageCount Value="137"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/main_window.pas"/>
@@ -18,9 +18,9 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Main_Window"/>
-        <TopLine Value="333"/>
-        <CursorPos X="11" Y="395"/>
-        <UsageCount Value="82"/>
+        <TopLine Value="362"/>
+        <CursorPos X="70" Y="430"/>
+        <UsageCount Value="137"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -33,7 +33,7 @@
         <UnitName Value="NewImage_Dialog"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="16"/>
-        <UsageCount Value="71"/>
+        <UsageCount Value="126"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/file_dialog.pas"/>
@@ -43,9 +43,9 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="File_Dialog"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="41"/>
+        <TopLine Value="115"/>
         <CursorPos X="17" Y="71"/>
-        <UsageCount Value="71"/>
+        <UsageCount Value="126"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/renamefile_dialog.pas"/>
@@ -56,7 +56,7 @@
         <UnitName Value="RenameFile_Dialog"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="17" Y="19"/>
-        <UsageCount Value="70"/>
+        <UsageCount Value="125"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/characteristics_dialog.pas"/>
@@ -68,7 +68,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="7"/>
         <CursorPos X="22" Y="19"/>
-        <UsageCount Value="70"/>
+        <UsageCount Value="125"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/settings_dialog.pas"/>
@@ -80,7 +80,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="4"/>
         <CursorPos X="4" Y="64"/>
-        <UsageCount Value="70"/>
+        <UsageCount Value="125"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/about_dialog.pas"/>
@@ -92,16 +92,16 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="33"/>
         <CursorPos X="13" Y="70"/>
-        <UsageCount Value="70"/>
+        <UsageCount Value="125"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/imagepage.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="ImagePage"/>
         <EditorIndex Value="1"/>
-        <TopLine Value="22"/>
-        <CursorPos X="93" Y="36"/>
-        <UsageCount Value="70"/>
+        <TopLine Value="59"/>
+        <CursorPos X="5" Y="259"/>
+        <UsageCount Value="125"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -111,15 +111,16 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="40"/>
         <CursorPos X="71" Y="40"/>
-        <UsageCount Value="65"/>
+        <UsageCount Value="120"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/versioninfo.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="VersionInfo"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="16"/>
-        <UsageCount Value="60"/>
+        <TopLine Value="172"/>
+        <CursorPos X="35" Y="220"/>
+        <UsageCount Value="115"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/xmlsettings.pas"/>
@@ -128,15 +129,16 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="133"/>
         <CursorPos X="20" Y="162"/>
-        <UsageCount Value="60"/>
+        <UsageCount Value="115"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/cifeglobals.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="CifeGlobals"/>
         <EditorIndex Value="4"/>
-        <CursorPos X="25" Y="50"/>
-        <UsageCount Value="48"/>
+        <TopLine Value="12"/>
+        <CursorPos X="32" Y="49"/>
+        <UsageCount Value="103"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -146,7 +148,7 @@
         <EditorIndex Value="5"/>
         <TopLine Value="79"/>
         <CursorPos X="7" Y="79"/>
-        <UsageCount Value="48"/>
+        <UsageCount Value="103"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -155,9 +157,9 @@
         <UnitName Value="CpmFileSystem"/>
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="992"/>
-        <CursorPos X="5" Y="1104"/>
-        <UsageCount Value="48"/>
+        <TopLine Value="1470"/>
+        <CursorPos X="7" Y="1482"/>
+        <UsageCount Value="103"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -165,9 +167,9 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="CpmTools"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="10"/>
-        <CursorPos X="27" Y="126"/>
-        <UsageCount Value="48"/>
+        <TopLine Value="119"/>
+        <CursorPos X="27" Y="148"/>
+        <UsageCount Value="103"/>
         <Loaded Value="True"/>
       </Unit>
       <Unit>
@@ -175,17 +177,25 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="CpmDefs"/>
         <EditorIndex Value="6"/>
-        <TopLine Value="23"/>
-        <CursorPos X="138" Y="29"/>
-        <UsageCount Value="45"/>
+        <TopLine Value="7"/>
+        <CursorPos X="23" Y="31"/>
+        <UsageCount Value="100"/>
         <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Sources/quicksort.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="QuickSort"/>
+        <EditorIndex Value="-1"/>
+        <CursorPos Y="19"/>
+        <UsageCount Value="27"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/commonstructures.pas"/>
         <UnitName Value="CommonStructures"/>
         <EditorIndex Value="-1"/>
         <CursorPos X="5" Y="26"/>
-        <UsageCount Value="23"/>
+        <UsageCount Value="21"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/uscaledpi.pas"/>
@@ -194,143 +204,154 @@
         <WindowIndex Value="-1"/>
         <TopLine Value="-1"/>
         <CursorPos X="-1" Y="-1"/>
-        <UsageCount Value="19"/>
+        <UsageCount Value="17"/>
       </Unit>
       <Unit>
         <Filename Value="../../../Lazarus_2.2.4/lazarus/lcl/include/customform.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="1861"/>
         <CursorPos Y="1892"/>
-        <UsageCount Value="8"/>
+        <UsageCount Value="6"/>
       </Unit>
       <Unit>
         <Filename Value="../../../Lazarus_2.2.4/lazarus/components/lazutils/laztracer.pas"/>
         <UnitName Value="LazTracer"/>
         <EditorIndex Value="-1"/>
         <CursorPos Y="50"/>
+        <UsageCount Value="6"/>
+      </Unit>
+      <Unit>
+        <Filename Value="../../../Lazarus_2.2.6/lazarus/lcl/grids.pas"/>
+        <UnitName Value="Grids"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="10098"/>
+        <CursorPos Y="10129"/>
         <UsageCount Value="8"/>
       </Unit>
     </Units>
+    <Debugger>
+      <Backend Value="{A3625D4B-D370-4D2A-9E21-50487926C06A}"/>
+    </Debugger>
     <JumpHistory HistoryIndex="29">
       <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="289" TopLine="258"/>
+        <Filename Value="Sources/cpmtools.pas"/>
+        <Caret Line="175" Column="34" TopLine="145"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/cpmtools.pas"/>
+        <Caret Line="31" Column="68"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/main_window.pas"/>
+        <Caret Line="354" Column="72" TopLine="159"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/cifeglobals.pas"/>
+        <Caret Line="43" Column="18" TopLine="12"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/main_window.pas"/>
+        <Caret Line="428" Column="71" TopLine="379"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagepage.pas"/>
+        <Caret Line="31" Column="64" TopLine="21"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagepage.pas"/>
+        <Caret Line="93" Column="96" TopLine="59"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagepage.pas"/>
+        <Caret Line="41" Column="74" TopLine="40"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagepage.pas"/>
+        <Caret Line="41" Column="40" TopLine="23"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagepage.pas"/>
+        <Caret Line="63" Column="19" TopLine="32"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagepage.pas"/>
+        <Caret Line="95" Column="16" TopLine="64"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagepage.pas"/>
+        <Caret Line="57" Column="54" TopLine="10"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagepage.pas"/>
+        <Caret Line="96" Column="45" TopLine="65"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/main_window.pas"/>
+        <Caret Line="160" Column="44" TopLine="128"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/main_window.pas"/>
+        <Caret Line="368" Column="72" TopLine="338"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/main_window.pas"/>
+        <Caret Line="160" Column="41" TopLine="117"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/main_window.pas"/>
+        <Caret Line="435" Column="45" TopLine="379"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/main_window.pas"/>
+        <Caret Line="428" Column="47" TopLine="379"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/cifeglobals.pas"/>
+        <Caret Line="49" Column="32" TopLine="12"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagepage.pas"/>
+        <Caret Line="269" Column="52" TopLine="210"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/cpmtools.pas"/>
+        <Caret Line="353" Column="52" TopLine="311"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagepage.pas"/>
+        <Caret Line="231" Column="159" TopLine="215"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagepage.pas"/>
+        <Caret Line="96" TopLine="80"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/main_window.pas"/>
+        <Caret Line="366" Column="74" TopLine="347"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/cpmtools.pas"/>
+        <Caret Line="43" Column="29" TopLine="31"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/cpmtools.pas"/>
+        <Caret Line="45" Column="33" TopLine="44"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/cpmtools.pas"/>
+        <Caret Line="319" Column="24" TopLine="276"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/cpmtools.pas"/>
+        <Caret Line="59" Column="29" TopLine="27"/>
       </Position>
       <Position>
         <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="1140" TopLine="1111"/>
+        <Caret Line="184" Column="56" TopLine="143"/>
       </Position>
       <Position>
         <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="265" Column="147" TopLine="255"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="288" TopLine="255"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="1139" TopLine="1110"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="286" TopLine="257"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="1139" TopLine="1110"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="300" Column="44" TopLine="254"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="289" Column="45" TopLine="262"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="1126" Column="9" TopLine="1093"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="287" Column="136" TopLine="269"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="1151" TopLine="1122"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="298" TopLine="269"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="1151" TopLine="1122"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="298" TopLine="269"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="306" Column="45" TopLine="254"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="198" Column="19" TopLine="185"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="238" Column="27" TopLine="202"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="346" Column="73" TopLine="302"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="411" Column="72" TopLine="362"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="445" Column="95" TopLine="410"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="1131" Column="163" TopLine="1127"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="1139" Column="13" TopLine="1095"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="1255" Column="13" TopLine="1213"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="1313" Column="23" TopLine="1264"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="1271" Column="35" TopLine="1227"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="1268" Column="70" TopLine="1238"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="1186" Column="37" TopLine="1151"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="1129" Column="38" TopLine="1095"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="530" Column="5" TopLine="499"/>
+        <Caret Line="1847" Column="5" TopLine="1797"/>
       </Position>
     </JumpHistory>
     <RunParams>
@@ -339,85 +360,60 @@
     </RunParams>
   </ProjectSession>
   <Debugging>
+    <BreakPoints>
+      <Item>
+        <Kind Value="bpkSource"/>
+        <WatchScope Value="wpsLocal"/>
+        <WatchKind Value="wpkWrite"/>
+        <Source Value="Sources/cpmfilesystem.pas"/>
+        <Line Value="1"/>
+      </Item>
+    </BreakPoints>
     <Watches>
       <Item>
-        <Expression Value="FDrive.UpperCase"/>
+        <Expression Value="AInode.Ino"/>
       </Item>
       <Item>
-        <Expression Value="FDrive.SecLength"/>
+        <Expression Value="AInode.Mode"/>
       </Item>
       <Item>
-        <Expression Value="FDrive.Tracks"/>
+        <Expression Value="AInode.Size"/>
       </Item>
       <Item>
-        <Expression Value="FDrive.SecTrk"/>
+        <Expression Value="AInode.Attr"/>
       </Item>
       <Item>
-        <Expression Value="FDrive.BlkSiz"/>
+        <Expression Value="AInode.ATime"/>
       </Item>
       <Item>
-        <Expression Value="FDrive.MaxDir"/>
+        <Expression Value="AInode.MTime"/>
       </Item>
       <Item>
-        <Expression Value="FDrive.DirBlks"/>
+        <Expression Value="AInode.CTime"/>
       </Item>
       <Item>
-        <Expression Value="FDrive.Skew"/>
+        <Expression Value="DirDate.Status"/>
       </Item>
       <Item>
-        <Expression Value="FDrive.BootSec"/>
+        <Expression Value="DirDate.Name"/>
       </Item>
       <Item>
-        <Expression Value="FDrive.BootTrk"/>
+        <Expression Value="DirDate.Ext"/>
       </Item>
       <Item>
-        <Expression Value="FDrive.Offset"/>
+        <Expression Value="DirDate.Extnol"/>
       </Item>
       <Item>
-        <Expression Value="FDrive.OsType"/>
+        <Expression Value="DirDate.Lrc"/>
       </Item>
       <Item>
-        <Expression Value="FDrive.Size"/>
+        <Expression Value="DirDate.Extnoh"/>
       </Item>
       <Item>
-        <Expression Value="FDrive.Extents"/>
+        <Expression Value="DirDate.Blkcnt"/>
       </Item>
       <Item>
-        <Expression Value="fDrive.AlvSize"/>
-      </Item>
-      <Item>
-        <Expression Value="FDrive.CnotaTime"/>
-      </Item>
-      <Item>
-        <Expression Value="FDrive.DiskLabel"/>
-      </Item>
-      <Item>
-        <Expression Value="FDrive.LabelLength"/>
-      </Item>
-      <Item>
-        <Expression Value="FDrive.Passwd"/>
-      </Item>
-      <Item>
-        <Expression Value="FDrive.PasswdLength"/>
-      </Item>
-      <Item>
-        <Expression Value="FDrive.DirtyDirectory"/>
-      </Item>
-      <Item>
-        <Expression Value="FDrive.DirtyDateStamp"/>
-      </Item>
-      <Item>
-        <Expression Value="FAllocationVector"/>
-      </Item>
-      <Item>
-        <Expression Value="FS_Ifdir"/>
-      </Item>
-      <Item>
-        <Expression Value="FS_Ifreg"/>
-      </Item>
-      <Item>
-        <Expression Value="FRoot.Mode"/>
-        <DisplayStyle Value="wdfDecimal"/>
+        <Expression Value="DirDate.Pointers"/>
       </Item>
     </Watches>
   </Debugging>
