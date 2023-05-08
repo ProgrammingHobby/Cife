@@ -28,7 +28,21 @@ type
     ino_t = cardinal;
     mode_t = nativeuint;
     cpm_attr_t = integer;
-    time_t = longint;
+    time_t = TDateTime;
+
+    TTm = packed record
+        tm_sec: integer;            // Seconds. [0-60] (1 leap second)
+        tm_min: integer;            // Minutes. [0-59]
+        tm_hour: integer;           // Hours.[0-23]
+        tm_mday: integer;           // Day.[1-31]
+        tm_mon: integer;            // Month.[0-11]
+        tm_year: integer;           // Year since 1900
+        tm_wday: integer;           // Day of week [0-6] (Sunday = 0)
+        tm_yday: integer;           // Days of year [0-365]
+        tm_isdst: integer;          // Daylight Savings flag [-1/0/1]
+        tm_gmtoff: integer;         // Seconds east of UTC
+        tm_zone: pansichar;         // Timezone abbreviation
+    end;
 
 const
     INTBITS = (sizeof(integer) * 8);
@@ -70,6 +84,10 @@ const
     S_IFDIR = 16384;
     S_IFREG = 32768;
 
+    O_RDONLY = 00;
+    O_WRONLY = 01;
+    O_RDWR = 02;
+
     C0 = 'G';
     C1 = 'E';
     C2 = 'H';
@@ -92,10 +110,44 @@ const
 //function BCD2BIN(x):
 //function BIN2BCD(x):
 //function ISFILECHAR(notFirst,c):
-//function EXTENT(low,high):
+//function EXTENT(low,high) (((low)&0x1f)|(((high)&0x3f)<<5))
 //function EXTENTL(extent):
 //function EXTENTH(extent):
 
+function S_ISDIR(AMode: mode_t): boolean; inline;
+function S_ISREG(AMode: mode_t): boolean; inline;
+function ISFILECHAR(ANotFirst: integer; AChar: char): boolean; inline;
+function EXTENT(ALow: byte; AHigh: byte): integer; inline;
+
 implementation
+
+// --------------------------------------------------------------------------------
+function S_ISDIR(AMode: mode_t): boolean;
+begin
+    Result := ((AMode and &0170000) = &040000);
+end;
+
+// --------------------------------------------------------------------------------
+function S_ISREG(AMode: mode_t): boolean;
+begin
+    Result := ((AMode and &0170000) = &0100000);
+end;
+
+// --------------------------------------------------------------------------------
+function ISFILECHAR(ANotFirst: integer; AChar: char): boolean;
+begin
+    //(((notFirst) || (c)!=' ') && (c)>=' ' && !((c)&~0x7f) && (c)!='<' && (c)!='>' && (c)!='.' && (c)!=',' && (c)!=';' && (c)!=':' && (c)!='=' && (c)!='?' && (c)!='*' && (c)!= '[' && (c)!=']')
+    Result := (((ANotFirst <> 0) or (Ord(AChar) <> Ord(' '))) and (Ord(AChar) >= Ord(' ')) and
+        ((Ord(AChar) and not $7F) = 0) and (Ord(AChar) <> Ord('<')) and (Ord(AChar) <> Ord('>')) and
+        (Ord(AChar) <> Ord('.')) and (Ord(AChar) <> Ord(',')) and (Ord(AChar) <> Ord(';')) and
+        (Ord(AChar) <> Ord(':')) and (Ord(AChar) <> Ord('=')) and (Ord(AChar) <> Ord('?')) and
+        (Ord(AChar) <> Ord('*')) and (Ord(AChar) <> Ord('[')) and (Ord(AChar) <> Ord(']')));
+end;
+
+// --------------------------------------------------------------------------------
+function EXTENT(ALow: byte; AHigh: byte): integer;
+begin
+    Result := ((ALow and $1F) or ((AHigh and $3F) shl 5));
+end;
 
 end.
