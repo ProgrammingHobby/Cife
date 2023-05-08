@@ -40,13 +40,13 @@ type
         System: string;
     end;
 
-    TDirStatistics = record
-        TotalBytes: string;
-        TotalRecords: string;
-        Total1KBlocks: string;
-        FilesFound: string;
-        MaxDirEntries: string;
-        UsedDirEntries: string;
+    TDirStatistic = record
+        TotalBytes: integer;
+        TotalRecords: integer;
+        Total1KBlocks: integer;
+        FilesFound: integer;
+        MaxDirEntries: integer;
+        UsedDirEntries: integer;
     end;
 
 function SettingsFile: string;
