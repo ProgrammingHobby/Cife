@@ -157,7 +157,7 @@ type
         procedure AddImagePage(ImageFile: string; ImageType: string);
         procedure HistoryMenuItemClick(Sender: TObject);
         procedure ShowImageInfo(Info: TFileSystemInfo);
-        procedure ShowDirectoryStatistics(Statistics: TDirStatistics);
+        procedure ShowDirectoryStatistic(AStatistic: TDirStatistic);
 
     public
 
@@ -362,9 +362,10 @@ var
     ImagePage: TImagePage;
 begin
     ImagePage := TImagePage.Create(PageControl);
+    ImagePage.SetFileSystemInfoCallBack(@ShowImageInfo);
+    ImagePage.SetDirectoryStatisticCallBack(@ShowDirectoryStatistic);
     if (ImagePage.Open(ImageFile, ImageType)) then begin
         ImagePage.Caption := ExtractFileName(ImageFile);
-        ImagePage.SetFileSystemInfoCallBack(@ShowImageInfo);
         ImagePage.PageControl := PageControl;
         PageControl.ActivePage := ImagePage;
         if (PageControl.PageCount > 0) then begin
@@ -424,14 +425,14 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-procedure TMainWindow.ShowDirectoryStatistics(Statistics: TDirStatistics);
+procedure TMainWindow.ShowDirectoryStatistic(AStatistic: TDirStatistic);
 begin
-    labelTotalBytes.Caption := Statistics.TotalBytes;
-    labelTotal1kBlocks.Caption := Statistics.Total1KBlocks;
-    labelTotalRecords.Caption := Statistics.TotalRecords;
-    labelFilesFound.Caption := Statistics.FilesFound;
-    labelMaxDirEntries.Caption := Statistics.MaxDirEntries;
-    labelUsedDirEntries.Caption := Statistics.UsedDirEntries;
+    labelTotalBytes.Caption := IntToStr(AStatistic.TotalBytes) + 'K';
+    labelTotal1kBlocks.Caption := IntToStr(AStatistic.Total1KBlocks);
+    labelTotalRecords.Caption := IntToStr(AStatistic.TotalRecords);
+    labelFilesFound.Caption := IntToStr(AStatistic.FilesFound);
+    labelMaxDirEntries.Caption := IntToStr(AStatistic.MaxDirEntries);
+    labelUsedDirEntries.Caption := IntToStr(AStatistic.UsedDirEntries);
 end;
 
 // --------------------------------------------------------------------------------
