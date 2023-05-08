@@ -27,16 +27,20 @@ uses
 
 type
 
+    TPrintDirectoryEntryCB = procedure(AColumn: integer; ARow: integer; AData: string) of object;
+
     { TCpmTools }
 
     TCpmTools = class
     public    // Attribute
 
     public    // Methoden
+        procedure SetPrintDirectoryEntryCallBack(APrintDirectoryEntryCB: TPrintDirectoryEntryCB);
         function OpenImage(const AFileName: string; const AFileType: string; AUpperCase: boolean): boolean;
         function CloseImage: boolean;
         procedure ShowDirectory;
         function GetFileSystemInfo: TFileSystemInfo;
+        function GetDirectoryStatistic: TDirStatistic;
 
     public  // Konstruktor/Destruktor
         constructor Create; overload;
@@ -51,6 +55,8 @@ type
         FCpmFileSystem: TCpmFileSystem;
         FFileName: string;
         FFileType: string;
+        FDirStatistic: TDirStatistic;
+        FPrintDirectoryEntry: TPrintDirectoryEntryCB;
 
     private   // Methoden
 
@@ -60,7 +66,13 @@ implementation
 
 { TCpmTools }
 
-uses Dialogs, Controls;
+uses Dialogs, Controls, StrUtils, CpmDefs, QuickSort;
+
+// --------------------------------------------------------------------------------
+procedure TCpmTools.SetPrintDirectoryEntryCallBack(APrintDirectoryEntryCB: TPrintDirectoryEntryCB);
+begin
+    FPrintDirectoryEntry := APrintDirectoryEntryCB;
+end;
 
 // --------------------------------------------------------------------------------
 function TCpmTools.OpenImage(const AFileName: string; const AFileType: string; AUpperCase: boolean): boolean;
@@ -121,8 +133,166 @@ end;
 
 // --------------------------------------------------------------------------------
 procedure TCpmTools.ShowDirectory;
+var
+    DirFile: TCpmInode;
+    Buf: TCpmStatFS;
+    StatBuf: TCpmStat;
+    Gargc, Row: integer;
+    IndexI, Attrib, User: integer;
+    FilesCount, TotalBytes, TotalRecs: integer;
+    Gargv: TStringList;
+    Attribute: string[16];
 begin
+    Row := 1;
+    Gargv := TStringList.Create;
+    FCpmFileSystem.Glob('*', Gargc, Gargv);
 
+    if (Gargc > 0) then begin
+        FilesCount := 0;
+        TotalBytes := 0;
+        TotalRecs := 0;
+        QSort(Gargv, 0, Gargv.Count - 1);
+        FCpmFileSystem.StatFs(Buf);
+
+        for User := 0 to 31 do begin
+
+            for IndexI := 0 to Gargc - 1 do begin
+
+                if ((Gargv[IndexI].ToCharArray[0] = Chr(Ord('0') + (User div 10))) and
+                    (Gargv[IndexI].ToCharArray[1] = Chr(Ord('0') + (User mod 10)))) then begin
+                    FCpmFileSystem.Name2Inode(PChar(Gargv[IndexI]), DirFile);
+                    FCpmFileSystem.Stat(DirFile, StatBuf);
+                    FCpmFileSystem.AttrGet(DirFile, Attrib);
+                    Inc(TotalBytes, StatBuf.Size);
+                    Inc(TotalRecs, ((StatBuf.Size + 127) div 128));
+                    //  user: name
+                    FPrintDirectoryEntry(0, Row, Format('%2d: %s', [User,
+                        MidStr(Gargv[IndexI], 3, Length(Gargv[IndexI]))]));
+                    //  bytes
+                    FPrintDirectoryEntry(1, Row,
+                        Format('%5.1dK', [(StatBuf.Size + Buf.F_BSize - 1) div Buf.F_BSize * (Buf.F_BSize div 1024)]));
+                    //  records
+                    FPrintDirectoryEntry(2, Row, Format('%6.1d', [StatBuf.Size div 128]));
+                    //  attributes
+                    Attribute := '';
+
+                    if ((Attrib and CPM_ATTR_F1) <> 0) then begin
+                        Attribute := Attribute + '1';
+                    end
+                    else begin
+                        Attribute := Attribute + '-';
+                    end;
+
+                    if ((Attrib and CPM_ATTR_F2) <> 0) then begin
+                        Attribute := Attribute + '3';
+                    end
+                    else begin
+                        Attribute := Attribute + '-';
+                    end;
+
+                    if ((Attrib and CPM_ATTR_F3) <> 0) then begin
+                        Attribute := Attribute + '3';
+                    end
+                    else begin
+                        Attribute := Attribute + '-';
+                    end;
+
+                    if ((Attrib and CPM_ATTR_F4) <> 0) then begin
+                        Attribute := Attribute + '4';
+                    end
+                    else begin
+                        Attribute := Attribute + '-';
+                    end;
+
+                    Attribute := Attribute + ' ';
+
+                    if ((Attrib and CPM_ATTR_RO) <> 0) then begin
+                        Attribute := Attribute + 'r';
+                    end
+                    else begin
+                        Attribute := Attribute + '-';
+                    end;
+
+                    if ((Attrib and CPM_ATTR_SYS) <> 0) then begin
+                        Attribute := Attribute + 's';
+                    end
+                    else begin
+                        Attribute := Attribute + '-';
+                    end;
+
+                    if ((Attrib and CPM_ATTR_ARCV) <> 0) then begin
+                        Attribute := Attribute + 'a';
+                    end
+                    else begin
+                        Attribute := Attribute + '-';
+                    end;
+
+                    FPrintDirectoryEntry(3, Row, Attribute);
+                    //  protections
+                    Attribute := '';
+
+                    if ((Attrib and CPM_ATTR_PWREAD) <> 0) then begin
+                        Attribute := Attribute + 'rd';
+                    end
+                    else begin
+                        Attribute := Attribute + '--';
+                    end;
+
+                    Attribute := Attribute + ' ';
+
+                    if ((Attrib and CPM_ATTR_PWWRITE) <> 0) then begin
+                        Attribute := Attribute + 'wr';
+                    end
+                    else begin
+                        Attribute := Attribute + '--';
+                    end;
+
+                    Attribute := Attribute + ' ';
+
+                    if ((Attrib and CPM_ATTR_PWDEL) <> 0) then begin
+                        Attribute := Attribute + 'del';
+                    end
+                    else begin
+                        Attribute := Attribute + '---';
+                    end;
+
+                    FPrintDirectoryEntry(4, Row, Attribute);
+
+                    //  updated
+
+                    if (StatBuf.MTime <> 0) then begin
+                        FPrintDirectoryEntry(5, Row, FormatDateTime('DD-MMM-YYYY HH:MM', StatBuf.MTime));
+                    end;
+
+                    //  created
+
+                    if (StatBuf.CTime <> 0) then begin
+                        FPrintDirectoryEntry(6, Row, FormatDateTime('DD-MMM-YYYY HH:MM', StatBuf.CTime));
+                    end;
+
+                    //  last access
+
+                    if (StatBuf.ATime <> 0) then begin
+                        FPrintDirectoryEntry(7, Row, FormatDateTime('DD-MMM-YYYY HH:MM', StatBuf.ATime));
+                    end;
+
+                    Inc(FilesCount);
+                    Inc(Row);
+                end;
+
+            end;
+
+        end;
+
+        FDirStatistic.TotalBytes := ((TotalBytes + 1023) div 1024);
+        FDirStatistic.TotalRecords := TotalRecs;
+        FDirStatistic.FilesFound := FilesCount;
+        FDirStatistic.Total1KBlocks := ((Buf.F_BUsed * Buf.F_BSize) div 1024);
+        FDirStatistic.UsedDirEntries := (Buf.F_Files - Buf.F_FFree);
+        FDirStatistic.MaxDirEntries := Buf.F_Files;
+    end;
+
+    FreeAndNil(Gargv);
 end;
 
 // --------------------------------------------------------------------------------
@@ -134,6 +304,12 @@ begin
     Info.FileName := FFileName;
     Info.FileType := FFileType;
     Result := Info;
+end;
+
+// --------------------------------------------------------------------------------
+function TCpmTools.GetDirectoryStatistic: TDirStatistic;
+begin
+    Result := FDirStatistic;
 end;
 
 // --------------------------------------------------------------------------------
