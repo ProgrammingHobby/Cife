@@ -1807,7 +1807,7 @@ begin
 
                 APattern := APattern + 1;
 
-                while (AEntry[0] <> '\0') do begin
+                while (AEntry[0] <> Chr(0)) do begin
 
                     if (RecMatch(AEntry, APattern)) then begin
                         Result := True;
@@ -1833,7 +1833,7 @@ begin
             end;
             else begin
 
-                if (strlower(AEntry) = strlower(APattern)) then begin
+                if (LowerCase(AEntry) = LowerCase(APattern)) then begin
                     AEntry := AEntry + 1;
                     APattern := APattern + 1;
                 end
