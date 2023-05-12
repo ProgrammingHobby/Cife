@@ -158,6 +158,7 @@ type
         procedure HistoryMenuItemClick(Sender: TObject);
         procedure ShowImageInfo(Info: TFileSystemInfo);
         procedure ShowDirectoryStatistic(AStatistic: TDirStatistic);
+        procedure MenuActionsControl(AMenuAction: TEnableAction);
 
     public
 
@@ -211,6 +212,7 @@ end;
 // --------------------------------------------------------------------------------
 procedure TMainWindow.actionCloseExecute(Sender: TObject);
 begin
+    MenuActionsControl([]);
     PageControl.ActivePage.Free;
     if (PageControl.PageCount <= 0) then begin
         actionClose.Enabled := False;
@@ -364,6 +366,7 @@ begin
     ImagePage := TImagePage.Create(PageControl);
     ImagePage.SetFileSystemInfoCallBack(@ShowImageInfo);
     ImagePage.SetDirectoryStatisticCallBack(@ShowDirectoryStatistic);
+    ImagePage.SetMenuActionCallBack(@MenuActionsControl);
     if (ImagePage.Open(ImageFile, ImageType)) then begin
         ImagePage.Caption := ExtractFileName(ImageFile);
         ImagePage.PageControl := PageControl;
@@ -433,6 +436,21 @@ begin
     labelFilesFound.Caption := IntToStr(AStatistic.FilesFound);
     labelMaxDirEntries.Caption := IntToStr(AStatistic.MaxDirEntries);
     labelUsedDirEntries.Caption := IntToStr(AStatistic.UsedDirEntries);
+end;
+
+// --------------------------------------------------------------------------------
+procedure TMainWindow.MenuActionsControl(AMenuAction: TEnableAction);
+begin
+    actionCut.Enabled := (MAcut in AMenuAction);
+    actionCopy.Enabled := (MAcopy in AMenuAction);
+    actionPaste.Enabled := (MApaste in AMenuAction);
+    actionSelectAll.Enabled := (MAselectall in AMenuAction);
+    actionRename.Enabled := (MArename in AMenuAction);
+    actionDelete.Enabled := (MAdelete in AMenuAction);
+    actionFormatCurrent.Enabled := (MAformat in AMenuAction);
+    actionCharacteristics.Enabled := (MAcharacteristic in AMenuAction);
+    actionRefresh.Enabled := (MArefresh in AMenuAction);
+    actionCheckImage.Enabled := (MAcheck in AMenuAction);
 end;
 
 // --------------------------------------------------------------------------------

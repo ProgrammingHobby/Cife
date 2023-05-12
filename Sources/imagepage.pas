@@ -26,9 +26,11 @@ uses
     Classes, SysUtils, ComCtrls, CpmTools, CifeGlobals;
 
 type
-
+    TMenuAction = (MAcut, MAcopy, MApaste, MAselectall, MArename, MAdelete, MAformat, MAcharacteristic, MArefresh, MAcheck);
+    TEnableAction = set of TMenuAction;
     TFileSystemInfoCB = procedure(AInfo: TFileSystemInfo) of object;
     TDirectoryStatisticCB = procedure(AStatistic: TDirStatistic) of object;
+    TMenuActionEnableCB = procedure(AEnableAction: TEnableAction) of object;
 
     { TImagePage }
 
@@ -39,6 +41,7 @@ type
         procedure DoShow; override;
         procedure SetFileSystemInfoCallBack(AFileSystemInfoCB: TFileSystemInfoCB);
         procedure SetDirectoryStatisticCallBack(ADirectoryStatisticCB: TDirectoryStatisticCB);
+        procedure SetMenuActionCallBack(AMenuActionEnableCB: TMenuActionEnableCB);
         function Open(const AFileName: string; const AFileType: string; AUpperCase: boolean = False): boolean;
         function GetFileName: string;
 
@@ -55,6 +58,8 @@ type
         FCpmTools: TCpmTools;
         FFileSystemInfoCallBack: TFileSystemInfoCB;
         FDirStatisticCallBack: TDirectoryStatisticCB;
+        FMenuActionEnableCallBack: TMenuActionEnableCB;
+        FEnableAction: TEnableAction;
 
     private   // Methoden
         procedure CreateDirectoryListView;
@@ -80,9 +85,21 @@ begin
     if Assigned(FFileSystemInfoCallBack) then begin
         FFileSystemInfoCallBack(FCpmTools.GetFileSystemInfo);
     end;
+
     if Assigned(FDirStatisticCallBack) then begin
         FDirStatisticCallBack(FCpmTools.GetDirectoryStatistic);
     end;
+
+    FEnableAction := [MApaste, MArefresh, MAformat, MAcheck];
+
+    if (FDirectoryList.Items.Count > 0) then begin
+        FEnableAction := FEnableAction + [MAselectall];
+    end;
+
+    if Assigned(FMenuActionEnableCallBack) then begin
+        FMenuActionEnableCallBack(FEnableAction);
+    end;
+
 end;
 
 // --------------------------------------------------------------------------------
@@ -95,6 +112,12 @@ end;
 procedure TImagePage.SetDirectoryStatisticCallBack(ADirectoryStatisticCB: TDirectoryStatisticCB);
 begin
     FDirStatisticCallBack := ADirectoryStatisticCB;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TImagePage.SetMenuActionCallBack(AMenuActionEnableCB: TMenuActionEnableCB);
+begin
+    FMenuActionEnableCallBack := AMenuActionEnableCB;
 end;
 
 // --------------------------------------------------------------------------------
@@ -116,6 +139,7 @@ begin
     CreateDirectoryListView;
     FCpmTools := TCpmTools.Create;
     FCpmTools.SetPrintDirectoryEntryCallBack(@PrintDirectoryEntry);
+    FEnableAction := [];
 end;
 
 // --------------------------------------------------------------------------------
@@ -141,10 +165,11 @@ begin
         ScrollBars := ssAutoVertical;
         ViewStyle := vsReport;
         AutoSort := False;
-        GridLines := True;
+        GridLines := False;
         ColumnClick := False;
-        SortDirection := sdAscending;
-        SortType := stText;
+        SortType := stNone;
+        AutoWidthLastColumn := False;
+        RowSelect := True;
         BeginUpdate;
         DirColumn := Columns.Add;
         DirColumn.Caption := 'User : Name';
