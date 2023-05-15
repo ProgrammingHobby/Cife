@@ -348,6 +348,7 @@ begin
     FImageFileHistory := TImageFileHistory.Create(menuitemRecentFiles);
     FImageFileHistory.SetHistoryMenuItemsEvent(@HistoryMenuItemClick);
     actionClearHistory.Enabled := FImageFileHistory.Load;
+    MenuActionsControl([]);
 end;
 
 // --------------------------------------------------------------------------------

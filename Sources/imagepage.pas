@@ -51,7 +51,9 @@ type
 
     protected // Attribute
 
-    protected // Methoden
+    protected // Methoden 
+        procedure DirectoryListResize(ASender: TObject);
+        procedure DirectorySelectItem(Sender: TObject; Item: TListItem; Selected: boolean);
 
     private   // Attribute
         FDirectoryList: TListView;
@@ -63,7 +65,6 @@ type
 
     private   // Methoden
         procedure CreateDirectoryListView;
-        procedure DirectoryListResize(ASender: TObject);
         procedure ClearFileSystemInfo;
         procedure PrintDirectoryEntry(AColumn: integer; ARow: integer; AData: string);
 
@@ -151,56 +152,6 @@ begin
     inherited Destroy;
 end;
 
-procedure TImagePage.CreateDirectoryListView;
-var
-    DirColumn: TListColumn;
-begin
-    FDirectoryList := TListView.Create(self);
-
-    with FDirectoryList do begin
-        Parent := self;
-        Align := alClient;
-        BorderStyle := bsSingle;
-        ReadOnly := True;
-        ScrollBars := ssAutoVertical;
-        ViewStyle := vsReport;
-        AutoSort := False;
-        GridLines := False;
-        ColumnClick := False;
-        SortType := stNone;
-        AutoWidthLastColumn := False;
-        RowSelect := True;
-        BeginUpdate;
-        DirColumn := Columns.Add;
-        DirColumn.Caption := 'User : Name';
-        DirColumn.Alignment := taLeftJustify;
-        DirColumn := Columns.Add;
-        DirColumn.Caption := 'Bytes';
-        DirColumn.Alignment := taRightJustify;
-        DirColumn := Columns.Add;
-        DirColumn.Caption := 'Recs';
-        DirColumn.Alignment := taRightJustify;
-        DirColumn := Columns.Add;
-        DirColumn.Caption := 'Attributes';
-        DirColumn.Alignment := taCenter;
-        DirColumn := Columns.Add;
-        DirColumn.Caption := 'Protections';
-        DirColumn.Alignment := taCenter;
-        DirColumn := Columns.Add;
-        DirColumn.Caption := 'Updated';
-        DirColumn.Alignment := taCenter;
-        DirColumn := Columns.Add;
-        DirColumn.Caption := 'Created';
-        DirColumn.Alignment := taCenter;
-        DirColumn := Columns.Add;
-        DirColumn.Caption := 'Last Access';
-        DirColumn.Alignment := taCenter;
-        EndUpdate;
-        OnResize := @DirectoryListResize;
-    end;
-
-end;
-
 // --------------------------------------------------------------------------------
 procedure TImagePage.DirectoryListResize(ASender: TObject);
 var
@@ -237,6 +188,86 @@ begin
     ColWidths := ColWidths + NewWidth;
     dlv.Columns[7].Width := (NewWidth + (ActListViewWidth - Colwidths));
     dlv.EndUpdate;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TImagePage.DirectorySelectItem(Sender: TObject; Item: TListItem; Selected: boolean);
+var
+    DirList: TListView;
+begin
+    DirList := TListView(Sender);
+
+    if (DirList.SelCount > 0) then begin
+        FEnableAction := FEnableAction + [MAcut, MAcopy, MAdelete] - [MApaste];
+
+        if (DirList.SelCount = 1) then begin
+            FEnableAction := FEnableAction + [MAcharacteristic, MArename];
+        end
+        else begin
+            FEnableAction := FEnableAction - [MAcharacteristic, MArename];
+        end;
+
+    end
+    else begin
+        FEnableAction := FEnableAction - [MAcut, MAcopy, MAdelete, MAcharacteristic, MArename] + [MApaste];
+    end;
+
+    if Assigned(FMenuActionEnableCallBack) then begin
+        FMenuActionEnableCallBack(FEnableAction);
+    end;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TImagePage.CreateDirectoryListView;
+var
+    DirColumn: TListColumn;
+begin
+    FDirectoryList := TListView.Create(self);
+
+    with FDirectoryList do begin
+        Parent := self;
+        Align := alClient;
+        BorderStyle := bsSingle;
+        ReadOnly := True;
+        MultiSelect := True;
+        ScrollBars := ssAutoVertical;
+        ViewStyle := vsReport;
+        AutoSort := False;
+        GridLines := False;
+        ColumnClick := False;
+        SortType := stNone;
+        AutoWidthLastColumn := False;
+        RowSelect := True;
+        BeginUpdate;
+        DirColumn := Columns.Add;
+        DirColumn.Caption := 'User : Name';
+        DirColumn.Alignment := taLeftJustify;
+        DirColumn := Columns.Add;
+        DirColumn.Caption := 'Bytes';
+        DirColumn.Alignment := taRightJustify;
+        DirColumn := Columns.Add;
+        DirColumn.Caption := 'Recs';
+        DirColumn.Alignment := taRightJustify;
+        DirColumn := Columns.Add;
+        DirColumn.Caption := 'Attributes';
+        DirColumn.Alignment := taCenter;
+        DirColumn := Columns.Add;
+        DirColumn.Caption := 'Protections';
+        DirColumn.Alignment := taCenter;
+        DirColumn := Columns.Add;
+        DirColumn.Caption := 'Updated';
+        DirColumn.Alignment := taCenter;
+        DirColumn := Columns.Add;
+        DirColumn.Caption := 'Created';
+        DirColumn.Alignment := taCenter;
+        DirColumn := Columns.Add;
+        DirColumn.Caption := 'Last Access';
+        DirColumn.Alignment := taCenter;
+        EndUpdate;
+        OnResize := @DirectoryListResize;
+        OnSelectItem := @DirectorySelectItem;
+    end;
+
 end;
 
 // --------------------------------------------------------------------------------
