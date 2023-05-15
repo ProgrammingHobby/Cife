@@ -368,6 +368,7 @@ begin
     ImagePage.SetFileSystemInfoCallBack(@ShowImageInfo);
     ImagePage.SetDirectoryStatisticCallBack(@ShowDirectoryStatistic);
     ImagePage.SetMenuActionCallBack(@MenuActionsControl);
+    ImagePage.SetPopupMenu(PopupMenu1);
     if (ImagePage.Open(ImageFile, ImageType)) then begin
         ImagePage.Caption := ExtractFileName(ImageFile);
         ImagePage.PageControl := PageControl;

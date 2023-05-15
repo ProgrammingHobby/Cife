@@ -23,7 +23,7 @@ unit ImagePage;
 interface
 
 uses
-    Classes, SysUtils, ComCtrls, CpmTools, CifeGlobals;
+    Classes, SysUtils, Menus, ComCtrls, CpmTools, CifeGlobals;
 
 type
     TMenuAction = (MAcut, MAcopy, MApaste, MAselectall, MArename, MAdelete, MAformat, MAcharacteristic, MArefresh, MAcheck);
@@ -42,6 +42,7 @@ type
         procedure SetFileSystemInfoCallBack(AFileSystemInfoCB: TFileSystemInfoCB);
         procedure SetDirectoryStatisticCallBack(ADirectoryStatisticCB: TDirectoryStatisticCB);
         procedure SetMenuActionCallBack(AMenuActionEnableCB: TMenuActionEnableCB);
+        procedure SetPopupMenu(APopupMenu: TPopupMenu);
         function Open(const AFileName: string; const AFileType: string; AUpperCase: boolean = False): boolean;
         function GetFileName: string;
 
@@ -119,6 +120,11 @@ end;
 procedure TImagePage.SetMenuActionCallBack(AMenuActionEnableCB: TMenuActionEnableCB);
 begin
     FMenuActionEnableCallBack := AMenuActionEnableCB;
+end;
+
+procedure TImagePage.SetPopupMenu(APopupMenu: TPopupMenu);
+begin
+    FDirectoryList.PopupMenu := APopupMenu;
 end;
 
 // --------------------------------------------------------------------------------
