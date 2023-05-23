@@ -171,7 +171,7 @@ implementation
 
 {$R *.lfm}
 
-uses NewImage_Dialog, File_Dialog, RenameFile_Dialog, Characteristics_Dialog, Settings_Dialog,
+uses NewImage_Dialog, File_Dialog, Characteristics_Dialog, Settings_Dialog,
     About_Dialog, XMLSettings;
 
 { TMainWindow }
@@ -265,13 +265,11 @@ end;
 // --------------------------------------------------------------------------------
 procedure TMainWindow.actionRenameExecute(Sender: TObject);
 var
-    dialog: TRenameFileDialog;
+    Page:TImagePage;
 begin
-    try
-        dialog := TRenameFileDialog.Create(self);
-        dialog.ShowModal;
-    finally
-        FreeAndNil(dialog);
+    Page:= PageControl.ActivePage as TImagePage;
+    if(Assigned(Page)) then begin
+        Page.RenameFile;
     end;
 end;
 

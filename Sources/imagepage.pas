@@ -45,6 +45,7 @@ type
         procedure SetPopupMenu(APopupMenu: TPopupMenu);
         function Open(const AFileName: string; const AFileType: string; AUpperCase: boolean = False): boolean;
         function GetFileName: string;
+        procedure RenameFile;
 
     public  // Konstruktor/Destruktor
         constructor Create(ATheOwner: TComponent); override;
@@ -75,7 +76,7 @@ implementation
 
 { TImagePage }
 
-uses Controls, StdCtrls;
+uses Controls, StdCtrls, RenameFile_Dialog, StrUtils;
 
 // --------------------------------------------------------------------------------
 procedure TImagePage.DoShow;
@@ -137,6 +138,28 @@ end;
 function TImagePage.GetFileName: string;
 begin
     Result := FCpmTools.GetFileSystemInfo.FileName;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TImagePage.RenameFile;
+var
+    Dialog: TRenameFileDialog;
+    OldName, NewName: string;
+begin
+    try
+        Dialog := TRenameFileDialog.Create(self);
+        OldName := DelSpace(FDirectoryList.Selected.Caption);
+        Dialog.SetOldName(OldName);
+        if (Dialog.ShowModal = mrOk) then begin
+            NewName := Dialog.GetNewName;
+            if (FCpmTools.RenameFile(OldName, NewName)) then begin
+                FDirectoryList.Clear;
+                FCpmTools.ShowDirectory;
+            end;
+        end;
+    finally
+        FreeAndNil(Dialog);
+    end;
 end;
 
 // --------------------------------------------------------------------------------
