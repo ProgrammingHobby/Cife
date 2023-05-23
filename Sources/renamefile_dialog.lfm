@@ -1,18 +1,19 @@
 object RenameFileDialog: TRenameFileDialog
   Left = 2160
-  Height = 165
+  Height = 177
   Top = 250
-  Width = 302
+  Width = 306
   AutoSize = True
   Caption = 'Rename CP/M File'
-  ClientHeight = 165
-  ClientWidth = 302
+  ClientHeight = 177
+  ClientWidth = 306
+  OnClose = FormClose
   Position = poOwnerFormCenter
   object ButtonPanel1: TButtonPanel
     Left = 8
     Height = 34
-    Top = 119
-    Width = 282
+    Top = 131
+    Width = 286
     BorderSpacing.Right = 4
     BorderSpacing.Bottom = 4
     BorderSpacing.Around = 8
@@ -30,26 +31,26 @@ object RenameFileDialog: TRenameFileDialog
   end
   object Panel1: TPanel
     Left = 4
-    Height = 107
+    Height = 119
     Top = 4
-    Width = 294
+    Width = 298
     Align = alClient
     AutoSize = True
     BorderSpacing.Around = 4
     BevelOuter = bvNone
-    ClientHeight = 107
-    ClientWidth = 294
+    ClientHeight = 119
+    ClientWidth = 298
     TabOrder = 1
     object Panel2: TPanel
       Left = 4
-      Height = 99
+      Height = 111
       Top = 4
       Width = 93
       Align = alLeft
       AutoSize = True
       BorderSpacing.Around = 4
       BevelOuter = bvNone
-      ClientHeight = 99
+      ClientHeight = 111
       ClientWidth = 93
       TabOrder = 0
       object Label1: TLabel
@@ -77,19 +78,19 @@ object RenameFileDialog: TRenameFileDialog
     end
     object Panel3: TPanel
       Left = 101
-      Height = 99
+      Height = 111
       Top = 4
-      Width = 189
+      Width = 193
       Align = alClient
       AutoSize = True
       BorderSpacing.Around = 4
       BevelOuter = bvNone
-      ClientHeight = 99
+      ClientHeight = 107
       ClientWidth = 189
       TabOrder = 1
       object Panel4: TPanel
         Left = 4
-        Height = 31
+        Height = 35
         Top = 4
         Width = 181
         Align = alTop
@@ -97,17 +98,19 @@ object RenameFileDialog: TRenameFileDialog
         BorderSpacing.Around = 4
         BevelOuter = bvNone
         ClientHeight = 31
-        ClientWidth = 181
+        ClientWidth = 177
         TabOrder = 0
-        object editOldUserNumer: TEdit
+        object editOldUserNumber: TEdit
           Left = 0
           Height = 31
           Hint = 'old user number'
           Top = 0
           Width = 31
           Align = alLeft
+          Alignment = taRightJustify
           BorderSpacing.Right = 8
           Enabled = False
+          NumbersOnly = True
           ReadOnly = True
           TabOrder = 0
         end
@@ -116,7 +119,7 @@ object RenameFileDialog: TRenameFileDialog
           Height = 31
           Hint = 'old File Name'
           Top = 0
-          Width = 142
+          Width = 138
           Align = alClient
           Constraints.MinWidth = 64
           Enabled = False
@@ -126,15 +129,15 @@ object RenameFileDialog: TRenameFileDialog
       end
       object Panel5: TPanel
         Left = 4
-        Height = 31
-        Top = 39
+        Height = 35
+        Top = 43
         Width = 181
         Align = alTop
         AutoSize = True
         BorderSpacing.Around = 4
         BevelOuter = bvNone
         ClientHeight = 31
-        ClientWidth = 181
+        ClientWidth = 177
         TabOrder = 1
         object editNewUserNumber: TEdit
           Left = 0
@@ -143,7 +146,11 @@ object RenameFileDialog: TRenameFileDialog
           Top = 0
           Width = 31
           Align = alLeft
+          Alignment = taRightJustify
           BorderSpacing.Right = 8
+          Enabled = False
+          MaxLength = 2
+          NumbersOnly = True
           TabOrder = 0
         end
         object editNewFileName: TEdit
@@ -151,20 +158,22 @@ object RenameFileDialog: TRenameFileDialog
           Height = 31
           Hint = 'new File Name'
           Top = 0
-          Width = 142
+          Width = 138
           Align = alClient
           Constraints.MinWidth = 64
+          MaxLength = 12
           TabOrder = 1
         end
       end
       object checkboxChangeUserNumber: TCheckBox
         Left = 4
         Height = 21
-        Top = 74
+        Top = 82
         Width = 181
         Align = alTop
         BorderSpacing.Around = 4
         Caption = 'change user number too.'
+        OnClick = checkboxChangeUserNumberClick
         TabOrder = 2
       end
     end

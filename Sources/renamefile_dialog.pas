@@ -33,7 +33,7 @@ type
     TRenameFileDialog = class(TForm)
         ButtonPanel1: TButtonPanel;
         checkboxChangeUserNumber: TCheckBox;
-        editOldUserNumer: TEdit;
+        editOldUserNumber: TEdit;
         editOldFileName: TEdit;
         editNewUserNumber: TEdit;
         editNewFileName: TEdit;
@@ -44,9 +44,15 @@ type
         Panel3: TPanel;
         Panel4: TPanel;
         Panel5: TPanel;
+        procedure checkboxChangeUserNumberClick(Sender: TObject);
+        procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
     private
+        FOldName: string;
+        FNewName: string;
 
     public
+        procedure SetOldName(AOldName: string);
+        function GetNewName: string;
 
     end;
 
@@ -56,5 +62,45 @@ var
 implementation
 
 {$R *.lfm}
+uses StrUtils;
+
+{ TRenameFileDialog }
+
+// --------------------------------------------------------------------------------
+procedure TRenameFileDialog.checkboxChangeUserNumberClick(Sender: TObject);
+begin
+    editNewUserNumber.Enabled := checkboxChangeUserNumber.Checked;
+end;
+
+procedure TRenameFileDialog.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+begin
+    if (ModalResult = mrOk) then begin
+        FNewName := editNewUserNumber.Text + ':' + editNewFileName.Text;
+        if (FNewName <> FOldName) then begin
+            ModalResult := mrOk;
+        end
+        else begin
+            FNewName := '';
+            ModalResult := mrCancel;
+        end;
+    end;
+    CloseAction := caFree;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TRenameFileDialog.SetOldName(AOldName: string);
+begin
+    FOldName := AOldName;
+    editOldUserNumber.Text := LeftStr(FOldName, Pos(':', FOldName) - 1);
+    editNewUserNumber.Text := LeftStr(FOldName, Pos(':', FOldName) - 1);
+    editOldFileName.Text := RightStr(FOldName, Length(FOldName) - Pos(':', FOldName));
+    editNewFileName.Text := RightStr(FOldName, Length(FOldName) - Pos(':', FOldName));
+end;
+
+// --------------------------------------------------------------------------------
+function TRenameFileDialog.GetNewName: string;
+begin
+    Result := FNewName;
+end;
 
 end.

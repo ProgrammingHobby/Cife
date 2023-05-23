@@ -2,7 +2,7 @@
 {"hash":197528661,"name":"trenamefiledialog.caption","sourcebytes":[82,101,110,97,109,101,32,67,80,47,77,32,70,105,108,101],"value":"Rename CP/M File"},
 {"hash":51159914,"name":"trenamefiledialog.label1.caption","sourcebytes":[111,108,100,32,70,105,108,101,32,78,97,109,101,32,58],"value":"old File Name :"},
 {"hash":199281386,"name":"trenamefiledialog.label2.caption","sourcebytes":[110,101,119,32,70,105,108,101,32,78,97,109,101,58],"value":"new File Name:"},
-{"hash":19452578,"name":"trenamefiledialog.editoldusernumer.hint","sourcebytes":[111,108,100,32,117,115,101,114,32,110,117,109,98,101,114],"value":"old user number"},
+{"hash":19452578,"name":"trenamefiledialog.editoldusernumber.hint","sourcebytes":[111,108,100,32,117,115,101,114,32,110,117,109,98,101,114],"value":"old user number"},
 {"hash":72551589,"name":"trenamefiledialog.editoldfilename.hint","sourcebytes":[111,108,100,32,70,105,108,101,32,78,97,109,101],"value":"old File Name"},
 {"hash":235458626,"name":"trenamefiledialog.editnewusernumber.hint","sourcebytes":[110,101,119,32,85,115,101,114,32,78,117,109,98,101,114],"value":"new User Number"},
 {"hash":113118373,"name":"trenamefiledialog.editnewfilename.hint","sourcebytes":[110,101,119,32,70,105,108,101,32,78,97,109,101],"value":"new File Name"},
