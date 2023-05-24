@@ -160,8 +160,7 @@ begin
         if (Dialog.ShowModal = mrOk) then begin
             NewName := Dialog.GetNewName;
             if (FCpmTools.RenameFile(OldName, NewName)) then begin
-                FDirectoryList.Clear;
-                FCpmTools.ShowDirectory;
+                RefreshDirectory;
             end;
         end;
     finally
