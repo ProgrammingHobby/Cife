@@ -348,7 +348,8 @@ msgstr ""
 msgid "old File Name"
 msgstr ""
 
-#: trenamefiledialog.editoldusernumer.hint
+#: trenamefiledialog.editoldusernumber.hint
+msgctxt "trenamefiledialog.editoldusernumber.hint"
 msgid "old user number"
 msgstr ""
 
