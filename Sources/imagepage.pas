@@ -45,6 +45,7 @@ type
         procedure SetPopupMenu(APopupMenu: TPopupMenu);
         function Open(const AFileName: string; const AFileType: string; AUpperCase: boolean = False): boolean;
         function GetFileName: string;
+        procedure RefreshDirectory;
         procedure RenameFile;
 
     public  // Konstruktor/Destruktor
@@ -82,15 +83,10 @@ uses Controls, StdCtrls, RenameFile_Dialog, StrUtils;
 procedure TImagePage.DoShow;
 begin
     inherited DoShow;
-    FDirectoryList.Clear;
-    FCpmTools.ShowDirectory;
+    RefreshDirectory;
 
     if Assigned(FFileSystemInfoCallBack) then begin
         FFileSystemInfoCallBack(FCpmTools.GetFileSystemInfo);
-    end;
-
-    if Assigned(FDirStatisticCallBack) then begin
-        FDirStatisticCallBack(FCpmTools.GetDirectoryStatistic);
     end;
 
     FEnableAction := [MApaste, MArefresh, MAformat, MAcheck];
@@ -138,6 +134,17 @@ end;
 function TImagePage.GetFileName: string;
 begin
     Result := FCpmTools.GetFileSystemInfo.FileName;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TImagePage.RefreshDirectory;
+begin
+    FDirectoryList.Clear;
+    FCpmTools.ShowDirectory;
+
+    if Assigned(FDirStatisticCallBack) then begin
+        FDirStatisticCallBack(FCpmTools.GetDirectoryStatistic);
+    end;
 end;
 
 // --------------------------------------------------------------------------------
