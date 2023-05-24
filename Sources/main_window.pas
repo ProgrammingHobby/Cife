@@ -147,6 +147,7 @@ type
         procedure actionNewExecute(Sender: TObject);
         procedure actionOpenExecute(Sender: TObject);
         procedure actionQuitExecute(Sender: TObject);
+        procedure actionRefreshExecute(Sender: TObject);
         procedure actionRenameExecute(Sender: TObject);
         procedure actionSettingsExecute(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -263,12 +264,23 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
+procedure TMainWindow.actionRefreshExecute(Sender: TObject);
+var
+    Page: TImagePage;
+begin
+    Page := PageControl.ActivePage as TImagePage;
+    if (Assigned(Page)) then begin
+        Page.RefreshDirectory;
+    end;
+end;
+
+// --------------------------------------------------------------------------------
 procedure TMainWindow.actionRenameExecute(Sender: TObject);
 var
-    Page:TImagePage;
+    Page: TImagePage;
 begin
-    Page:= PageControl.ActivePage as TImagePage;
-    if(Assigned(Page)) then begin
+    Page := PageControl.ActivePage as TImagePage;
+    if (Assigned(Page)) then begin
         Page.RenameFile;
     end;
 end;
