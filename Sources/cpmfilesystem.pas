@@ -1157,7 +1157,7 @@ begin
                             FFileSystemError :=
                                 Format('invalid blocksize ''%s'' in line %d', [DefinitionLine[1], (LineNumber)]);
                             Result := False;
-                            break;
+                            exit;
                         end;
 
                     end
@@ -1211,7 +1211,7 @@ begin
                             FFileSystemError :=
                                 Format('offset value ''%s'' is not a number in line %d', [DefinitionLine[1], (LineNumber)]);
                             Result := False;
-                            break;
+                            exit;
                         end;
 
                         for Pass := 1 to DefinitionLine[1].Length do begin
@@ -1229,7 +1229,7 @@ begin
                             FFileSystemError :=
                                 Format('invalid offset value ''%s'' in line %d', [DefinitionLine[1], (LineNumber)]);
                             Result := False;
-                            break;
+                            exit;
                         end;
 
 
@@ -1249,7 +1249,7 @@ begin
                                             Format('offset must be specified after sectrk, tracks and secLength in line %d',
                                             [(LineNumber)]);
                                         Result := False;
-                                        break;
+                                        exit;
                                     end;
 
                                     Multiplier := (FDrive.SecTrk * FDrive.SecLength);
@@ -1261,7 +1261,7 @@ begin
                                             Format('offset must be specified after sectrk, tracks and secLength in line %d',
                                             [(LineNumber)]);
                                         Result := False;
-                                        break;
+                                        exit;
                                     end;
 
                                     Multiplier := FDrive.SecLength;
@@ -1271,7 +1271,7 @@ begin
                                         Format('unknown unit specifier ''%s'' in line %d',
                                         [DefinitionLine[1][Pass], (LineNumber)]);
                                     Result := False;
-                                    break;
+                                    exit;
                                 end;
                             end;
 
@@ -1280,7 +1280,7 @@ begin
                         if ((Value * Multiplier) > MaxInt) then begin
                             FFileSystemError := Format('effective offset is out of range in line %d', [(LineNumber)]);
                             Result := False;
-                            break;
+                            exit;
                         end;
 
                         FDrive.Offset := (Value * Multiplier);
@@ -1310,7 +1310,7 @@ begin
                                 FFileSystemError :=
                                     Format('invalid OS type ''%s'' in line %d', [DefinitionLine[1], (LineNumber)]);
                                 Result := False;
-                                break;
+                                exit;
                             end;
                         end;
 
@@ -1320,7 +1320,7 @@ begin
                 then begin
                     FFileSystemError := Format('invalid keyword ''%s'' in line %d', [DefinitionLine[0], (LineNumber)]);
                     Result := False;
-                    break;
+                    exit;
                 end;
             end
             else if ((Length(DefinitionLine) >= 2) and (DefinitionLine[0] = 'diskdef') and (DefinitionLine[1] = AImageType)) then
@@ -1877,7 +1877,7 @@ begin
         Pat := PChar(Format('??%s', [APattern]));
     end
     else begin
-        Pat := PChar(Format('%02d%s', [User, APattern]));
+        Pat := PChar(Format('%.2d%s', [User, APattern]));
     end;
 
     Result := (RecMatch(AEntry, Pat));
