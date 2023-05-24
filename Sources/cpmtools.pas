@@ -39,6 +39,7 @@ type
         function OpenImage(const AFileName: string; const AFileType: string; AUpperCase: boolean): boolean;
         function CloseImage: boolean;
         procedure ShowDirectory;
+        function RenameFile(AOldName, ANewName: string): boolean;
         function GetFileSystemInfo: TFileSystemInfo;
         function GetDirectoryStatistic: TDirStatistic;
 
@@ -59,6 +60,8 @@ type
         FPrintDirectoryEntry: TPrintDirectoryEntryCB;
 
     private   // Methoden
+        function GetUserNumber(const AFileName: string): integer;
+        function ConvertFilename(const AFileName: string): string;
 
     end;
 
@@ -66,7 +69,7 @@ implementation
 
 { TCpmTools }
 
-uses Dialogs, Controls, StrUtils, CpmDefs, QuickSort;
+uses Dialogs, Controls, StrUtils, CpmDefs, QuickSort, Character;
 
 // --------------------------------------------------------------------------------
 procedure TCpmTools.SetPrintDirectoryEntryCallBack(APrintDirectoryEntryCB: TPrintDirectoryEntryCB);
@@ -296,6 +299,34 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
+function TCpmTools.RenameFile(AOldName, ANewName: string): boolean;
+var
+    Gargc: integer;
+    Gargv: TStringList;
+begin
+    try
+        Gargv := TStringList.Create;
+        FCpmFileSystem.Glob(PChar(AOldName), Gargc, Gargv);
+
+        if not ((Gargc > 0) and (FCpmFileSystem.Rename(PChar(Gargv[0]), PChar(ConvertFilename(ANewName))))) then begin
+
+            if MessageDlg(Format('can not rename %s in %s' + LineEnding + '(%s)',
+                [AOldName, ANewName, FCpmFileSystem.GetErrorMsg]), mtError, [mbOK], 0) = mrOk then begin
+                Result := False;
+                Exit;
+            end;
+
+        end;
+
+    finally
+        FreeAndNil(Gargv);
+    end;
+
+    FCpmFileSystem.Sync;
+    Result := True;
+end;
+
+// --------------------------------------------------------------------------------
 function TCpmTools.GetFileSystemInfo: TFileSystemInfo;
 var
     Info: TFileSystemInfo;
@@ -326,6 +357,30 @@ begin
     FreeAndNil(FCpmFileSystem);
     FreeAndNil(FCpmDevice);
     inherited Destroy;
+end;
+
+// --------------------------------------------------------------------------------
+//  -- get User Number from Filename (UU:NNNNNNNN.EEE)
+// --------------------------------------------------------------------------------
+function TCpmTools.GetUserNumber(const AFileName: string): integer;
+begin
+    if (IsDigit(AFileName[1]) and (AFileName[2] = ':')) then begin
+        Result := StrToIntDef(AFileName[1], -1);
+    end
+    else if (IsDigit(AFileName[1]) and IsDigit(AFileName[2]) and (AFileName[3] = ':')) then begin
+        Result := StrToIntDef(AFileName[1] + AFileName[2], -1);
+    end
+    else begin
+        Result := -1;
+    end;
+end;
+
+// --------------------------------------------------------------------------------
+//  -- convert Filename from UU:NNNNNNNN.EEE to UUNNNNNNNN.EEE
+// --------------------------------------------------------------------------------
+function TCpmTools.ConvertFilename(const AFileName: string): string;
+begin
+    Result := Format('%.2d%s', [GetUserNumber(AFileName), RightStr(AFileName, Length(AFileName) - Pos(':', AFileName))]);
 end;
 
 // --------------------------------------------------------------------------------

@@ -77,6 +77,8 @@ type
         procedure Stat(const AInode: TCpmInode; var ABuffer: TCpmStat);
         procedure AttrGet(const AInode: TCpmInode; var AAttrib: cpm_attr_t);
         function Unmount: boolean;
+        //int rename(char const *oldname, char const *newname);
+        function Rename(const AOldName: PChar; const ANewName: PChar): boolean;
         function Sync: boolean;
         function GetErrorMsg: string;
         function GetFileSystemInfo: TFileSystemInfo;
@@ -200,7 +202,6 @@ uses Character, StrUtils, DateUtils;
 // --------------------------------------------------------------------------------
 function TCpmFileSystem.ReadDiskdefData(const AImageType: string): boolean;
 begin
-    Result := False;
 
     if (AImageType.Contains('Amstrad (PCW16)')) then begin
         Result := AmstradReadSuper();
@@ -208,6 +209,7 @@ begin
     else begin
         Result := DiskdefsReadSuper(AImageType);
     end;
+
 end;
 
 // --------------------------------------------------------------------------------
@@ -826,6 +828,59 @@ begin
         SetLength(FDrive.DiskLabel, 0);
         FDrive.DiskLabel := nil;
     end;
+
+    Result := True;
+end;
+
+// --------------------------------------------------------------------------------
+//  -- rename a file
+// --------------------------------------------------------------------------------
+// int CpmFs::rename(char const *oldn, char const *newn) {
+function TCpmFileSystem.Rename(const AOldName: PChar; const ANewName: PChar): boolean;
+var
+    Extent, OldUser, NewUser: integer;
+    OldName: array[0..7] of char;
+    OldExt: array[0..2] of char;
+    NewName: array[0..7] of char;
+    NewExt: array[0..2] of char;
+begin
+
+    if not S_ISDIR(FRoot.Mode) then begin
+        FFileSystemError := 'no such file';
+        Result := False;
+        exit;
+    end;
+
+    if not SplitFilename(AOldName, FDrive.OsType, OldName, OldExt, OldUser) then begin
+        Result := False;
+        exit;
+    end;
+
+    if not SplitFilename(ANewName, FDrive.OsType, NewName, NewExt, NewUser) then begin
+        Result := False;
+        exit;
+    end;
+
+    Extent := FindFileExtent(OldUser, OldName, OldExt, 0, -1);
+
+    if (Extent = -1) then begin
+        Result := False;
+        exit;
+    end;
+
+    if (FindFileExtent(NewUser, NewName, NewExt, 0, -1) <> -1) then begin
+        FFileSystemError := 'file already exists';
+        Result := False;
+        exit;
+    end;
+
+    repeat
+        FDrive.DirtyDirectory := True;
+        FDirectory[Extent].Status := NewUser;
+        FDirectory[Extent].Name := NewName;
+        FDirectory[Extent].Ext := NewExt;
+        Extent := FindFileExtent(OldUser, OldName, OldExt, Extent + 1, -1);
+    until (Extent = -1);
 
     Result := True;
 end;
