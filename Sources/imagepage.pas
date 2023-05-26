@@ -77,7 +77,7 @@ implementation
 
 { TImagePage }
 
-uses Controls, StdCtrls, RenameFile_Dialog, StrUtils;
+uses Controls, StdCtrls, RenameFile_Dialog, StrUtils, Graphics;
 
 // --------------------------------------------------------------------------------
 procedure TImagePage.DoShow;
@@ -140,7 +140,7 @@ end;
 procedure TImagePage.RefreshDirectory;
 begin
     FDirectoryList.Clear;
-    FCpmTools.ShowDirectory;
+    FCpmTools.RefreshDirectory;
 
     if Assigned(FDirStatisticCallBack) then begin
         FDirStatisticCallBack(FCpmTools.GetDirectoryStatistic);
@@ -273,6 +273,7 @@ begin
         SortType := stNone;
         AutoWidthLastColumn := False;
         RowSelect := True;
+        Font.Name:='Consolas';
         BeginUpdate;
         DirColumn := Columns.Add;
         DirColumn.Caption := 'User : Name';

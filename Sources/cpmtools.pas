@@ -39,6 +39,7 @@ type
         function OpenImage(const AFileName: string; const AFileType: string; AUpperCase: boolean): boolean;
         function CloseImage: boolean;
         procedure ShowDirectory;
+        procedure RefreshDirectory;
         function RenameFile(AOldName, ANewName: string): boolean;
         function GetFileSystemInfo: TFileSystemInfo;
         function GetDirectoryStatistic: TDirStatistic;
@@ -56,6 +57,7 @@ type
         FCpmFileSystem: TCpmFileSystem;
         FFileName: string;
         FFileType: string;
+        FUppercase: boolean;
         FDirStatistic: TDirStatistic;
         FPrintDirectoryEntry: TPrintDirectoryEntryCB;
 
@@ -82,6 +84,7 @@ function TCpmTools.OpenImage(const AFileName: string; const AFileType: string; A
 begin
     FFileName := AFileName;
     FFileType := AFileType;
+    FUppercase := AUpperCase;
 
     if not (FCpmDevice.Open(AFileName, dmOpenReadWrite)) then begin
         if MessageDlg(Format('cannot open %s' + LineEnding + '(%s)', [ExtractFileName(AFileName), FCpmDevice.GetErrorMsg()])
@@ -169,8 +172,7 @@ begin
                     Inc(TotalBytes, StatBuf.Size);
                     Inc(TotalRecs, ((StatBuf.Size + 127) div 128));
                     //  user: name
-                    FPrintDirectoryEntry(0, Row, Format('%2d: %s', [User,
-                        MidStr(Gargv[IndexI], 3, Length(Gargv[IndexI]))]));
+                    FPrintDirectoryEntry(0, Row, Format('%2d: %s', [User, MidStr(Gargv[IndexI], 3, Length(Gargv[IndexI]))]));
                     //  bytes
                     FPrintDirectoryEntry(1, Row,
                         Format('%5.1dK', [(StatBuf.Size + Buf.F_BSize - 1) div Buf.F_BSize * (Buf.F_BSize div 1024)]));
@@ -296,6 +298,14 @@ begin
     end;
 
     FreeAndNil(Gargv);
+end;
+
+// --------------------------------------------------------------------------------
+procedure TCpmTools.RefreshDirectory;
+begin
+    if (FCpmFileSystem.InitDriveData(FUpperCase)) then begin
+        ShowDirectory;
+    end;
 end;
 
 // --------------------------------------------------------------------------------
