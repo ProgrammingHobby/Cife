@@ -43,7 +43,7 @@ type
         procedure SetDirectoryStatisticCallBack(ADirectoryStatisticCB: TDirectoryStatisticCB);
         procedure SetMenuActionCallBack(AMenuActionEnableCB: TMenuActionEnableCB);
         procedure SetPopupMenu(APopupMenu: TPopupMenu);
-        function Open(const AFileName: string; const AFileType: string; AUpperCase: boolean = False): boolean;
+        function Open(const AFileName: string; const AFileType: string): boolean;
         function GetFileName: string;
         procedure RefreshDirectory;
         procedure RenameFile;
@@ -77,7 +77,7 @@ implementation
 
 { TImagePage }
 
-uses Controls, StdCtrls, RenameFile_Dialog, StrUtils, Graphics;
+uses Controls, StdCtrls, RenameFile_Dialog, StrUtils, Graphics, XMLSettings;
 
 // --------------------------------------------------------------------------------
 procedure TImagePage.DoShow;
@@ -125,9 +125,21 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-function TImagePage.Open(const AFileName: string; const AFileType: string; AUpperCase: boolean): boolean;
+function TImagePage.Open(const AFileName: string; const AFileType: string): boolean;
+var
+    UpperCase: boolean;
 begin
-    Result := FCpmTools.OpenImage(AFileName, AFileType, AUpperCase);
+    UpperCase := False;
+
+    with TXMLSettings.Create(SettingsFile) do begin
+        try
+            UpperCase := GetValue('CpmFilesystem/UseUppercaseCharacters', False);
+        finally
+            Free;
+        end;
+    end;
+
+    Result := FCpmTools.OpenImage(AFileName, AFileType, UpperCase);
 end;
 
 // --------------------------------------------------------------------------------
@@ -138,9 +150,20 @@ end;
 
 // --------------------------------------------------------------------------------
 procedure TImagePage.RefreshDirectory;
+var
+    UpperCase: boolean;
 begin
     FDirectoryList.Clear;
-    FCpmTools.RefreshDirectory;
+
+    with TXMLSettings.Create(SettingsFile) do begin
+        try
+            UpperCase := GetValue('CpmFilesystem/UseUppercaseCharacters', False);
+        finally
+            Free;
+        end;
+    end;
+
+    FCpmTools.RefreshDirectory(UpperCase);
 
     if Assigned(FDirStatisticCallBack) then begin
         FDirStatisticCallBack(FCpmTools.GetDirectoryStatistic);
@@ -273,7 +296,7 @@ begin
         SortType := stNone;
         AutoWidthLastColumn := False;
         RowSelect := True;
-        Font.Name:='Consolas';
+        Font.Name := 'Consolas';
         BeginUpdate;
         DirColumn := Columns.Add;
         DirColumn.Caption := 'User : Name';

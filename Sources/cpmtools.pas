@@ -39,7 +39,7 @@ type
         function OpenImage(const AFileName: string; const AFileType: string; AUpperCase: boolean): boolean;
         function CloseImage: boolean;
         procedure ShowDirectory;
-        procedure RefreshDirectory;
+        procedure RefreshDirectory(AUpperCase: boolean);
         function RenameFile(AOldName, ANewName: string): boolean;
         function GetFileSystemInfo: TFileSystemInfo;
         function GetDirectoryStatistic: TDirStatistic;
@@ -57,7 +57,6 @@ type
         FCpmFileSystem: TCpmFileSystem;
         FFileName: string;
         FFileType: string;
-        FUppercase: boolean;
         FDirStatistic: TDirStatistic;
         FPrintDirectoryEntry: TPrintDirectoryEntryCB;
 
@@ -84,7 +83,6 @@ function TCpmTools.OpenImage(const AFileName: string; const AFileType: string; A
 begin
     FFileName := AFileName;
     FFileType := AFileType;
-    FUppercase := AUpperCase;
 
     if not (FCpmDevice.Open(AFileName, dmOpenReadWrite)) then begin
         if MessageDlg(Format('cannot open %s' + LineEnding + '(%s)', [ExtractFileName(AFileName), FCpmDevice.GetErrorMsg()])
@@ -301,9 +299,9 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-procedure TCpmTools.RefreshDirectory;
+procedure TCpmTools.RefreshDirectory(AUpperCase: boolean);
 begin
-    if (FCpmFileSystem.InitDriveData(FUpperCase)) then begin
+    if (FCpmFileSystem.InitDriveData(AUpperCase)) then begin
         ShowDirectory;
     end;
 end;
