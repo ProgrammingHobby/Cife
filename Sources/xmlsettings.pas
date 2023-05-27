@@ -196,10 +196,16 @@ var
 begin
     Result := ADefault;
     Node := FindNode(APath, Ident, [nfHasValue]);
-    Data := Node.FindNode(Ident);
-    if Assigned(Data) then begin
-        Result := Data.TextContent;
+
+    if Assigned(Node) then begin
+        Data := Node.FindNode(Ident);
+
+        if Assigned(Data) then begin
+            Result := Data.TextContent;
+        end;
+
     end;
+
 end;
 
 // --------------------------------------------------------------------------------
@@ -558,9 +564,9 @@ begin
             break;
         end;
         Child := Result.FirstChild;
-        while Assigned(Child) and not ((Child.NodeType = ELEMENT_NODE) and
-                (0 = CompareDOMStrings(DOMPChar(TDOMElement(Child).TagName), @APath[StartPos],
-                Length(TDOMElement(Child).TagName), EndPos - StartPos))) do begin
+        while Assigned(Child) and not ((Child.NodeType = ELEMENT_NODE) and (0 =
+                CompareDOMStrings(DOMPChar(TDOMElement(Child).TagName), @APath[StartPos], Length(TDOMElement(Child).TagName),
+                EndPos - StartPos))) do begin
             Child := Child.NextSibling;
         end;
         if (Child = nil) and (nfWriteAccess in AFlags) then begin
