@@ -116,6 +116,7 @@ begin
         cmb := TComboBox(Sender);
         ShellListView.Mask := FWildcardsList[(cmb.ItemIndex * 2) + 1];
         ShellListView.Refresh;
+        ShellListView.Sort;
     end;
 end;
 
@@ -166,6 +167,7 @@ begin
     ButtonPanel.OKButton.Enabled := False;
     buttonNewFolder.Enabled := False;
     editFileName.ReadOnly := True;
+    ShellListView.Sort;
 end;
 
 // --------------------------------------------------------------------------------
@@ -203,6 +205,7 @@ begin
     if (Sender is TShellTreeView) then begin
         Stv := TShellTreeView(Sender);
         labelFilePath.Caption := Stv.Path;
+        ShellListView.Sort;
     end;
 end;
 
@@ -234,6 +237,7 @@ end;
 procedure TFileDialog.SetDefaultPath(path: string);
 begin
     ShellTreeView.Path := path;
+    labelFilePath.Caption := path;
 end;
 
 // --------------------------------------------------------------------------------
