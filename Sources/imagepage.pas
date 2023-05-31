@@ -133,7 +133,7 @@ begin
 
     with TXMLSettings.Create(SettingsFile) do begin
         try
-            UpperCase := GetValue('CpmFilesystem/UseUppercaseCharacters', False);
+            UpperCase := GetValue('Settings/UseUppercaseCharacters', False);
         finally
             Free;
         end;
@@ -157,7 +157,7 @@ begin
 
     with TXMLSettings.Create(SettingsFile) do begin
         try
-            UpperCase := GetValue('CpmFilesystem/UseUppercaseCharacters', False);
+            UpperCase := GetValue('Settings/UseUppercaseCharacters', False);
         finally
             Free;
         end;
