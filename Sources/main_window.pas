@@ -289,12 +289,32 @@ end;
 procedure TMainWindow.actionSettingsExecute(Sender: TObject);
 var
     dialog: TSettingsDialog;
+    OldUseUpperCase: boolean;
+    OldSelection: integer;
 begin
+    with TXMLSettings.Create(SettingsFile) do begin
+        try
+            OldUseUpperCase := GetValue('Settings/UseUppercaseCharacters', False);
+        finally
+            Free;
+        end;
+    end;
+
     try
         dialog := TSettingsDialog.Create(self);
         dialog.ShowModal;
     finally
         FreeAndNil(dialog);
+    end;
+
+    with TXMLSettings.Create(SettingsFile) do begin
+        try
+            if (OldUseUpperCase <> GetValue('Settings/UseUppercaseCharacters', False)) then begin
+                (PageControl.ActivePage as TImagePage).RefreshDirectory;
+            end;
+        finally
+            Free;
+        end;
     end;
 end;
 
@@ -303,13 +323,17 @@ procedure TMainWindow.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
     FImageFileHistory.Save;
     FreeAndNil(FImageFileHistory);
+
     with TXMLSettings.Create(SettingsFile) do begin
+
         try
             SaveFormState(TForm(self));
         finally
             Free;
         end;
+
     end;
+
     CloseAction := caFree;
 end;
 
@@ -354,6 +378,7 @@ begin
             Free;
         end;
     end;
+
     actionClose.Enabled := False;
     FImageFileHistory := TImageFileHistory.Create(menuitemRecentFiles);
     FImageFileHistory.SetHistoryMenuItemsEvent(@HistoryMenuItemClick);
