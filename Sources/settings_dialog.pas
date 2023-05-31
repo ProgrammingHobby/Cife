@@ -51,6 +51,7 @@ type
         Splitter: TSplitter;
         treeviewSettingPages: TTreeView;
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+        procedure FormShow(Sender: TObject);
         procedure PanelPaint(Sender: TObject);
         procedure treeviewSettingPagesSelectionChanged(Sender: TObject);
     private
@@ -65,6 +66,8 @@ var
 implementation
 
 {$R *.lfm}
+
+uses XMLSettings, CifeGlobals;
 
 { TSettingsDialog }
 // --------------------------------------------------------------------------------
@@ -93,7 +96,54 @@ end;
 // --------------------------------------------------------------------------------
 procedure TSettingsDialog.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
+
+    if (ModalResult = mrOk) then begin
+
+        with TXMLSettings.Create(SettingsFile) do begin
+
+            try
+                OpenKey('Settings');
+                SetValue('OpenLastImages', checkboxOpenLastImage.Checked);
+                SetValue('UseUppercaseCharacters', checkboxUppercaseCpmCharacters.Checked);
+                SetValue('KeepTimestamps', checkboxKeepTimeStamps.Checked);
+                SetValue('DefaultUserNumber', spineditUserNumber.Value);
+                SetValue('TextFileEndings', memoTextfileEndings.Text);
+                SetValue('LastPage', treeviewSettingPages.Selected.Index);
+                CloseKey;
+                SaveFormState(TForm(self));
+            finally
+                Free;
+            end;
+
+        end;
+
+    end;
+
     CloseAction := caFree;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TSettingsDialog.FormShow(Sender: TObject);
+begin
+
+    with TXMLSettings.Create(SettingsFile) do begin
+
+        try
+            OpenKey('Settings');
+            checkboxOpenLastImage.Checked := GetValue('OpenLastImages', False);
+            checkboxUppercaseCpmCharacters.Checked := GetValue('UseUppercaseCharacters', False);
+            checkboxKeepTimeStamps.Checked := GetValue('KeepTimestamps', True);
+            spineditUserNumber.Value := GetValue('DefaultUserNumber', 0);
+            memoTextfileEndings.Text := GetValue('TextFileEndings', 'txt pip pas');
+            treeviewSettingPages.Items[GetValue('LastPage', 0)].Selected := True;
+            CloseKey;
+            RestoreFormState(TForm(self));
+        finally
+            Free;
+        end;
+
+    end;
+
 end;
 
 end.

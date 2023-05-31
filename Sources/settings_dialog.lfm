@@ -7,6 +7,7 @@ object SettingsDialog: TSettingsDialog
   ClientHeight = 242
   ClientWidth = 513
   OnClose = FormClose
+  OnShow = FormShow
   Position = poOwnerFormCenter
   object Panel1: TPanel
     Left = 4
@@ -117,7 +118,7 @@ object SettingsDialog: TSettingsDialog
       object Page2: TPage
         object Panel4: TPanel
           Left = 4
-          Height = 29
+          Height = 33
           Top = 4
           Width = 344
           Align = alTop
@@ -125,14 +126,14 @@ object SettingsDialog: TSettingsDialog
           BorderSpacing.Around = 4
           BevelOuter = bvNone
           ClientHeight = 29
-          ClientWidth = 344
+          ClientWidth = 340
           TabOrder = 0
           OnPaint = PanelPaint
           object checkboxKeepTimeStamps: TCheckBox
             Left = 4
             Height = 21
             Top = 4
-            Width = 336
+            Width = 332
             Align = alClient
             BorderSpacing.Around = 4
             Caption = 'keep last updated timestamps'
@@ -142,7 +143,7 @@ object SettingsDialog: TSettingsDialog
         object Panel5: TPanel
           Left = 4
           Height = 37
-          Top = 37
+          Top = 41
           Width = 344
           Align = alTop
           AutoSize = True
@@ -178,7 +179,7 @@ object SettingsDialog: TSettingsDialog
         object Panel6: TPanel
           Left = 4
           Height = 90
-          Top = 78
+          Top = 82
           Width = 344
           Align = alTop
           AutoSize = True
