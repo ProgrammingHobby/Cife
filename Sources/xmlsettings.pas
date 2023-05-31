@@ -171,8 +171,11 @@ var
     FormState: string;
 begin
     OpenKey('Forms/' + Form.Name);
-    FormState := GetAttribute('State', '000000000000000000000000000000000000000000000000000000');
+    FormState := GetAttribute('State', 'nil');
     CloseKey;
+    if (FormState = 'nil') then begin
+        exit;
+    end;
     LastWindowState := TWindowState(Hex2Dec(FormState.Substring(48, 6)));
     if LastWindowState = wsMaximized then begin
         Form.WindowState := wsNormal;
