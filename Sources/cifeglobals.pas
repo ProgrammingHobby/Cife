@@ -50,6 +50,7 @@ type
     end;
 
 function SettingsFile: string;
+function IsDiskdefsFilePresent: boolean;
 procedure GetDiskDefsList(DiskDefsList: TStrings);
 
 implementation
@@ -65,6 +66,12 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
+function IsDiskdefsFilePresent: boolean;
+begin
+    Result := FileExists(ExtractFilePath(ParamStr(0)) + 'diskdefs');
+end;
+
+// --------------------------------------------------------------------------------
 procedure GetDiskDefsList(DiskDefsList: TStrings);
 var
     Diskdefs: TStringList;
@@ -73,7 +80,7 @@ var
 begin
     try
         Diskdefs := TStringList.Create;
-        DiskDefs.LoadFromFile('diskdefs');
+        DiskDefs.LoadFromFile(ExtractFilePath(ParamStr(0)) + 'diskdefs');
         DiskDefsList.Add('Amstrad (PCW16)');
         for Index := 0 to Diskdefs.Count - 1 do begin
             Line := Diskdefs[Index].Trim.Split(' ');
