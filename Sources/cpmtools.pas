@@ -63,6 +63,7 @@ type
     private   // Methoden
         function GetUserNumber(const AFileName: string): integer;
         function ConvertFilename(const AFileName: string): string;
+        function SizeToKb(ASize: longint; ABlocksize: longint): longint;
 
     end;
 
@@ -172,8 +173,7 @@ begin
                     //  user: name
                     FPrintDirectoryEntry(0, Row, Format('%2d: %s', [User, MidStr(Gargv[IndexI], 3, Length(Gargv[IndexI]))]));
                     //  bytes
-                    FPrintDirectoryEntry(1, Row,
-                        Format('%5.1dK', [(StatBuf.Size + Buf.F_BSize - 1) div Buf.F_BSize * (Buf.F_BSize div 1024)]));
+                    FPrintDirectoryEntry(1, Row, Format('%5.1dK', [SizeToKb(StatBuf.Size, Buf.F_BSize)]));
                     //  records
                     FPrintDirectoryEntry(2, Row, Format('%6.1d', [StatBuf.Size div 128]));
                     //  attributes
@@ -389,6 +389,17 @@ end;
 function TCpmTools.ConvertFilename(const AFileName: string): string;
 begin
     Result := Format('%.2d%s', [GetUserNumber(AFileName), RightStr(AFileName, Length(AFileName) - Pos(':', AFileName))]);
+end;
+
+// --------------------------------------------------------------------------------
+function TCpmTools.SizeToKb(ASize: longint; ABlocksize: longint): longint;
+var
+    Blocks, BlockedSize: longint;
+begin
+    // In DR CP/M, the minimal block size is 1024, but in CP/M-65 it may be lower.
+    Blocks := ((ASize + ABlocksize - 1) div ABlocksize);
+    BlockedSize := (Blocks * ABlocksize);
+    Result := ((BlockedSize + 1023) div 1024);
 end;
 
 // --------------------------------------------------------------------------------
