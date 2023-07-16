@@ -140,7 +140,8 @@ type
             Offset: off_t;
             OsType: integer;
             Size: integer;
-            Extents: integer; { logical extents per physical extent }
+            Extents: integer; // logical extents per physical extent
+            Extentsize: integer; // pretty much always 16384
             AlvSize: integer;
             CnotaTime: integer;
             DiskLabel: array of char;
@@ -183,6 +184,7 @@ type
         function Match(const AEntry: PChar; APattern: PChar): boolean;
         function IsMatching(AUser1: integer; const AName1: array of char; const AExt1: array of char;
             AUser2: integer; const AName2: array of char; const AExt2: array of char): boolean;
+        function IsFileChar(AChar: char; AType: integer): boolean;
         function Cpm2UnixTime(ADays: integer; AHour: integer; AMin: integer): time_t;
         function Ds2UnixTime(const AEntry: TDsEntry): time_t;
         function SyncDateStamps: boolean;
@@ -217,11 +219,10 @@ end;
 // --------------------------------------------------------------------------------
 function TCpmFileSystem.InitDriveData(AUpperCase: boolean): boolean;
 var
-    IndexI, IndexJ, Value: integer;
+    IndexI, IndexJ, IndexK, Value: integer;
     Blocks, Passwords: integer;
     DirectoryBuffer: array of byte = nil;
 begin
-    Result := True;
     FDrive.UpperCase := AUpperCase;
 
     // optional field, compute based on directory size
@@ -250,13 +251,13 @@ begin
 
             while (True) do begin
 
-                IndexJ := 0;
+                IndexK := 0;
 
-                while ((IndexJ < IndexI) and (FSkewTab[IndexJ] <> Value)) do begin
-                    Inc(IndexJ);
+                while ((IndexK < IndexI) and (FSkewTab[IndexK] <> Value)) do begin
+                    Inc(IndexK);
                 end;
 
-                if (IndexJ < IndexI) then begin
+                if (IndexK < IndexI) then begin
                     Value := ((Value + 1) mod FDrive.SecTrk);
                 end
                 else begin
@@ -436,7 +437,7 @@ begin
                         SetLength(FDrive.DiskLabel, FDrive.LabelLength);
                     except
                         on e: Exception do begin
-                            FFileSystemError := e.Message;
+                            FFileSystemError := Format('out of memory  (%s)', [e.Message]);
                             Result := False;
                             exit;
                         end;
@@ -612,7 +613,7 @@ begin
         Result := True;
         exit;
     end
-    // access password
+    // access passwords
     else if ((AFilename = '[passwd]') and (FDrive.PasswdLength > 0)) then begin
         AInode.Attr := 0;
         AInode.Ino := (FDrive.MaxDir + 1);
@@ -671,7 +672,7 @@ begin
     end;
 
     // calculate size
-    AInode.Size := (HighestExtno * 16384);
+    AInode.Size := (HighestExtno * FDrive.Extentsize);
 
     if (FDrive.Size <= 256) then begin
 
@@ -720,6 +721,7 @@ begin
     AInode.Mode := S_IFREG;
     // read timestamps
     ProtectMode := ReadTimeStamps(AInode, LowestExt);
+    // Determine the inode attributes
     AInode.Attr := 0;
 
     if ((Ord(FDirectory[LowestExt].Name[0]) and $80) <> 0) then begin
@@ -824,18 +826,17 @@ begin
         SetLength(FDrive.Passwd, 0);
         FDrive.Passwd := nil;
     end;
+
     if (FDrive.LabelLength > 0) then begin
         SetLength(FDrive.DiskLabel, 0);
         FDrive.DiskLabel := nil;
     end;
 
-    Result := True;
 end;
 
 // --------------------------------------------------------------------------------
 //  -- rename a file
 // --------------------------------------------------------------------------------
-// int CpmFs::rename(char const *oldn, char const *newn) {
 function TCpmFileSystem.Rename(const AOldName: PChar; const ANewName: PChar): boolean;
 var
     Extent, OldUser, NewUser: integer;
@@ -1070,7 +1071,6 @@ var
     BootSpec: integer;
     IDString1, IDString2, IDString3: string;
 begin
-    Result := True;
     FCpmDevice.SetGeometry(512, 9, 40, 0);
 
     if (not (FCpmDevice.ReadSector(0, 0, BootSector))) then begin
@@ -1127,6 +1127,7 @@ begin
     FDrive.Skew := 1;  // Amstrads skew at the controller level
     FSkewTab := nil;
     FDrive.BootTrk := BootSector[BootSpec + 5];
+    FDrive.BootSec := -1;
     FDrive.Offset := 0;
     FDrive.Size := ((FDrive.SecLength * FDrive.SecTrk * (FDrive.Tracks - FDrive.BootTrk)) div FDrive.BlkSiz);
     if (FDrive.Size > 256) then begin
@@ -1135,6 +1136,8 @@ begin
     else begin
         FDrive.Extents := ((FDrive.BlkSiz * 16) div 16384);
     end;
+    FDrive.Extentsize := 16384;
+    Result := True;
 end;
 
 // --------------------------------------------------------------------------------
@@ -1154,7 +1157,8 @@ begin
     FoundDefinition := False;
     FDrive.Skew := 1;
     FDrive.Extents := 0;
-    FDrive.OsType := 0;
+    FDrive.Extentsize := 16384;
+    FDrive.OsType := CPMFS_DR22;
     FSkewTab := nil;
     FDrive.Offset := 0;
     FDrive.BlkSiz := -1;
@@ -1180,10 +1184,10 @@ begin
                     if (FDrive.Extents = 0) then begin
 
                         if (FDrive.Size > 256) then begin
-                            FDrive.Extents := ((FDrive.BlkSiz * 8) div 16384);
+                            FDrive.Extents := ((FDrive.BlkSiz * 8) div FDrive.Extentsize);
                         end
                         else begin
-                            FDrive.Extents := ((FDrive.BlkSiz * 16) div 16384);
+                            FDrive.Extents := ((FDrive.BlkSiz * 16) div FDrive.Extentsize);
                         end;
 
                     end;
@@ -1343,6 +1347,17 @@ begin
                     else if (DefinitionLine[0] = 'logicalextents') then begin
                         FDrive.Extents := StrToIntDef(DefinitionLine[1], -1);
                     end
+                    else if (DefinitionLine[0] = 'extentsize') then begin
+                        FDrive.Extentsize := StrToIntDef(DefinitionLine[1], -1);
+
+                        if (FDrive.Extentsize > 16384) then begin
+                            FFileSystemError := Format('extentsize > 16384 in line %d', [(LineNumber)]);
+                            Result := False;
+                            exit;
+                        end;
+
+                    end
+
                     else if (DefinitionLine[0] = 'os') then begin
 
                         case (DefinitionLine[1]) of
@@ -1538,10 +1553,10 @@ begin
     FFileSystemError := 'file already exists';
 
     if ((FDrive.OsType and CPMFS_HI_USER) <> 0) then begin
-        MaxUser := 32;
+        MaxUser := 31;
     end
     else begin
-        MaxUser := 16;
+        MaxUser := 15;
     end;
 
     while (AStart < FDrive.MaxDir) do begin
@@ -1799,7 +1814,8 @@ begin
 
     while ((IndexI < 8) and (AFullname[IndexI] <> char(0)) and (AFullname[IndexI] <> '.')) do begin
 
-        if not (ISFILECHAR(IndexI, AFullname[IndexI])) then begin
+        //if not (ISFILECHAR(IndexI, AFullname[IndexI])) then begin
+        if not (IsFileChar(ToUpper(AFullname[IndexI]), AOsType)) then begin
             FFileSystemError := 'illegal CP/M filename';
             Result := False;
             exit;
@@ -1811,13 +1827,20 @@ begin
         Inc(IndexI);
     end;
 
+    if (IndexI = 0) then begin
+        // no filename after user or extension without filename
+        FFileSystemError := 'illegal CP/M filename';
+        Result := False;
+        exit;
+    end;
+
     if (AFullname[IndexI] = '.') then begin
         Inc(IndexI);
         IndexJ := 0;
 
         while ((IndexJ < 3) and (AFullname[IndexI] <> char(0))) do begin
 
-            if not (ISFILECHAR(1, AFullname[IndexI])) then begin
+            if not (IsFileChar(ToUpper(AFullname[IndexI]), AOsType)) then begin
                 FFileSystemError := 'illegal CP/M filename';
                 Result := False;
                 exit;
@@ -1830,7 +1853,7 @@ begin
             Inc(IndexJ);
         end;
 
-        if ((IndexI = 1) and (IndexJ = 0)) then begin
+        if (AFullname[IndexI] <> char(0)) then begin
             FFileSystemError := 'illegal CP/M filename';
             Result := False;
             exit;
@@ -1860,7 +1883,7 @@ begin
                     exit;
                 end;
 
-                APattern := APattern + 1;
+                Inc(APattern);
 
                 while (AEntry[0] <> Chr(0)) do begin
 
@@ -1869,7 +1892,7 @@ begin
                         exit;
                     end
                     else begin
-                        AEntry := AEntry + 1;
+                        Inc(AEntry);
                     end;
                 end;
 
@@ -1877,8 +1900,8 @@ begin
             '?': begin
 
                 if (AEntry[0] <> Chr(0)) then begin
-                    AEntry := AEntry + 1;
-                    APattern := APattern + 1;
+                    Inc(AEntry);
+                    Inc(APattern);
                 end
                 else begin
                     Result := False;
@@ -1889,8 +1912,8 @@ begin
             else begin
 
                 if (LowerCase(AEntry) = LowerCase(APattern)) then begin
-                    AEntry := AEntry + 1;
-                    APattern := APattern + 1;
+                    Inc(AEntry);
+                    Inc(APattern);
                 end
                 else begin
                     Result := False;
@@ -1974,6 +1997,32 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
+//  -- is character allowed in a name?
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.IsFileChar(AChar: char; AType: integer): boolean;
+begin
+
+    if ((Ord(AChar) and $80) <> 0) then begin
+        Result := False;
+    end;
+
+    if (AType = CPMFS_DR3) then begin
+        Result := ((Ord(AChar) > Ord(' ')) and (Ord(AChar) <> Ord('<')) and (Ord(AChar) <> Ord('>')) and
+            (Ord(AChar) <> Ord('.')) and (Ord(AChar) <> Ord(',')) and (Ord(AChar) <> Ord(';')) and
+            (Ord(AChar) <> Ord(':')) and (Ord(AChar) <> Ord('=')) and (Ord(AChar) <> Ord('?')) and
+            (Ord(AChar) <> Ord('*')) and (Ord(AChar) <> Ord('[')) and (Ord(AChar) <> Ord(']')) and
+            (Ord(AChar) <> Ord('|')) and not IsLower(AChar));
+    end
+
+    else begin
+        Result := ((Ord(AChar) > Ord(' ')) and (Ord(AChar) <> Ord('<')) and (Ord(AChar) <> Ord('>')) and
+            (Ord(AChar) <> Ord('.')) and (Ord(AChar) <> Ord(',')) and (Ord(AChar) <> Ord(':')) and
+            (Ord(AChar) <> Ord('=')) and (Ord(AChar) <> Ord('?')) and (Ord(AChar) <> Ord('*')) and
+            (Ord(AChar) <> Ord('_')) and not IsLower(AChar));
+    end;
+end;
+
+// --------------------------------------------------------------------------------
 //  -- convert CP/M time to UTC
 // --------------------------------------------------------------------------------
 function TCpmFileSystem.Cpm2UnixTime(ADays: integer; AHour: integer; AMin: integer): time_t;
@@ -1984,7 +2033,7 @@ begin
     ///* timezone was used and if DST was in effect.  Assuming it was   */
     ///* the current offset from UTC is most sensible, but not perfect. */
     DateTime := EncodeDate(1978, 1, 1);
-    DateTime := IncDay(DateTime, ADays);
+    DateTime := IncDay(DateTime, ADays - 1);
     DateTime := IncHour(DateTime, BCDToInt(AHour));
     Result := IncMinute(DateTime, BCDToInt(AMin));
 end;
@@ -2024,9 +2073,7 @@ begin
 
     if (FDrive.DirtyDateStamp) then begin
 
-        DSOffset := (((FDrive.MaxDir * 32) + (FDrive.BlkSiz - 1)) div FDrive.BlkSiz);
         DSRecords := ((FDrive.MaxDir + 7) div 8);
-        DSBlocks := (((DSRecords * 128) + (FDrive.BlkSiz - 1)) div FDrive.BlkSiz);
 
         // allocate DateStamps buffer
         try
@@ -2081,6 +2128,8 @@ begin
 
         end;
 
+        DSOffset := (((FDrive.MaxDir * 32) + (FDrive.BlkSiz - 1)) div FDrive.BlkSiz);
+        DSBlocks := (((DSRecords * 128) + (FDrive.BlkSiz - 1)) div FDrive.BlkSiz);
         Offset := 0;
 
         for IndexI := DSOffset to (DSOffset + DSBlocks) - 1 do begin
@@ -2129,7 +2178,7 @@ var
     HasExt: boolean;
 begin
 
-    if not (S_ISDIR(ADir.Ino.Mode)) then begin
+    if not (S_ISDIR(ADir.Ino.Mode)) then begin      // error: not a directory
         FFileSystemError := 'not a directory';
         Result := False;
         exit;
@@ -2138,8 +2187,7 @@ begin
     while (True) do begin
         FillChar(Buffer, Length(Buffer), 0);
 
-        // first entry is .
-        if (ADir.Pos = 0) then begin
+        if (ADir.Pos = 0) then begin     // first entry is .
             AEnt.Ino := FDrive.MaxDir;
             AEnt.RecLen := 1;
             StrPCopy(AEnt.Name, '.');
@@ -2148,8 +2196,7 @@ begin
             Result := True;
             break;
         end
-        // next entry is ..
-        else if (ADir.Pos = 1) then begin
+        else if (ADir.Pos = 1) then begin   // next entry is ..
             AEnt.Ino := FDrive.MaxDir;
             AEnt.RecLen := 2;
             StrPCopy(AEnt.Name, '..');
@@ -2158,9 +2205,8 @@ begin
             Result := True;
             break;
         end
-        else if (ADir.Pos = 2) then begin
+        else if (ADir.Pos = 2) then begin   // next entry is [passwd]
 
-            // next entry is [passwd]
             if (FDrive.PasswdLength > 0) then begin
                 AEnt.Ino := (FDrive.MaxDir + 1);
                 AEnt.RecLen := 8;
@@ -2172,9 +2218,8 @@ begin
             end;
 
         end
-        else if (ADir.Pos = 3) then begin
+        else if (ADir.Pos = 3) then begin       // next entry is [label]
 
-            // next entry is [label]
             if (FDrive.LabelLength > 0) then begin
                 AEnt.Ino := (FDrive.MaxDir + 2);
                 AEnt.RecLen := 7;

@@ -116,7 +116,6 @@ const
 
 function S_ISDIR(AMode: mode_t): boolean; inline;
 function S_ISREG(AMode: mode_t): boolean; inline;
-function ISFILECHAR(ANotFirst: integer; AChar: char): boolean; inline;
 function EXTENT(ALow: byte; AHigh: byte): integer; inline;
 
 implementation
@@ -131,17 +130,6 @@ end;
 function S_ISREG(AMode: mode_t): boolean;
 begin
     Result := ((AMode and &0170000) = &0100000);
-end;
-
-// --------------------------------------------------------------------------------
-function ISFILECHAR(ANotFirst: integer; AChar: char): boolean;
-begin
-    //(((notFirst) || (c)!=' ') && (c)>=' ' && !((c)&~0x7f) && (c)!='<' && (c)!='>' && (c)!='.' && (c)!=',' && (c)!=';' && (c)!=':' && (c)!='=' && (c)!='?' && (c)!='*' && (c)!= '[' && (c)!=']')
-    Result := (((ANotFirst <> 0) or (Ord(AChar) <> Ord(' '))) and (Ord(AChar) >= Ord(' ')) and
-        ((Ord(AChar) and not $7F) = 0) and (Ord(AChar) <> Ord('<')) and (Ord(AChar) <> Ord('>')) and
-        (Ord(AChar) <> Ord('.')) and (Ord(AChar) <> Ord(',')) and (Ord(AChar) <> Ord(';')) and
-        (Ord(AChar) <> Ord(':')) and (Ord(AChar) <> Ord('=')) and (Ord(AChar) <> Ord('?')) and
-        (Ord(AChar) <> Ord('*')) and (Ord(AChar) <> Ord('[')) and (Ord(AChar) <> Ord(']')));
 end;
 
 // --------------------------------------------------------------------------------
