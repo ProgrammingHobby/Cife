@@ -172,7 +172,7 @@ implementation
 
 {$R *.lfm}
 
-uses NewImage_Dialog, File_Dialog, Characteristics_Dialog, Settings_Dialog,
+uses File_Dialog, Characteristics_Dialog, Settings_Dialog,
     About_Dialog, XMLSettings;
 
 { TMainWindow }
@@ -180,10 +180,10 @@ uses NewImage_Dialog, File_Dialog, Characteristics_Dialog, Settings_Dialog,
 // --------------------------------------------------------------------------------
 procedure TMainWindow.actionNewExecute(Sender: TObject);
 var
-    dialog: TNewImageDialog;
+    dialog: TFileDialog;
 begin
     try
-        dialog := TNewImageDialog.Create(self);
+        dialog := TFileDialog.Create(self);
         dialog.ShowModal;
     finally
         FreeAndNil(dialog);
@@ -242,15 +242,15 @@ var
 begin
     try
         dialog := TFileDialog.Create(self);
-        dialog.SetDialogTitle('Open CP/M Disk Image File');
-        dialog.SetRootPath(GetUserDir);
+        //dialog.SetDialogTitle('Open CP/M Disk Image File');
+        //dialog.SetRootPath(GetUserDir);
         HistoryEntry := FImageFileHistory.GetHistoryEntry(0);
-        dialog.SetDefaultPath(ExtractFileDir(HistoryEntry.FileName));
-        dialog.SetFileWildcards('Image Files (*.img,*.fdd,*.dsk)|*.img;*.IMG;*.fdd;*.FDD;*.dsk;*.DSK|all Files (*.*)|*');
+        //dialog.SetDefaultPath(ExtractFileDir(HistoryEntry.FileName));
+        //dialog.SetFileWildcards('Image Files (*.img,*.fdd,*.dsk)|*.img;*.IMG;*.fdd;*.FDD;*.dsk;*.DSK|all Files (*.*)|*');
         if (dialog.ShowModal = mrOk) then begin
-            ImageFile := dialog.GetFullFileName;
-            ImageType := dialog.GetImageType;
-            AddImagePage(ImageFile, ImageType);
+            //ImageFile := dialog.GetFullFileName;
+            //ImageType := dialog.GetImageType;
+            //AddImagePage(ImageFile, ImageType);
         end;
     finally
         FreeAndNil(dialog);
