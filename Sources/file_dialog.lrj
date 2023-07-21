@@ -1,9 +1,9 @@
 {"version":1,"strings":[
-{"hash":162247543,"name":"tfiledialog.caption","sourcebytes":[70,105,108,101,68,105,97,108,111,103],"value":"FileDialog"},
-{"hash":198474967,"name":"tfiledialog.buttonlistview.hint","sourcebytes":[86,105,101,119,32,102,105,108,101,115,32,97,115,32,97,32,108,105,115,116,32,118,105,101,119],"value":"View files as a list view"},
-{"hash":29098567,"name":"tfiledialog.buttondetailview.hint","sourcebytes":[86,105,101,119,32,102,105,108,101,115,32,97,115,32,97,32,100,101,116,97,105,108,101,100,32,118,105,101,119],"value":"View files as a detailed view"},
-{"hash":241909394,"name":"tfiledialog.buttonfolderup.hint","sourcebytes":[71,111,32,116,111,32,112,97,114,101,110,116,32,102,111,108,100,101,114],"value":"Go to parent folder"},
-{"hash":133529090,"name":"tfiledialog.buttonhomefolder.hint","sourcebytes":[71,111,32,116,111,32,104,111,109,101,32,102,111,108,100,101,114],"value":"Go to home folder"},
-{"hash":218754514,"name":"tfiledialog.buttonnewfolder.hint","sourcebytes":[67,114,101,97,116,101,32,110,101,119,32,102,111,108,100,101,114],"value":"Create new folder"},
-{"hash":204580032,"name":"tfiledialog.label1.caption","sourcebytes":[73,109,97,103,101,32,84,121,112,101,32,58,32],"value":"Image Type : "}
+{"hash":30235210,"name":"tfiledialog.label1.caption","sourcebytes":[73,109,97,103,101,32,70,105,108,101,32,58],"value":"Image File :"},
+{"hash":77164181,"name":"tfiledialog.buttonopenimagefile.caption","sourcebytes":[66,114,111,119,115,101],"value":"Browse"},
+{"hash":183521514,"name":"tfiledialog.label2.caption","sourcebytes":[73,109,97,103,101,84,121,112,101,32,58],"value":"ImageType :"},
+{"hash":104806554,"name":"tfiledialog.label3.caption","sourcebytes":[66,111,111,116,45,84,114,97,99,107,32,70,105,108,101,32,58],"value":"Boot-Track File :"},
+{"hash":77164181,"name":"tfiledialog.buttonopenboottrackfile.caption","sourcebytes":[66,114,111,119,115,101],"value":"Browse"},
+{"hash":265323514,"name":"tfiledialog.label4.caption","sourcebytes":[70,105,108,101,45,83,121,115,116,101,109,32,76,97,98,101,108,32,58],"value":"File-System Label :"},
+{"hash":98561411,"name":"tfiledialog.checkboxusetimestamps.caption","sourcebytes":[117,115,101,32,84,105,109,101,115,116,97,109,112,115],"value":"use Timestamps"}
 ]}

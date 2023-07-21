@@ -1,21 +1,18 @@
 object FileDialog: TFileDialog
   Left = 2160
-  Height = 371
+  Height = 268
   Top = 250
-  Width = 538
-  Caption = 'FileDialog'
-  ClientHeight = 371
-  ClientWidth = 538
-  OnClose = FormClose
-  OnShow = FormShow
-  Position = poOwnerFormCenter
-  ShowHint = True
-  object ButtonPanel: TButtonPanel
-    Left = 6
+  Width = 363
+  AutoSize = True
+  ClientHeight = 268
+  ClientWidth = 363
+  Position = poMainFormCenter
+  object ButtonPanel1: TButtonPanel
+    Left = 8
     Height = 34
-    Top = 331
-    Width = 510
-    BorderSpacing.Right = 16
+    Top = 226
+    Width = 347
+    BorderSpacing.Around = 8
     OKButton.Name = 'OKButton'
     OKButton.DefaultCaption = True
     HelpButton.Name = 'HelpButton'
@@ -28,355 +25,214 @@ object FileDialog: TFileDialog
     ShowButtons = [pbOK, pbCancel]
     ShowBevel = False
   end
-  object Panel1: TPanel
-    Left = 0
-    Height = 38
+  object panelImageFile: TPanel
+    Left = 8
+    Height = 76
     Top = 8
-    Width = 538
+    Width = 347
     Align = alTop
     AutoSize = True
-    BorderSpacing.Top = 8
+    BorderSpacing.Around = 8
     BevelOuter = bvNone
-    ClientHeight = 34
-    ClientWidth = 534
+    ClientHeight = 76
+    ClientWidth = 347
     TabOrder = 1
-    object Panel2: TPanel
-      Left = 16
-      Height = 34
-      Top = 0
-      Width = 80
-      Align = alLeft
-      AutoSize = True
-      BorderSpacing.Left = 16
-      BevelOuter = bvNone
-      ClientHeight = 30
-      ClientWidth = 76
-      TabOrder = 0
-      object buttonListView: TSpeedButton
-        Left = 0
-        Height = 30
-        Hint = 'View files as a list view'
-        Top = 0
-        Width = 30
-        Align = alLeft
-        AutoSize = True
-        BorderSpacing.Right = 16
-        Enabled = False
-        Images = ImageList
-        ImageIndex = 1
-        Visible = False
-        OnClick = buttonListViewClick
-      end
-      object buttonDetailView: TSpeedButton
-        Left = 46
-        Height = 30
-        Hint = 'View files as a detailed view'
-        Top = 0
-        Width = 30
-        Align = alClient
-        AutoSize = True
-        Enabled = False
-        Images = ImageList
-        ImageIndex = 0
-        Visible = False
-        OnClick = buttonDetailViewClick
-      end
-    end
-    object Panel3: TPanel
-      Left = 360
-      Height = 34
-      Top = 0
-      Width = 80
-      Align = alRight
-      AutoSize = True
-      BorderSpacing.Right = 48
-      BevelOuter = bvNone
-      ClientHeight = 30
-      ClientWidth = 76
-      TabOrder = 1
-      object buttonFolderUp: TSpeedButton
-        Left = 0
-        Height = 30
-        Hint = 'Go to parent folder'
-        Top = 0
-        Width = 30
-        Align = alLeft
-        AutoSize = True
-        BorderSpacing.Right = 16
-        Enabled = False
-        Images = ImageList
-        ImageIndex = 3
-        Visible = False
-      end
-      object buttonHomeFolder: TSpeedButton
-        Left = 46
-        Height = 30
-        Hint = 'Go to home folder'
-        Top = 0
-        Width = 30
-        Align = alClient
-        AutoSize = True
-        Images = ImageList
-        ImageIndex = 2
-        OnClick = buttonHomeFolderClick
-      end
-    end
-    object buttonNewFolder: TSpeedButton
-      Left = 488
-      Height = 34
-      Hint = 'Create new folder'
-      Top = 0
-      Width = 30
-      Align = alRight
-      AutoSize = True
-      BorderSpacing.Left = 16
-      BorderSpacing.Right = 16
-      Images = ImageList
-      ImageIndex = 4
-    end
-  end
-  object Panel4: TPanel
-    Left = 8
-    Height = 269
-    Top = 54
-    Width = 522
-    Align = alClient
-    BorderSpacing.Left = 8
-    BorderSpacing.Top = 8
-    BorderSpacing.Right = 8
-    BorderSpacing.Bottom = 8
-    BevelOuter = bvNone
-    ClientHeight = 269
-    ClientWidth = 522
-    DoubleBuffered = True
-    ParentDoubleBuffered = False
-    TabOrder = 2
-    OnPaint = Panel4Paint
-    object Panel6: TPanel
+    OnPaint = PanelPaint
+    object Label1: TLabel
+      AnchorSideLeft.Control = panelImageFile
+      AnchorSideTop.Control = editImageFile
+      AnchorSideTop.Side = asrCenter
       Left = 4
-      Height = 13
-      Top = 4
-      Width = 514
-      Align = alTop
-      AutoSize = True
-      BorderSpacing.Around = 4
-      BevelOuter = bvNone
-      ClientHeight = 9
-      ClientWidth = 510
-      TabOrder = 1
-      object labelFilePath: TLabel
-        Left = 4
-        Height = 1
-        Top = 4
-        Width = 502
-        Align = alClient
-        BorderSpacing.Around = 4
-        Layout = tlCenter
-        ParentColor = False
-      end
-    end
-    object Panel5: TPanel
-      Left = 4
-      Height = 154
-      Top = 21
-      Width = 514
-      Align = alClient
+      Height = 19
+      Top = 10
+      Width = 71
       BorderSpacing.Left = 4
-      BorderSpacing.Right = 4
-      BevelOuter = bvNone
-      ClientHeight = 150
-      ClientWidth = 510
-      DoubleBuffered = True
-      ParentDoubleBuffered = False
-      TabOrder = 0
-      object ShellTreeView: TShellTreeView
-        Left = 0
-        Height = 150
-        Top = 0
-        Width = 196
-        Align = alLeft
-        FileSortType = fstFoldersFirst
-        ReadOnly = True
-        ScrollBars = ssAutoBoth
-        TabOrder = 0
-        OnClick = ShellTreeViewClick
-        Options = [tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoShowButtons, tvoShowLines, tvoShowRoot, tvoToolTips, tvoThemedDraw]
-        ObjectTypes = [otFolders]
-        ShellListView = ShellListView
-      end
-      object Splitter: TSplitter
-        Left = 196
-        Height = 150
-        Top = 0
-        Width = 5
-        AutoSnap = False
-        MinSize = 196
-      end
-      object ShellListView: TShellListView
-        Left = 201
-        Height = 150
-        Top = 0
-        Width = 309
-        Align = alClient
-        Color = clDefault
-        ReadOnly = True
-        ScrollBars = ssAutoBoth
-        SortColumn = 0
-        SortType = stText
-        TabOrder = 2
-        OnSelectItem = ShellListViewSelectItem
-        ObjectTypes = [otNonFolders]
-        ShellTreeView = ShellTreeView
-      end
+      Caption = 'Image File :'
+      Layout = tlCenter
+      ParentColor = False
     end
-    object Panel7: TPanel
-      Left = 4
-      Height = 82
-      Top = 179
-      Width = 514
-      Align = alBottom
+    object editImageFile: TEdit
+      AnchorSideLeft.Control = comboboxImageType
+      AnchorSideTop.Control = panelImageFile
+      AnchorSideRight.Control = buttonOpenImageFile
+      Left = 85
+      Height = 31
+      Top = 4
+      Width = 196
+      Anchors = [akTop, akLeft, akRight]
+      AutoSize = False
+      BorderSpacing.Top = 4
+      BorderSpacing.Right = 4
+      BorderSpacing.Bottom = 6
+      Constraints.MinWidth = 160
+      TabOrder = 0
+    end
+    object buttonOpenImageFile: TButton
+      AnchorSideTop.Control = editImageFile
+      AnchorSideTop.Side = asrCenter
+      AnchorSideRight.Control = panelImageFile
+      AnchorSideRight.Side = asrBottom
+      Left = 285
+      Height = 33
+      Top = 3
+      Width = 58
+      Anchors = [akTop, akRight]
       AutoSize = True
+      BorderSpacing.Right = 4
+      Caption = 'Browse'
+      TabOrder = 1
+    end
+    object Label2: TLabel
+      AnchorSideLeft.Control = panelImageFile
+      AnchorSideTop.Control = comboboxImageType
+      AnchorSideTop.Side = asrCenter
+      Left = 4
+      Height = 19
+      Top = 47
+      Width = 77
+      BorderSpacing.Left = 4
+      Caption = 'ImageType :'
+      Layout = tlCenter
+      ParentColor = False
+    end
+    object comboboxImageType: TComboBox
+      AnchorSideLeft.Control = Label2
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = editImageFile
+      AnchorSideTop.Side = asrBottom
+      Left = 85
+      Height = 31
+      Top = 41
+      Width = 100
+      BorderSpacing.Left = 4
       BorderSpacing.Bottom = 4
-      BorderSpacing.Around = 4
-      BevelOuter = bvNone
-      ChildSizing.HorizontalSpacing = 8
-      ChildSizing.VerticalSpacing = 8
-      ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
-      ChildSizing.EnlargeVertical = crsHomogenousChildResize
-      ChildSizing.Layout = cclLeftToRightThenTopToBottom
-      ChildSizing.ControlsPerLine = 2
-      ClientHeight = 82
-      ClientWidth = 514
+      ItemHeight = 0
       TabOrder = 2
-      object Panel8: TPanel
-        Left = 0
-        Height = 35
-        Top = 2
-        Width = 293
-        BorderSpacing.CellAlignVertical = ccaCenter
-        BevelOuter = bvNone
-        ClientHeight = 31
-        ClientWidth = 289
-        TabOrder = 0
-        object editFileName: TEdit
-          Left = 0
-          Height = 31
-          Top = 0
-          Width = 289
-          Align = alClient
-          AutoSelect = False
-          TabOrder = 0
-        end
-      end
-      object Panel9: TPanel
-        Left = 301
-        Height = 39
-        Top = 0
-        Width = 213
-        BorderSpacing.CellAlignVertical = ccaCenter
-        BevelOuter = bvNone
-        ClientHeight = 35
-        ClientWidth = 209
-        TabOrder = 1
-        object comboboxFileTypes: TComboBox
-          Left = 0
-          Height = 35
-          Top = 0
-          Width = 209
-          Align = alClient
-          ItemHeight = 0
-          OnChange = comboboxFileTypesChange
-          Style = csDropDownList
-          TabOrder = 0
-        end
-      end
-      object Panel10: TPanel
-        Left = 0
-        Height = 35
-        Top = 47
-        Width = 293
-        BorderSpacing.CellAlignVertical = ccaCenter
-        BevelOuter = bvNone
-        ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
-        ChildSizing.EnlargeVertical = crsHomogenousChildResize
-        ChildSizing.Layout = cclLeftToRightThenTopToBottom
-        ChildSizing.ControlsPerLine = 2
-        ClientHeight = 35
-        ClientWidth = 293
-        TabOrder = 2
-        object Label1: TLabel
-          Left = 55
-          Height = 19
-          Top = 8
-          Width = 83
-          AutoSize = False
-          BorderSpacing.CellAlignHorizontal = ccaRightBottom
-          BorderSpacing.CellAlignVertical = ccaCenter
-          Caption = 'Image Type : '
-          Layout = tlCenter
-          ParentColor = False
-        end
-        object comboboxImageTypes: TComboBox
-          Left = 138
-          Height = 35
-          Top = 0
-          Width = 155
-          ItemHeight = 0
-          OnChange = comboboxImageTypesChange
-          Sorted = True
-          Style = csDropDownList
-          TabOrder = 0
-        end
-      end
-      object Panel11: TPanel
-        Left = 301
-        Height = 35
-        Top = 47
-        Width = 213
-        BevelOuter = bvNone
-        TabOrder = 3
-      end
     end
   end
-  object ImageList: TImageList
-    Height = 26
-    Width = 26
-    Left = 232
-    Top = 336
-    Bitmap = {
-      4C7A050000001A0000001A000000F00300000000000078DAED977B48535118C0
-      F772A66966E2A60EDD352BCC1E8421420A65889460090969948A5A94565A4132
-      451421900C9FD34AB2D01E7FD41F96E42B52231F2999BA6A20091151D9C347BE
-      2DD0D3398BDD6EF36EBB9B77E332CE073FF49CE3FD7EF76CE77EF793C7B3ED18
-      382154B3C11677DE56439E852C1160839D9EBC20639E9E04A186398510F42709
-      C93182BAAE6F6E2A53C8C8638DFD4C57FA023608948B8D7A52831C348C971120
-      3BCC891C23A8EBFAE63E5EF661E4B1D67EF2239C354C9413A024DA851C23A8EB
-      FAE63E5FE1D67EAA0EBB6AF809F77337C18D1C23A8EBFAE6BE16C939B59FFA93
-      EE1A2695047872464A8E11D4757D733F4A98ED6704EE1B817EFF562C27C7DA39
-      EA986E6EAA82E0D4E73698E3A501DDD7DB3C19394650D7117DD9CBE7D0F3C0A5
-      FD349F966840E7A0FD9C941C23A8EBFAE6464BB975AE711DE56E1DC5C1ED7899
-      2353B3418097DD56AE3C3FA5875C492CE9490C742041E3BA9312507DD48D113F
-      61ED35D763A9FD8CC1FAA9C5921E6B9D036B7D6EBA1E55AE0CF428BC18817A0A
-      A69EA7191E24F8FB31DF5310E5024EEF5ACD88F132EE3DA7B65E4795B1EB701D
-      E5D039B0250F0E1C4CA2E99CF440438634668D035F6089FCE7235CBC672BD737
-      4D57124BF0DC22861EA54977B3953F3F8CC77F5FE89307F3CED03D27334ADFFB
-      65096289B9F943FCEC458AC8B51130D73B06CFE5C483546946E806B1C854CF78
-      99FC1ABCFEB709356071BC5C5E3B33C9B763927F284F1605BF83D115D49C85A1
-      4BDE8501327BBDE7A431C3E30EBA2F36EADB4C25F1C980A79DAD3A8AC01EECE1
-      BA072ED3D268E07F240E789E59C9D3C49E8798D5EFF1DCC79AA782C83554AFEB
-      D3A5B1F0EF3EAFC0338F1C8E62BE18773938561ACEF1691710167524A5677AAB
-      C6004252D3D4650947E20E0F81D6A16553F9BDFDA6E6A94E1614B4660A162140
-      875FB9D1BC14CF66D5075D0F42E4B37EA3299E9BC97C358D43C3B61E35A07368
-      098FF4CF8B0FE1D311C2D413DCF1C2A003E13B30427B7FAD17055F743D5D5783
-      D4F31D07812E84EA87510FE2466FE9B26B275AC297BD1BFA6FEFFDCF53D35B04
-      E4AA51460E2DE81A5D97310F1DBA79DF749F02C6AEC11EECE1BAC71C6CDDF3AA
-      36EC0DFB9E034BCBF713BE1DAEB5413A59E379549C39EFD4E23D812288508BD4
-      71156E9870D87CB857D70B2122819BC422F99D8E9DE2C3FA9D02790D198628DD
-      ABEA1CCDE9470D793C1FF705C3DC939477C612245DE4E76F523F8A68CBE22B69
-      FACD5CF4F3704B6B83FC6FEE7F3D6AF7F050D291CDA1A67A0C71EBBA02F80FFE
-      DF4FE63C6C846B0E8CFB5126CC75C480EABE5610ACFA0EB6C1DEF2FCC03B30D6
-      799C513F6AB2AB33068C74A5824F5D67C174671C7E6F630FF6600FEE47717022
-      FE006CAF35D3
-    }
+  object panelSystemData: TPanel
+    Left = 8
+    Height = 101
+    Top = 92
+    Width = 347
+    Align = alTop
+    AutoSize = True
+    BorderSpacing.Around = 8
+    BevelOuter = bvNone
+    ClientHeight = 101
+    ClientWidth = 347
+    TabOrder = 3
+    OnPaint = PanelPaint
+    object Label3: TLabel
+      AnchorSideLeft.Control = panelSystemData
+      AnchorSideTop.Control = editBootTrackFile
+      AnchorSideTop.Side = asrCenter
+      Left = 4
+      Height = 19
+      Top = 10
+      Width = 97
+      BorderSpacing.Left = 4
+      Caption = 'Boot-Track File :'
+      Layout = tlCenter
+      ParentColor = False
+    end
+    object editBootTrackFile: TEdit
+      AnchorSideLeft.Control = editFileSystemLabel
+      AnchorSideTop.Control = panelSystemData
+      AnchorSideRight.Control = buttonOpenBootTrackFile
+      Left = 121
+      Height = 31
+      Top = 4
+      Width = 160
+      Anchors = [akTop, akLeft, akRight]
+      BorderSpacing.Top = 4
+      BorderSpacing.Right = 4
+      BorderSpacing.Bottom = 4
+      Constraints.MinWidth = 160
+      TabOrder = 0
+    end
+    object buttonOpenBootTrackFile: TButton
+      AnchorSideTop.Control = editBootTrackFile
+      AnchorSideTop.Side = asrCenter
+      AnchorSideRight.Control = panelSystemData
+      AnchorSideRight.Side = asrBottom
+      Left = 285
+      Height = 33
+      Top = 3
+      Width = 58
+      Anchors = [akTop, akRight]
+      AutoSize = True
+      BorderSpacing.Right = 4
+      BorderSpacing.CellAlignHorizontal = ccaLeftTop
+      Caption = 'Browse'
+      TabOrder = 1
+    end
+    object Label4: TLabel
+      AnchorSideLeft.Control = panelSystemData
+      AnchorSideTop.Control = editFileSystemLabel
+      AnchorSideTop.Side = asrCenter
+      AnchorSideRight.Side = asrBottom
+      Left = 4
+      Height = 19
+      Top = 45
+      Width = 113
+      BorderSpacing.Left = 4
+      Caption = 'File-System Label :'
+      Layout = tlCenter
+      ParentColor = False
+    end
+    object editFileSystemLabel: TEdit
+      AnchorSideLeft.Control = Label4
+      AnchorSideLeft.Side = asrBottom
+      AnchorSideTop.Control = editBootTrackFile
+      AnchorSideTop.Side = asrBottom
+      Left = 121
+      Height = 31
+      Top = 39
+      Width = 160
+      BorderSpacing.Left = 4
+      BorderSpacing.Bottom = 6
+      MaxLength = 11
+      TabOrder = 2
+    end
+    object checkboxUseTimestamps: TCheckBox
+      AnchorSideLeft.Control = editFileSystemLabel
+      AnchorSideTop.Control = editFileSystemLabel
+      AnchorSideTop.Side = asrBottom
+      Left = 121
+      Height = 21
+      Top = 76
+      Width = 123
+      BorderSpacing.Bottom = 4
+      Caption = 'use Timestamps'
+      Checked = True
+      State = cbChecked
+      TabOrder = 3
+    end
+  end
+  object panelDialogNotice: TPanel
+    Left = 8
+    Height = 17
+    Top = 201
+    Width = 347
+    Align = alClient
+    AutoSize = True
+    BorderSpacing.Around = 8
+    BevelOuter = bvNone
+    ClientHeight = 17
+    ClientWidth = 347
+    TabOrder = 2
+    OnPaint = PanelPaint
+    object labelDialogNotice: TLabel
+      Left = 8
+      Height = 1
+      Top = 8
+      Width = 331
+      Align = alClient
+      AutoSize = False
+      BorderSpacing.Around = 8
+      ParentColor = False
+      WordWrap = True
+    end
   end
 end
