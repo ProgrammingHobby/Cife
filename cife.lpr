@@ -37,7 +37,7 @@ uses
 
 begin
     RequireDerivedFormResource := True;
-    Application.Scaled := True;
+  Application.Scaled:=True;
     Application.Initialize;
     if (not IsDiskdefsFilePresent) then begin
         MessageDlg('Diskdefinitions File not found. Please copy ''diskdefs'' into Application directory and restart CP/M Image-File Explorer.'

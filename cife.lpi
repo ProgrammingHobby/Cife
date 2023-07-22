@@ -22,7 +22,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="1"/>
-      <BuildNr Value="933"/>
+      <BuildNr Value="964"/>
       <StringTable FileDescription="CP/M Image-File Explorer" InternalName="CIFE" OriginalFilename="CIFE"/>
     </VersionInfo>
     <BuildModes>
@@ -62,10 +62,9 @@
           </CodeGeneration>
           <Linking>
             <Debugging>
-              <DebugInfoType Value="dsDwarf2"/>
+              <DebugInfoType Value="dsDwarf3"/>
               <UseHeaptrc Value="True"/>
               <TrashVariables Value="True"/>
-              <UseExternalDbgSyms Value="True"/>
             </Debugging>
           </Linking>
         </CompilerOptions>
@@ -95,7 +94,7 @@
           <Linking>
             <Debugging>
               <GenerateDebugInfo Value="False"/>
-              <DebugInfoType Value="dsDwarf2"/>
+              <DebugInfoType Value="dsDwarf3"/>
               <StripSymbols Value="True"/>
             </Debugging>
             <LinkSmart Value="True"/>
@@ -137,10 +136,9 @@
           </CodeGeneration>
           <Linking>
             <Debugging>
-              <DebugInfoType Value="dsDwarf2"/>
+              <DebugInfoType Value="dsDwarf3"/>
               <UseHeaptrc Value="True"/>
               <TrashVariables Value="True"/>
-              <UseExternalDbgSyms Value="True"/>
             </Debugging>
           </Linking>
         </CompilerOptions>
@@ -170,7 +168,7 @@
           <Linking>
             <Debugging>
               <GenerateDebugInfo Value="False"/>
-              <DebugInfoType Value="dsDwarf2"/>
+              <DebugInfoType Value="dsDwarf3"/>
               <StripSymbols Value="True"/>
             </Debugging>
             <LinkSmart Value="True"/>
@@ -212,10 +210,9 @@
           </CodeGeneration>
           <Linking>
             <Debugging>
-              <DebugInfoType Value="dsDwarf2"/>
+              <DebugInfoType Value="dsDwarf3"/>
               <UseHeaptrc Value="True"/>
               <TrashVariables Value="True"/>
-              <UseExternalDbgSyms Value="True"/>
             </Debugging>
             <Options>
               <Win32>
@@ -250,7 +247,7 @@
           <Linking>
             <Debugging>
               <GenerateDebugInfo Value="False"/>
-              <DebugInfoType Value="dsDwarf2"/>
+              <DebugInfoType Value="dsDwarf3"/>
               <StripSymbols Value="True"/>
             </Debugging>
             <LinkSmart Value="True"/>
@@ -297,10 +294,9 @@
           </CodeGeneration>
           <Linking>
             <Debugging>
-              <DebugInfoType Value="dsDwarf2"/>
+              <DebugInfoType Value="dsDwarf3"/>
               <UseHeaptrc Value="True"/>
               <TrashVariables Value="True"/>
-              <UseExternalDbgSyms Value="True"/>
             </Debugging>
             <Options>
               <Win32>
@@ -335,7 +331,7 @@
           <Linking>
             <Debugging>
               <GenerateDebugInfo Value="False"/>
-              <DebugInfoType Value="dsDwarf2"/>
+              <DebugInfoType Value="dsDwarf3"/>
               <StripSymbols Value="True"/>
             </Debugging>
             <LinkSmart Value="True"/>
@@ -382,14 +378,6 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Main_Window"/>
-      </Unit>
-      <Unit>
-        <Filename Value="Sources/newimage_dialog.pas"/>
-        <IsPartOfProject Value="True"/>
-        <ComponentName Value="NewImageDialog"/>
-        <HasResources Value="True"/>
-        <ResourceBaseClass Value="Form"/>
-        <UnitName Value="NewImage_Dialog"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/file_dialog.pas"/>
@@ -509,10 +497,9 @@
     </CodeGeneration>
     <Linking>
       <Debugging>
-        <DebugInfoType Value="dsDwarf2"/>
+        <DebugInfoType Value="dsDwarf3"/>
         <UseHeaptrc Value="True"/>
         <TrashVariables Value="True"/>
-        <UseExternalDbgSyms Value="True"/>
       </Debugging>
       <Options>
         <Win32>
