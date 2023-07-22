@@ -6,6 +6,9 @@ object FileDialog: TFileDialog
   AutoSize = True
   ClientHeight = 268
   ClientWidth = 363
+  OnClose = FormClose
+  OnCreate = FormCreate
+  OnShow = FormShow
   Position = poMainFormCenter
   object ButtonPanel1: TButtonPanel
     Left = 8
@@ -60,11 +63,12 @@ object FileDialog: TFileDialog
       Top = 4
       Width = 196
       Anchors = [akTop, akLeft, akRight]
-      AutoSize = False
       BorderSpacing.Top = 4
       BorderSpacing.Right = 4
       BorderSpacing.Bottom = 6
       Constraints.MinWidth = 160
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 0
     end
     object buttonOpenImageFile: TButton
@@ -80,6 +84,7 @@ object FileDialog: TFileDialog
       AutoSize = True
       BorderSpacing.Right = 4
       Caption = 'Browse'
+      OnClick = buttonOpenImageFileClick
       TabOrder = 1
     end
     object Label2: TLabel
@@ -107,7 +112,11 @@ object FileDialog: TFileDialog
       BorderSpacing.Left = 4
       BorderSpacing.Bottom = 4
       ItemHeight = 0
+      OnChange = comboboxImageTypeChange
+      ReadOnly = True
+      Sorted = True
       TabOrder = 2
+      TextHint = 'Select Image Type'
     end
   end
   object panelSystemData: TPanel

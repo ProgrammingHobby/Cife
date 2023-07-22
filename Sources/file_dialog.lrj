@@ -2,6 +2,7 @@
 {"hash":30235210,"name":"tfiledialog.label1.caption","sourcebytes":[73,109,97,103,101,32,70,105,108,101,32,58],"value":"Image File :"},
 {"hash":77164181,"name":"tfiledialog.buttonopenimagefile.caption","sourcebytes":[66,114,111,119,115,101],"value":"Browse"},
 {"hash":183521514,"name":"tfiledialog.label2.caption","sourcebytes":[73,109,97,103,101,84,121,112,101,32,58],"value":"ImageType :"},
+{"hash":122225061,"name":"tfiledialog.comboboximagetype.texthint","sourcebytes":[83,101,108,101,99,116,32,73,109,97,103,101,32,84,121,112,101],"value":"Select Image Type"},
 {"hash":104806554,"name":"tfiledialog.label3.caption","sourcebytes":[66,111,111,116,45,84,114,97,99,107,32,70,105,108,101,32,58],"value":"Boot-Track File :"},
 {"hash":77164181,"name":"tfiledialog.buttonopenboottrackfile.caption","sourcebytes":[66,114,111,119,115,101],"value":"Browse"},
 {"hash":265323514,"name":"tfiledialog.label4.caption","sourcebytes":[70,105,108,101,45,83,121,115,116,101,109,32,76,97,98,101,108,32,58],"value":"File-System Label :"},
