@@ -1,25 +1,24 @@
 object AboutDialog: TAboutDialog
   Left = 2160
-  Height = 342
+  Height = 338
   Top = 250
-  Width = 359
+  Width = 484
   AutoSize = True
   Caption = 'About CP/M Image-File Explorer'
   ChildSizing.EnlargeHorizontal = crsHomogenousSpaceResize
   ChildSizing.EnlargeVertical = crsHomogenousSpaceResize
   ChildSizing.Layout = cclLeftToRightThenTopToBottom
   ChildSizing.ControlsPerLine = 1
-  ClientHeight = 342
-  ClientWidth = 359
+  ClientHeight = 338
+  ClientWidth = 484
   OnClose = FormClose
   OnShow = FormShow
   Position = poMainFormCenter
-  LCLVersion = '2.2.6.0'
   object Panel1: TPanel
     Left = 24
-    Height = 95
+    Height = 91
     Top = 12
-    Width = 311
+    Width = 436
     AutoSize = True
     BorderSpacing.Top = 12
     BorderSpacing.Bottom = 12
@@ -28,11 +27,11 @@ object AboutDialog: TAboutDialog
     ChildSizing.EnlargeVertical = crsHomogenousSpaceResize
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ChildSizing.ControlsPerLine = 1
-    ClientHeight = 95
-    ClientWidth = 311
+    ClientHeight = 91
+    ClientWidth = 436
     TabOrder = 0
     object Image1: TImage
-      Left = 104
+      Left = 168
       Height = 91
       Top = 0
       Width = 100
@@ -946,19 +945,19 @@ object AboutDialog: TAboutDialog
   object Panel2: TPanel
     Left = 24
     Height = 23
-    Top = 119
-    Width = 311
+    Top = 115
+    Width = 436
     AutoSize = True
     BorderSpacing.Bottom = 8
     BevelOuter = bvNone
     ClientHeight = 23
-    ClientWidth = 311
+    ClientWidth = 436
     TabOrder = 1
     object labelTitle: TLabel
       Left = 0
       Height = 23
       Top = 0
-      Width = 311
+      Width = 436
       Align = alClient
       Alignment = taCenter
       Caption = 'CP/M Image-File Explorer'
@@ -972,19 +971,19 @@ object AboutDialog: TAboutDialog
   object Panel3: TPanel
     Left = 24
     Height = 1
-    Top = 150
-    Width = 311
+    Top = 146
+    Width = 436
     AutoSize = True
     BorderSpacing.Bottom = 8
     BevelOuter = bvNone
     ClientHeight = 1
-    ClientWidth = 311
+    ClientWidth = 436
     TabOrder = 2
     object labelVersion: TLabel
       Left = 0
       Height = 1
       Top = 0
-      Width = 307
+      Width = 436
       Align = alClient
       Alignment = taCenter
       Layout = tlCenter
@@ -994,19 +993,19 @@ object AboutDialog: TAboutDialog
   object Panel4: TPanel
     Left = 24
     Height = 1
-    Top = 159
-    Width = 311
+    Top = 155
+    Width = 436
     AutoSize = True
     BorderSpacing.Bottom = 8
     BevelOuter = bvNone
     ClientHeight = 1
-    ClientWidth = 311
+    ClientWidth = 436
     TabOrder = 3
     object labelSystem: TLabel
       Left = 0
       Height = 1
       Top = 0
-      Width = 307
+      Width = 436
       Align = alClient
       Alignment = taCenter
       Layout = tlCenter
@@ -1017,24 +1016,24 @@ object AboutDialog: TAboutDialog
   object Panel5: TPanel
     Left = 24
     Height = 38
-    Top = 168
-    Width = 311
+    Top = 164
+    Width = 436
     AutoSize = True
     BorderSpacing.Left = 24
     BorderSpacing.Right = 24
     BorderSpacing.Bottom = 8
     BevelOuter = bvNone
     ClientHeight = 38
-    ClientWidth = 311
+    ClientWidth = 436
     TabOrder = 4
     object labelToolsCopyright: TLabel
       Left = 0
       Height = 38
       Top = 0
-      Width = 311
+      Width = 436
       Align = alClient
       Alignment = taCenter
-      Caption = '   CP/M Images Functionality based on CP/M-Tools   '#10' Source Code Version 2.23 from Michael Haardt.'
+      Caption = '   CP/M Images Functionality based on CP/M-Tools   '#10' Source Code Version 2.24 (Snapshot 2023-07-16) from Michael Haardt.'
       Layout = tlCenter
       ParentColor = False
     end
@@ -1042,19 +1041,19 @@ object AboutDialog: TAboutDialog
   object Panel6: TPanel
     Left = 24
     Height = 19
-    Top = 214
-    Width = 311
+    Top = 210
+    Width = 436
     AutoSize = True
     BorderSpacing.Bottom = 8
     BevelOuter = bvNone
     ClientHeight = 19
-    ClientWidth = 311
+    ClientWidth = 436
     TabOrder = 5
     object labelHyperlink: TLabel
       Left = 0
       Height = 19
       Top = 0
-      Width = 311
+      Width = 436
       Align = alClient
       Alignment = taCenter
       Caption = 'http://www.moria.de/~michael/cpmtools'
@@ -1069,9 +1068,9 @@ object AboutDialog: TAboutDialog
     end
   end
   object Panel8: TPanel
-    Left = 90
+    Left = 152
     Height = 30
-    Top = 241
+    Top = 237
     Width = 179
     BorderSpacing.CellAlignHorizontal = ccaCenter
     BorderSpacing.CellAlignVertical = ccaCenter
@@ -1112,19 +1111,19 @@ object AboutDialog: TAboutDialog
   object Panel7: TPanel
     Left = 24
     Height = 19
-    Top = 271
-    Width = 311
+    Top = 267
+    Width = 436
     AutoSize = True
     BorderSpacing.Bottom = 8
     BevelOuter = bvNone
     ClientHeight = 19
-    ClientWidth = 311
+    ClientWidth = 436
     TabOrder = 6
     object labelDeveloper: TLabel
       Left = 0
       Height = 19
       Top = 0
-      Width = 311
+      Width = 436
       Align = alClient
       Alignment = taCenter
       Caption = 'Uwe Merker    2023'
@@ -1133,9 +1132,9 @@ object AboutDialog: TAboutDialog
     end
   end
   object ButtonPanel1: TButtonPanel
-    Left = 132
+    Left = 194
     Height = 34
-    Top = 298
+    Top = 294
     Width = 95
     Align = alNone
     BorderSpacing.Bottom = 4
