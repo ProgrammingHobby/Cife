@@ -30,20 +30,14 @@ uses
     Interfaces, // this includes the LCL widgetset
     Forms,
     Dialogs,
-    Main_Window,
-    CifeGlobals { you can add units after this };
+    Main_Window { you can add units after this };
 
 {$R *.res}
 
 begin
     RequireDerivedFormResource := True;
-  Application.Scaled:=True;
+    Application.Scaled := True;
     Application.Initialize;
-    if (not IsDiskdefsFilePresent) then begin
-        MessageDlg('Diskdefinitions File not found. Please copy ''diskdefs'' into Application directory and restart CP/M Image-File Explorer.'
-            , mtError, [mbOK], 0);
-        exit;
-    end;
     Application.CreateForm(TMainWindow, MainWindow);
     Application.Run;
 end.

@@ -29,7 +29,7 @@ msgstr ""
 #: taboutdialog.labeltoolscopyright.caption
 msgid ""
 "   CP/M Images Functionality based on CP/M-Tools   \n"
-" Source Code Version 2.23 from Michael Haardt."
+" Source Code Version 2.24 (Snapshot 2023-07-16) from Michael Haardt."
 msgstr ""
 
 #: tcharacteristicsdialog.caption
@@ -88,32 +88,43 @@ msgstr ""
 msgid "labelUpdated"
 msgstr ""
 
-#: tfiledialog.buttondetailview.hint
-msgid "View files as a detailed view"
+#: tfiledialog.buttonopenboottrackfile.caption
+msgctxt "tfiledialog.buttonopenboottrackfile.caption"
+msgid "Browse"
 msgstr ""
 
-#: tfiledialog.buttonfolderup.hint
-msgid "Go to parent folder"
+#: tfiledialog.buttonopenimagefile.caption
+msgctxt "tfiledialog.buttonopenimagefile.caption"
+msgid "Browse"
 msgstr ""
 
-#: tfiledialog.buttonhomefolder.hint
-msgid "Go to home folder"
+#: tfiledialog.checkboxusetimestamps.caption
+msgctxt "tfiledialog.checkboxusetimestamps.caption"
+msgid "use Timestamps"
 msgstr ""
 
-#: tfiledialog.buttonlistview.hint
-msgid "View files as a list view"
-msgstr ""
-
-#: tfiledialog.buttonnewfolder.hint
-msgid "Create new folder"
-msgstr ""
-
-#: tfiledialog.caption
-msgid "FileDialog"
+#: tfiledialog.comboboximagetype.texthint
+msgid "Select Image Type"
 msgstr ""
 
 #: tfiledialog.label1.caption
-msgid "Image Type : "
+msgctxt "tfiledialog.label1.caption"
+msgid "Image File :"
+msgstr ""
+
+#: tfiledialog.label2.caption
+msgctxt "tfiledialog.label2.caption"
+msgid "ImageType :"
+msgstr ""
+
+#: tfiledialog.label3.caption
+msgctxt "tfiledialog.label3.caption"
+msgid "Boot-Track File :"
+msgstr ""
+
+#: tfiledialog.label4.caption
+msgctxt "tfiledialog.label4.caption"
+msgid "File-System Label :"
 msgstr ""
 
 #: tmainwindow.actionabout.caption
@@ -238,6 +249,10 @@ msgstr ""
 msgid "Used Dir Entries :"
 msgstr ""
 
+#: tmainwindow.label18.caption
+msgid "Label18"
+msgstr ""
+
 #: tmainwindow.label2.caption
 msgid "Sectors :"
 msgstr ""
@@ -298,36 +313,6 @@ msgstr ""
 msgid "View"
 msgstr ""
 
-#: tnewimagedialog.buttonopenboottrackfile.caption
-msgctxt "tnewimagedialog.buttonopenboottrackfile.caption"
-msgid "Browse"
-msgstr ""
-
-#: tnewimagedialog.buttonopenimagefile.caption
-msgctxt "tnewimagedialog.buttonopenimagefile.caption"
-msgid "Browse"
-msgstr ""
-
-#: tnewimagedialog.checkboxusetimestamps.caption
-msgid "use Timestamps"
-msgstr ""
-
-#: tnewimagedialog.label1.caption
-msgid "Image File :"
-msgstr ""
-
-#: tnewimagedialog.label2.caption
-msgid "ImageType :"
-msgstr ""
-
-#: tnewimagedialog.label3.caption
-msgid "Boot-Track File :"
-msgstr ""
-
-#: tnewimagedialog.label4.caption
-msgid "File-System Label :"
-msgstr ""
-
 #: trenamefiledialog.caption
 msgid "Rename CP/M File"
 msgstr ""
@@ -361,6 +346,11 @@ msgstr ""
 msgid "new File Name:"
 msgstr ""
 
+#: tsettingsdialog.buttonbrowsediskdefsfile.caption
+msgctxt "tsettingsdialog.buttonbrowsediskdefsfile.caption"
+msgid "Browse"
+msgstr ""
+
 #: tsettingsdialog.caption
 msgctxt "tsettingsdialog.caption"
 msgid "Settings"
@@ -384,5 +374,9 @@ msgstr ""
 
 #: tsettingsdialog.label2.caption
 msgid "space separated list of textfile endings to be converted during copy Operations :"
+msgstr ""
+
+#: tsettingsdialog.label3.caption
+msgid "Path to diskdefs file:"
 msgstr ""
 
