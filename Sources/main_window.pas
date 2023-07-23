@@ -324,11 +324,13 @@ begin
                 actionNew.Enabled := True;
                 actionOpen.Enabled := True;
                 menuitemRecentFiles.Enabled := True;
+                StatusBar1.SimpleText := GetValue('DiskdefsFile', '');
             end
             else begin
                 actionNew.Enabled := False;
                 actionOpen.Enabled := False;
                 menuitemRecentFiles.Enabled := False;
+                StatusBar1.SimpleText := '';
             end;
 
             CloseKey;
@@ -400,6 +402,7 @@ begin
                 actionNew.Enabled := True;
                 actionOpen.Enabled := True;
                 menuitemRecentFiles.Enabled := True;
+                StatusBar1.SimpleText := GetValue('DiskdefsFile', '');
             end
             else begin
                 MessageDlg('Diskdefinitions file not found. Please select valid ''diskdefs'' file' +
@@ -408,6 +411,7 @@ begin
                 actionNew.Enabled := False;
                 actionOpen.Enabled := False;
                 menuitemRecentFiles.Enabled := False;
+                StatusBar1.SimpleText := '';
             end;
 
             CloseKey;

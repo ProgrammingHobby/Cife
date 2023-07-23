@@ -9,12 +9,13 @@ object MainWindow: TMainWindow
   Menu = MainMenu
   OnClose = FormClose
   OnShow = FormShow
-  LCLVersion = '2.2.6.0'
   object StatusBar1: TStatusBar
-    Left = 0
+    Left = 4
     Height = 21
     Top = 369
-    Width = 687
+    Width = 679
+    BorderSpacing.Left = 4
+    BorderSpacing.Right = 4
     Panels = <>
   end
   object Panel1: TPanel
@@ -383,7 +384,7 @@ object MainWindow: TMainWindow
       ChildSizing.EnlargeVertical = crsHomogenousChildResize
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
       ChildSizing.ControlsPerLine = 2
-      ClientHeight = 143
+      ClientHeight = 144
       ClientWidth = 98
       Font.Height = -13
       Font.Name = 'Sans'
