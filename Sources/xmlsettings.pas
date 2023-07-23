@@ -285,12 +285,10 @@ begin
     Node := FindNode(APath, Ident, [nfHasValue, nfWriteAccess]);
     KeyNode := Node.FindNode(Ident);
     if Assigned(KeyNode) then begin
-        if KeyNode.FirstChild.NodeType = TEXT_NODE then begin
-            OldNode := KeyNode.FirstChild;
-            DataNode := FXmlDoc.CreateTextNode(AValue);
-            if (KeyNode.ReplaceChild(DataNode, OldNode) <> nil) then begin
-                FModified := True;
-            end;
+        OldNode := KeyNode.FirstChild;
+        DataNode := FXmlDoc.CreateTextNode(AValue);
+        if (KeyNode.ReplaceChild(DataNode, OldNode) <> nil) then begin
+            FModified := True;
         end;
     end
     else begin
@@ -567,9 +565,9 @@ begin
             break;
         end;
         Child := Result.FirstChild;
-        while Assigned(Child) and not ((Child.NodeType = ELEMENT_NODE) and (0 =
-                CompareDOMStrings(DOMPChar(TDOMElement(Child).TagName), @APath[StartPos], Length(TDOMElement(Child).TagName),
-                EndPos - StartPos))) do begin
+        while Assigned(Child) and not ((Child.NodeType = ELEMENT_NODE) and
+                (0 = CompareDOMStrings(DOMPChar(TDOMElement(Child).TagName), @APath[StartPos],
+                Length(TDOMElement(Child).TagName), EndPos - StartPos))) do begin
             Child := Child.NextSibling;
         end;
         if (Child = nil) and (nfWriteAccess in AFlags) then begin
