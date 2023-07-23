@@ -62,6 +62,7 @@ type
         Label15: TLabel;
         Label16: TLabel;
         Label17: TLabel;
+        Label18: TLabel;
         labelType: TLabel;
         labelUsedDirEntries: TLabel;
         labelMaxDirEntries: TLabel;
@@ -290,11 +291,15 @@ procedure TMainWindow.actionSettingsExecute(Sender: TObject);
 var
     dialog: TSettingsDialog;
     OldUseUpperCase: boolean;
+    OldDiskdefsFile: string;
     OldSelection: integer;
 begin
     with TXMLSettings.Create(SettingsFile) do begin
         try
-            OldUseUpperCase := GetValue('Settings/UseUppercaseCharacters', False);
+            OpenKey('Settings');
+            OldUseUpperCase := GetValue('UseUppercaseCharacters', False);
+            OldDiskdefsFile := GetValue('DiskdefsFile', '');
+            CloseKey;
         finally
             Free;
         end;
@@ -309,9 +314,24 @@ begin
 
     with TXMLSettings.Create(SettingsFile) do begin
         try
+            OpenKey('Settings');
+
             if (OldUseUpperCase <> GetValue('Settings/UseUppercaseCharacters', False)) then begin
                 (PageControl.ActivePage as TImagePage).RefreshDirectory;
             end;
+
+            if (OldDiskdefsFile <> GetValue('DiskdefsFile', '')) and (FileExists(GetValue('DiskdefsFile', ''))) then begin
+                actionNew.Enabled := True;
+                actionOpen.Enabled := True;
+                menuitemRecentFiles.Enabled := True;
+            end
+            else begin
+                actionNew.Enabled := False;
+                actionOpen.Enabled := False;
+                menuitemRecentFiles.Enabled := False;
+            end;
+
+            CloseKey;
         finally
             Free;
         end;
@@ -372,11 +392,30 @@ begin
     SetAutoSize(False);
 
     with TXMLSettings.Create(SettingsFile) do begin
+
         try
+            OpenKey('Settings');
+
+            if (FileExists(GetValue('DiskdefsFile', ''))) then begin
+                actionNew.Enabled := True;
+                actionOpen.Enabled := True;
+                menuitemRecentFiles.Enabled := True;
+            end
+            else begin
+                MessageDlg('Diskdefinitions file not found. Please select valid ''diskdefs'' file' +
+                    ' on the Options -> Settings -> General-Settings page.'
+                    , mtError, [mbOK], 0);
+                actionNew.Enabled := False;
+                actionOpen.Enabled := False;
+                menuitemRecentFiles.Enabled := False;
+            end;
+
+            CloseKey;
             RestoreFormState(TForm(self));
         finally
             Free;
         end;
+
     end;
 
     actionClose.Enabled := False;
