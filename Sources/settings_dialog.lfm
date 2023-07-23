@@ -61,14 +61,15 @@ object SettingsDialog: TSettingsDialog
       Height = 172
       Top = 4
       Width = 352
-      PageIndex = 1
+      PageIndex = 0
       Align = alClient
+      AutoSize = True
       BorderSpacing.Around = 4
       TabOrder = 2
       object Page1: TPage
         object Panel2: TPanel
           Left = 4
-          Height = 29
+          Height = 33
           Top = 4
           Width = 344
           Align = alTop
@@ -76,7 +77,7 @@ object SettingsDialog: TSettingsDialog
           BorderSpacing.Around = 4
           BevelOuter = bvNone
           ClientHeight = 29
-          ClientWidth = 344
+          ClientWidth = 340
           TabOrder = 0
           OnPaint = PanelPaint
           object checkboxOpenLastImage: TCheckBox
@@ -92,15 +93,15 @@ object SettingsDialog: TSettingsDialog
         end
         object Panel3: TPanel
           Left = 4
-          Height = 29
-          Top = 37
+          Height = 33
+          Top = 41
           Width = 344
           Align = alTop
           AutoSize = True
           BorderSpacing.Around = 4
           BevelOuter = bvNone
           ClientHeight = 29
-          ClientWidth = 344
+          ClientWidth = 340
           TabOrder = 1
           OnPaint = PanelPaint
           object checkboxUppercaseCpmCharacters: TCheckBox
@@ -114,11 +115,67 @@ object SettingsDialog: TSettingsDialog
             TabOrder = 0
           end
         end
+        object Panel7: TPanel
+          Left = 4
+          Height = 68
+          Top = 78
+          Width = 344
+          Align = alTop
+          AutoSize = True
+          BorderSpacing.Around = 4
+          BevelOuter = bvNone
+          ClientHeight = 68
+          ClientWidth = 344
+          TabOrder = 2
+          OnPaint = PanelPaint
+          object Label3: TLabel
+            Left = 4
+            Height = 19
+            Top = 4
+            Width = 340
+            Align = alTop
+            BorderSpacing.Left = 4
+            BorderSpacing.Top = 4
+            Caption = 'Path to diskdefs file:'
+            ParentColor = False
+          end
+          object Panel8: TPanel
+            Left = 4
+            Height = 37
+            Top = 27
+            Width = 336
+            Align = alClient
+            BorderSpacing.Around = 4
+            BevelOuter = bvNone
+            ClientHeight = 33
+            ClientWidth = 332
+            TabOrder = 0
+            object editDiskdefsPath: TEdit
+              Left = 0
+              Height = 33
+              Top = 0
+              Width = 257
+              Align = alClient
+              ReadOnly = True
+              TabOrder = 0
+            end
+            object buttonBrowseDiskdefsFile: TButton
+              Left = 257
+              Height = 33
+              Top = 0
+              Width = 75
+              Align = alRight
+              Caption = 'Browse'
+              OnClick = buttonBrowseDiskdefsFileClick
+              TabOrder = 1
+            end
+          end
+        end
       end
       object Page2: TPage
         object Panel4: TPanel
           Left = 4
-          Height = 33
+          Height = 29
           Top = 4
           Width = 344
           Align = alTop
@@ -126,14 +183,14 @@ object SettingsDialog: TSettingsDialog
           BorderSpacing.Around = 4
           BevelOuter = bvNone
           ClientHeight = 29
-          ClientWidth = 340
+          ClientWidth = 344
           TabOrder = 0
           OnPaint = PanelPaint
           object checkboxKeepTimeStamps: TCheckBox
             Left = 4
             Height = 21
             Top = 4
-            Width = 332
+            Width = 336
             Align = alClient
             BorderSpacing.Around = 4
             Caption = 'keep last updated timestamps'
@@ -143,7 +200,7 @@ object SettingsDialog: TSettingsDialog
         object Panel5: TPanel
           Left = 4
           Height = 37
-          Top = 41
+          Top = 37
           Width = 344
           Align = alTop
           AutoSize = True
@@ -179,7 +236,7 @@ object SettingsDialog: TSettingsDialog
         object Panel6: TPanel
           Left = 4
           Height = 90
-          Top = 82
+          Top = 78
           Width = 344
           Align = alTop
           AutoSize = True

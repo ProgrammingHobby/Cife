@@ -23,7 +23,7 @@ unit Settings_Dialog;
 interface
 
 uses
-    Classes, SysUtils, Forms, Controls, Graphics, Dialogs, ComCtrls,
+    Classes, SysUtils, Forms, Controls, Graphics, ComCtrls,
     ButtonPanel, ExtCtrls, StdCtrls, Spin;
 
 type
@@ -31,12 +31,15 @@ type
     { TSettingsDialog }
 
     TSettingsDialog = class(TForm)
+        buttonBrowseDiskdefsFile: TButton;
         ButtonPanel: TButtonPanel;
         checkboxKeepTimeStamps: TCheckBox;
         checkboxOpenLastImage: TCheckBox;
         checkboxUppercaseCpmCharacters: TCheckBox;
+        editDiskdefsPath: TEdit;
         Label1: TLabel;
         Label2: TLabel;
+        Label3: TLabel;
         memoTextfileEndings: TMemo;
         Notebook: TNotebook;
         Page1: TPage;
@@ -47,9 +50,12 @@ type
         Panel3: TPanel;
         Panel5: TPanel;
         Panel6: TPanel;
+        Panel7: TPanel;
+        Panel8: TPanel;
         spineditUserNumber: TSpinEdit;
         Splitter: TSplitter;
         treeviewSettingPages: TTreeView;
+        procedure buttonBrowseDiskdefsFileClick(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
         procedure FormShow(Sender: TObject);
         procedure PanelPaint(Sender: TObject);
@@ -67,7 +73,7 @@ implementation
 
 {$R *.lfm}
 
-uses XMLSettings, CifeGlobals;
+uses XMLSettings, CifeGlobals, Dialogs;
 
 { TSettingsDialog }
 // --------------------------------------------------------------------------------
@@ -97,24 +103,25 @@ end;
 procedure TSettingsDialog.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
 
-    if (ModalResult = mrOk) then begin
+    with TXMLSettings.Create(SettingsFile) do begin
 
-        with TXMLSettings.Create(SettingsFile) do begin
+        try
 
-            try
+            if (ModalResult = mrOk) then begin
                 OpenKey('Settings');
                 SetValue('OpenLastImages', checkboxOpenLastImage.Checked);
                 SetValue('UseUppercaseCharacters', checkboxUppercaseCpmCharacters.Checked);
                 SetValue('KeepTimestamps', checkboxKeepTimeStamps.Checked);
                 SetValue('DefaultUserNumber', spineditUserNumber.Value);
                 SetValue('TextFileEndings', memoTextfileEndings.Text);
+                SetValue('DiskdefsFile', editDiskdefsPath.Text);
                 SetValue('LastPage', treeviewSettingPages.Selected.Index);
                 CloseKey;
-                SaveFormState(TForm(self));
-            finally
-                Free;
             end;
 
+            SaveFormState(TForm(self));
+        finally
+            Free;
         end;
 
     end;
@@ -123,7 +130,27 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
+procedure TSettingsDialog.buttonBrowseDiskdefsFileClick(Sender: TObject);
+var
+    Dialog: TOpenDialog;
+begin
+    try
+        Dialog := TOpenDialog.Create(self);
+        Dialog.Title := 'Select CP/M Diskdefs File';
+        Dialog.InitialDir := ExtractFilePath(editDiskdefsPath.Text);
+        if (Dialog.Execute) then begin
+            editDiskdefsPath.Text := Dialog.FileName;
+            editDiskdefsPath.SelStart := editDiskdefsPath.GetTextLen;
+        end;
+    finally
+        FreeAndNil(Dialog);
+    end;
+end;
+
+// --------------------------------------------------------------------------------
 procedure TSettingsDialog.FormShow(Sender: TObject);
+var
+    MinWidth, MinHeight: integer;
 begin
 
     with TXMLSettings.Create(SettingsFile) do begin
@@ -135,6 +162,8 @@ begin
             checkboxKeepTimeStamps.Checked := GetValue('KeepTimestamps', True);
             spineditUserNumber.Value := GetValue('DefaultUserNumber', 0);
             memoTextfileEndings.Text := GetValue('TextFileEndings', 'txt pip pas');
+            editDiskdefsPath.Text := GetValue('DiskdefsFile', '');
+            editDiskdefsPath.SelStart := editDiskdefsPath.GetTextLen;
             treeviewSettingPages.Items[GetValue('LastPage', 0)].Selected := True;
             CloseKey;
             RestoreFormState(TForm(self));
@@ -143,6 +172,10 @@ begin
         end;
 
     end;
+
+    CalculatePreferredSize(MinWidth, MinHeight, True);
+    Constraints.MinWidth := MinWidth;
+    Constraints.MinHeight := MinHeight;
 
 end;
 
