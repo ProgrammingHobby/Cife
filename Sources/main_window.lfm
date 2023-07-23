@@ -130,14 +130,6 @@ object MainWindow: TMainWindow
             ParentFont = False
           end
         end
-        object Label18: TLabel
-          Left = 0
-          Height = 19
-          Top = 0
-          Width = 49
-          Caption = 'Label18'
-          ParentColor = False
-        end
       end
       object groupDirStatistics: TGroupBox
         Left = 0

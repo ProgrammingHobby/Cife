@@ -62,7 +62,6 @@ type
         Label15: TLabel;
         Label16: TLabel;
         Label17: TLabel;
-        Label18: TLabel;
         labelType: TLabel;
         labelUsedDirEntries: TLabel;
         labelMaxDirEntries: TLabel;

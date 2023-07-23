@@ -3,7 +3,6 @@
 {"hash":225561941,"name":"tmainwindow.groupimagefile.caption","sourcebytes":[73,109,97,103,101,32,70,105,108,101],"value":"Image File"},
 {"hash":96495418,"name":"tmainwindow.label10.caption","sourcebytes":[84,121,112,101,32,58],"value":"Type :"},
 {"hash":80750394,"name":"tmainwindow.label11.caption","sourcebytes":[70,105,108,101,32,58],"value":"File :"},
-{"hash":41467672,"name":"tmainwindow.label18.caption","sourcebytes":[76,97,98,101,108,49,56],"value":"Label18"},
 {"hash":70560499,"name":"tmainwindow.groupdirstatistics.caption","sourcebytes":[68,105,114,101,99,116,111,114,121,32,83,116,97,116,105,115,116,105,99,115],"value":"Directory Statistics"},
 {"hash":56671018,"name":"tmainwindow.label12.caption","sourcebytes":[84,111,116,97,108,32,66,121,116,101,115,32,58],"value":"Total Bytes :"},
 {"hash":221682234,"name":"tmainwindow.label13.caption","sourcebytes":[84,111,116,97,108,32,49,107,32,66,108,111,99,107,115,32,58],"value":"Total 1k Blocks :"},
