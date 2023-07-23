@@ -50,7 +50,6 @@ type
     end;
 
 function SettingsFile: string;
-function IsDiskdefsFilePresent: boolean;
 procedure GetDiskDefsList(DiskDefsList: TStrings);
 
 implementation
@@ -63,12 +62,6 @@ begin
         MkDir(Result);
     end;
     Result := Result + 'cife.xml';
-end;
-
-// --------------------------------------------------------------------------------
-function IsDiskdefsFilePresent: boolean;
-begin
-    Result := FileExists(ExtractFilePath(ParamStr(0)) + 'diskdefs');
 end;
 
 // --------------------------------------------------------------------------------
