@@ -105,7 +105,18 @@ procedure TFileDialog.PrepareImageTypesComboBox;
 var
     IndexI, NewWidth: integer;
 begin
-    GetDiskDefsList(comboboxImageType.Items);
+    with TXMLSettings.Create(SettingsFile) do begin
+
+        try
+            OpenKey('Settings');
+            GetDiskDefsList(GetValue('DiskdefsFile', ''), comboboxImageType.Items);
+            CloseKey;
+        finally
+            Free;
+        end;
+
+    end;
+
     comboboxImageType.Sorted := True;
     comboboxImageType.Canvas.Font.Assign(comboboxImageType.Font);
     NewWidth := 0;
@@ -212,7 +223,26 @@ begin
                 Dialog := TOpenDialog.Create(self);
                 Dialog.Title := 'Select CP/M Disk Image File';
                 Dialog.Filter := FWildcards;
-                Dialog.InitialDir := FDefaultPath;
+
+                if (FDefaultPath.IsEmpty) then begin
+
+                    with TXMLSettings.Create(SettingsFile) do begin
+
+                        try
+                            OpenKey('Settings');
+                            Dialog.InitialDir := ExtractFilePath(GetValue('DiskdefsFile', ''));
+                            CloseKey;
+                        finally
+                            Free;
+                        end;
+
+                    end;
+
+                end
+                else begin
+                    Dialog.InitialDir := FDefaultPath;
+                end;
+
                 if (Dialog.Execute) then begin
                     editImageFile.Hint := Dialog.FileName;
                     editImageFile.Text := ExtractFileName(Dialog.FileName);

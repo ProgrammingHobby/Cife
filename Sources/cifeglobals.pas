@@ -50,7 +50,7 @@ type
     end;
 
 function SettingsFile: string;
-procedure GetDiskDefsList(DiskDefsList: TStrings);
+procedure GetDiskDefsList(APath: string; ADiskDefsList: TStrings);
 
 implementation
 
@@ -65,7 +65,7 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-procedure GetDiskDefsList(DiskDefsList: TStrings);
+procedure GetDiskDefsList(APath: string; ADiskDefsList: TStrings);
 var
     Diskdefs: TStringList;
     Line: TStringArray;
@@ -73,12 +73,12 @@ var
 begin
     try
         Diskdefs := TStringList.Create;
-        DiskDefs.LoadFromFile(ExtractFilePath(ParamStr(0)) + 'diskdefs');
-        DiskDefsList.Add('Amstrad (PCW16)');
+        DiskDefs.LoadFromFile(APath);
+        ADiskDefsList.Add('Amstrad (PCW16)');
         for Index := 0 to Diskdefs.Count - 1 do begin
             Line := Diskdefs[Index].Trim.Split(' ');
             if ((Length(Line) = 2) and (Line[0] = 'diskdef')) then begin
-                DiskDefsList.Add(Line[1]);
+                ADiskDefsList.Add(Line[1]);
             end;
         end;
     finally
