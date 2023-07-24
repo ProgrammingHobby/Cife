@@ -1006,6 +1006,7 @@ object MainWindow: TMainWindow
       Caption = 'Delete'
       DisableIfNoHandler = False
       ImageIndex = 9
+      OnExecute = actionDeleteExecute
       ShortCut = 46
     end
     object actionCharacteristics: TAction

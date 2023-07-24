@@ -144,6 +144,7 @@ type
         procedure actionCharacteristicsExecute(Sender: TObject);
         procedure actionClearHistoryExecute(Sender: TObject);
         procedure actionCloseExecute(Sender: TObject);
+        procedure actionDeleteExecute(Sender: TObject);
         procedure actionNewExecute(Sender: TObject);
         procedure actionOpenExecute(Sender: TObject);
         procedure actionQuitExecute(Sender: TObject);
@@ -217,6 +218,17 @@ begin
     PageControl.ActivePage.Free;
     if (PageControl.PageCount <= 0) then begin
         actionClose.Enabled := False;
+    end;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TMainWindow.actionDeleteExecute(Sender: TObject);
+var
+    Page: TImagePage;
+begin
+    Page := PageControl.ActivePage as TImagePage;
+    if (Assigned(Page)) then begin
+        Page.DeleteFile;
     end;
 end;
 
