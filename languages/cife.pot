@@ -249,10 +249,6 @@ msgstr ""
 msgid "Used Dir Entries :"
 msgstr ""
 
-#: tmainwindow.label18.caption
-msgid "Label18"
-msgstr ""
-
 #: tmainwindow.label2.caption
 msgid "Sectors :"
 msgstr ""
