@@ -77,8 +77,8 @@ type
         procedure Stat(const AInode: TCpmInode; var ABuffer: TCpmStat);
         procedure AttrGet(const AInode: TCpmInode; var AAttrib: cpm_attr_t);
         function Unmount: boolean;
-        //int rename(char const *oldname, char const *newname);
         function Rename(const AOldName: PChar; const ANewName: PChar): boolean;
+        function Delete(const AFileName: PChar): boolean;
         function Sync: boolean;
         function GetErrorMsg: string;
         function GetFileSystemInfo: TFileSystemInfo;
@@ -883,6 +883,45 @@ begin
         Extent := FindFileExtent(OldUser, OldName, OldExt, Extent + 1, -1);
     until (Extent = -1);
 
+    Result := True;
+end;
+
+// --------------------------------------------------------------------------------
+//  -- delete cp/m-file
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.Delete(const AFileName: PChar): boolean;
+var
+    User, Extent: integer;
+    Name: array[0..7] of char;
+    Extension: array[0..2] of char;
+begin
+
+    if not S_ISDIR(FRoot.Mode) then begin
+        FFileSystemError := 'no such file';
+        Result := False;
+        exit;
+    end;
+
+    if not SplitFilename(AFileName, FDrive.OsType, Name, Extension, User) then begin
+        Result := False;
+        exit;
+    end;
+
+    Extent := FindFileExtent(User, Name, Extension, 0, -1);
+
+    if (Extent = -1) then begin
+        Result := False;
+        exit;
+    end;
+
+    FDrive.DirtyDirectory := True;
+
+    repeat
+        FDirectory[Extent].Status := $E5;
+        Extent := FindFileExtent(User, Name, Extension, Extent + 1, -1);
+    until (Extent <= 0);
+
+    AlvInit;
     Result := True;
 end;
 

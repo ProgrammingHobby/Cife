@@ -47,6 +47,7 @@ type
         function GetFileName: string;
         procedure RefreshDirectory;
         procedure RenameFile;
+        procedure DeleteFile;
 
     public  // Konstruktor/Destruktor
         constructor Create(ATheOwner: TComponent); override;
@@ -77,7 +78,7 @@ implementation
 
 { TImagePage }
 
-uses Controls, StdCtrls, RenameFile_Dialog, StrUtils, Graphics, XMLSettings;
+uses Controls, StdCtrls, RenameFile_Dialog, StrUtils, Graphics, XMLSettings, Dialogs;
 
 // --------------------------------------------------------------------------------
 procedure TImagePage.DoShow;
@@ -189,6 +190,36 @@ begin
         end;
     finally
         FreeAndNil(Dialog);
+    end;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TImagePage.DeleteFile;
+var
+    FileList: TStringList;
+    IndexI: integer;
+begin
+
+    if MessageDlg('Delete File/s', 'Are you sure you want delete selected File/s ?', mtConfirmation, [mbYes, mbNo], 0) =
+        mrYes then begin
+
+        try
+            FileList := TStringList.Create;
+
+            for IndexI := 0 to FDirectoryList.Items.Count - 1 do begin
+
+                if (FDirectoryList.Items[IndexI].Selected) then begin
+                    FileList.Add(DelSpace(FDirectoryList.Items[IndexI].Caption));
+                end;
+
+            end;
+
+            FCpmTools.DeleteFile(FileList);
+            RefreshDirectory;
+        finally
+            FreeAndNil(FileList);
+        end;
+
     end;
 end;
 

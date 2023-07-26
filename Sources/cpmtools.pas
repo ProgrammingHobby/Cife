@@ -41,6 +41,7 @@ type
         procedure ShowDirectory;
         procedure RefreshDirectory(AUpperCase: boolean);
         function RenameFile(AOldName, ANewName: string): boolean;
+        function DeleteFile(AFiles: TStringList): boolean;
         function GetFileSystemInfo: TFileSystemInfo;
         function GetDirectoryStatistic: TDirStatistic;
 
@@ -322,6 +323,38 @@ begin
                 [AOldName, ANewName, FCpmFileSystem.GetErrorMsg]), mtError, [mbOK], 0) = mrOk then begin
                 Result := False;
                 Exit;
+            end;
+
+        end;
+
+    finally
+        FreeAndNil(Gargv);
+    end;
+
+    FCpmFileSystem.Sync;
+    Result := True;
+end;
+
+// --------------------------------------------------------------------------------
+function TCpmTools.DeleteFile(AFiles: TStringList): boolean;
+var
+    Gargc, IndexI: integer;
+    Gargv: TStringList;
+begin
+    try
+        Gargv := TStringList.Create;
+        for IndexI := 0 to AFiles.Count - 1 do begin
+
+            FCpmFileSystem.Glob(PChar(AFiles[IndexI]), Gargc, Gargv);
+
+            if not ((Gargc > 0) and (FCpmFileSystem.Delete(PChar(Gargv[IndexI])))) then begin
+
+                if MessageDlg(Format('can not erase %s' + LineEnding + '(%s)',
+                    [Gargv[0], FCpmFileSystem.GetErrorMsg]), mtError, [mbOK], 0) = mrOk then begin
+                    Result := False;
+                    Exit;
+                end;
+
             end;
 
         end;
