@@ -48,6 +48,7 @@ type
         procedure RefreshDirectory;
         procedure RenameFile;
         procedure DeleteFile;
+        procedure ShowFileCharacteristics;
 
     public  // Konstruktor/Destruktor
         constructor Create(ATheOwner: TComponent); override;
@@ -78,7 +79,7 @@ implementation
 
 { TImagePage }
 
-uses Controls, StdCtrls, RenameFile_Dialog, StrUtils, Graphics, XMLSettings, Dialogs;
+uses Controls, StdCtrls, RenameFile_Dialog, StrUtils, Graphics, XMLSettings, Dialogs, Characteristics_Dialog;
 
 // --------------------------------------------------------------------------------
 procedure TImagePage.DoShow;
@@ -220,6 +221,19 @@ begin
             FreeAndNil(FileList);
         end;
 
+    end;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TImagePage.ShowFileCharacteristics;
+var
+    dialog: TCharacteristicsDialog;
+begin
+    try
+        dialog := TCharacteristicsDialog.Create(self);
+        dialog.ShowModal;
+    finally
+        FreeAndNil(dialog);
     end;
 end;
 

@@ -173,7 +173,7 @@ implementation
 
 {$R *.lfm}
 
-uses File_Dialog, Characteristics_Dialog, Settings_Dialog,
+uses File_Dialog, Settings_Dialog,
     About_Dialog, XMLSettings;
 
 { TMainWindow }
@@ -194,13 +194,11 @@ end;
 // --------------------------------------------------------------------------------
 procedure TMainWindow.actionCharacteristicsExecute(Sender: TObject);
 var
-    dialog: TCharacteristicsDialog;
+    Page: TImagePage;
 begin
-    try
-        dialog := TCharacteristicsDialog.Create(self);
-        dialog.ShowModal;
-    finally
-        FreeAndNil(dialog);
+    Page := PageControl.ActivePage as TImagePage;
+    if (Assigned(Page)) then begin
+        Page.ShowFileCharacteristics;
     end;
 end;
 
