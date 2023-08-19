@@ -68,10 +68,10 @@ const
 
     CPM_ATTR_RO = 256;        // Read-only
     CPM_ATTR_SYS = 512;       // System
-    CPM_ATTR_ARCV = 1024;     // Archive */
-    CPM_ATTR_PWDEL = 2048;    // Password required to delete */
-    CPM_ATTR_PWWRITE = 4096;  // Password required to write */
-    CPM_ATTR_PWREAD = 8192;   // Password required to read */
+    CPM_ATTR_ARCV = 1024;     // Archive
+    CPM_ATTR_PWDEL = 2048;    // Password required to delete
+    CPM_ATTR_PWWRITE = 4096;  // Password required to write
+    CPM_ATTR_PWREAD = 8192;   // Password required to read
 
     PASSWD_RECLEN = 24;
     RESERVED_ENTRIES = 4;
