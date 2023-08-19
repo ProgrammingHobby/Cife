@@ -1,229 +1,21 @@
 object CharacteristicsDialog: TCharacteristicsDialog
   Left = 250
-  Height = 453
+  Height = 294
   Top = 250
-  Width = 274
+  Width = 268
   AutoSize = True
   Caption = 'File Characteristics'
-  ClientHeight = 453
-  ClientWidth = 274
+  ClientHeight = 294
+  ClientWidth = 268
   OnClose = FormClose
+  OnShow = FormShow
   Position = poOwnerFormCenter
-  object checkgroupAttributes: TCheckGroup
-    Left = 12
-    Height = 134
-    Top = 4
-    Width = 250
-    Align = alTop
-    AutoFill = True
-    AutoSize = True
-    BorderSpacing.Left = 8
-    BorderSpacing.Right = 8
-    BorderSpacing.Around = 4
-    Caption = 'File Attributes'
-    ChildSizing.LeftRightSpacing = 12
-    ChildSizing.TopBottomSpacing = 6
-    ChildSizing.HorizontalSpacing = 32
-    ChildSizing.VerticalSpacing = 6
-    ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
-    ChildSizing.EnlargeVertical = crsHomogenousChildResize
-    ChildSizing.ShrinkHorizontal = crsScaleChilds
-    ChildSizing.ShrinkVertical = crsScaleChilds
-    ChildSizing.Layout = cclLeftToRightThenTopToBottom
-    ChildSizing.ControlsPerLine = 2
-    ClientHeight = 114
-    ClientWidth = 248
-    Columns = 2
-    Items.Strings = (
-      'F1'
-      'Read Only'
-      'F2'
-      'System'
-      'F3'
-      'Archived'
-      'F4'
-    )
-    TabOrder = 0
-    Data = {
-      0700000002020202020202
-    }
-  end
-  object checkgroupProtections: TCheckGroup
-    Left = 12
-    Height = 105
-    Top = 142
-    Width = 250
-    Align = alTop
-    AutoFill = True
-    BorderSpacing.Left = 8
-    BorderSpacing.Right = 8
-    BorderSpacing.Around = 4
-    Caption = 'File Protections'
-    ChildSizing.LeftRightSpacing = 12
-    ChildSizing.TopBottomSpacing = 6
-    ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
-    ChildSizing.EnlargeVertical = crsHomogenousChildResize
-    ChildSizing.ShrinkHorizontal = crsScaleChilds
-    ChildSizing.ShrinkVertical = crsScaleChilds
-    ChildSizing.Layout = cclLeftToRightThenTopToBottom
-    ChildSizing.ControlsPerLine = 1
-    ClientHeight = 85
-    ClientWidth = 248
-    Items.Strings = (
-      'read Protect'
-      'write Protect'
-      'delete Protect'
-    )
-    TabOrder = 1
-    Data = {
-      03000000020202
-    }
-  end
-  object checkboxChangeProtect: TCheckBox
-    Left = 12
-    Height = 21
-    Top = 251
-    Width = 250
-    Align = alTop
-    BorderSpacing.Left = 8
-    BorderSpacing.Right = 8
-    BorderSpacing.Bottom = 8
-    BorderSpacing.Around = 4
-    Caption = 'Attributes and Permissions read only'
-    Checked = True
-    State = cbChecked
-    TabOrder = 4
-  end
-  object Panel1: TPanel
-    Left = 12
-    Height = 111
-    Top = 284
-    Width = 250
-    Align = alClient
-    AutoSize = True
-    BorderSpacing.Left = 8
-    BorderSpacing.Right = 8
-    BorderSpacing.Around = 4
-    BevelOuter = bvNone
-    ChildSizing.LeftRightSpacing = 8
-    ChildSizing.TopBottomSpacing = 4
-    ChildSizing.VerticalSpacing = 2
-    ChildSizing.EnlargeHorizontal = crsScaleChilds
-    ChildSizing.EnlargeVertical = crsHomogenousChildResize
-    ChildSizing.ShrinkHorizontal = crsScaleChilds
-    ChildSizing.Layout = cclLeftToRightThenTopToBottom
-    ChildSizing.ControlsPerLine = 2
-    ClientHeight = 111
-    ClientWidth = 250
-    TabOrder = 3
-    OnPaint = Panel1Paint
-    object Label1: TLabel
-      Left = 8
-      Height = 19
-      Top = 4
-      Width = 68
-      BorderSpacing.CellAlignHorizontal = ccaLeftTop
-      BorderSpacing.CellAlignVertical = ccaCenter
-      Caption = 'File Name :'
-      Layout = tlCenter
-      ParentColor = False
-    end
-    object labelFileName: TLabel
-      Left = 109
-      Height = 19
-      Top = 4
-      Width = 133
-      Caption = 'labelFileName'
-      Layout = tlCenter
-      ParentColor = False
-    end
-    object Label2: TLabel
-      Left = 8
-      Height = 19
-      Top = 25
-      Width = 55
-      BorderSpacing.CellAlignHorizontal = ccaLeftTop
-      BorderSpacing.CellAlignVertical = ccaCenter
-      Caption = 'File Size :'
-      Layout = tlCenter
-      ParentColor = False
-    end
-    object labelFileSize: TLabel
-      Left = 109
-      Height = 19
-      Top = 25
-      Width = 133
-      Caption = 'labelFileSize'
-      Layout = tlCenter
-      ParentColor = False
-    end
-    object Label3: TLabel
-      Left = 8
-      Height = 19
-      Top = 46
-      Width = 56
-      BorderSpacing.CellAlignHorizontal = ccaLeftTop
-      BorderSpacing.CellAlignVertical = ccaCenter
-      Caption = 'Created :'
-      Layout = tlCenter
-      ParentColor = False
-    end
-    object labelCreated: TLabel
-      Left = 109
-      Height = 19
-      Top = 46
-      Width = 133
-      Caption = 'labelCreated'
-      Layout = tlCenter
-      ParentColor = False
-    end
-    object Label4: TLabel
-      Left = 8
-      Height = 19
-      Top = 67
-      Width = 61
-      BorderSpacing.CellAlignHorizontal = ccaLeftTop
-      BorderSpacing.CellAlignVertical = ccaCenter
-      Caption = 'Updated :'
-      Layout = tlCenter
-      ParentColor = False
-    end
-    object labelUpdated: TLabel
-      Left = 109
-      Height = 19
-      Top = 67
-      Width = 133
-      Caption = 'labelUpdated'
-      Layout = tlCenter
-      ParentColor = False
-    end
-    object Label5: TLabel
-      Left = 8
-      Height = 19
-      Top = 88
-      Width = 72
-      BorderSpacing.CellAlignHorizontal = ccaLeftTop
-      BorderSpacing.CellAlignVertical = ccaCenter
-      Caption = 'last Access :'
-      Layout = tlCenter
-      ParentColor = False
-    end
-    object labelLastAccess: TLabel
-      Left = 109
-      Height = 19
-      Top = 88
-      Width = 133
-      Caption = 'labelLastAccess'
-      Layout = tlCenter
-      ParentColor = False
-    end
-  end
   object ButtonPanel1: TButtonPanel
-    Left = 12
+    Left = 4
     Height = 34
-    Top = 407
-    Width = 250
-    BorderSpacing.Around = 12
+    Top = 256
+    Width = 260
+    BorderSpacing.Around = 4
     OKButton.Name = 'OKButton'
     OKButton.DefaultCaption = True
     HelpButton.Name = 'HelpButton'
@@ -232,8 +24,274 @@ object CharacteristicsDialog: TCharacteristicsDialog
     CloseButton.DefaultCaption = True
     CancelButton.Name = 'CancelButton'
     CancelButton.DefaultCaption = True
-    TabOrder = 2
+    TabOrder = 0
     ShowButtons = [pbOK, pbCancel]
     ShowBevel = False
+  end
+  object PageControl: TPageControl
+    Left = 4
+    Height = 248
+    Top = 4
+    Width = 260
+    ActivePage = sheetPermissions
+    Align = alClient
+    BorderSpacing.Around = 4
+    TabIndex = 1
+    TabOrder = 1
+    object sheetGeneral: TTabSheet
+      Caption = 'General'
+      ClientHeight = 217
+      ClientWidth = 250
+      object panelFileData: TPanel
+        Left = 0
+        Height = 156
+        Top = 4
+        Width = 250
+        Align = alTop
+        BorderSpacing.Top = 4
+        BevelOuter = bvNone
+        ChildSizing.LeftRightSpacing = 8
+        ChildSizing.TopBottomSpacing = 4
+        ChildSizing.HorizontalSpacing = 4
+        ChildSizing.VerticalSpacing = 2
+        ChildSizing.EnlargeHorizontal = crsScaleChilds
+        ChildSizing.EnlargeVertical = crsHomogenousChildResize
+        ChildSizing.ShrinkHorizontal = crsHomogenousSpaceResize
+        ChildSizing.Layout = cclLeftToRightThenTopToBottom
+        ChildSizing.ControlsPerLine = 2
+        ClientHeight = 156
+        ClientWidth = 250
+        TabOrder = 0
+        object Label1: TLabel
+          Left = 8
+          Height = 19
+          Top = 4
+          Width = 107
+          Caption = 'User Number :'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object labelUserNumber: TLabel
+          Left = 119
+          Height = 19
+          Top = 4
+          Width = 123
+          Caption = 'labelUserNumber'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object Label2: TLabel
+          Left = 8
+          Height = 19
+          Top = 25
+          Width = 68
+          BorderSpacing.CellAlignHorizontal = ccaLeftTop
+          BorderSpacing.CellAlignVertical = ccaCenter
+          Caption = 'File Name :'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object labelFileName: TLabel
+          Left = 119
+          Height = 19
+          Top = 25
+          Width = 123
+          Caption = 'labelFileName'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object Label3: TLabel
+          Left = 8
+          Height = 19
+          Top = 46
+          Width = 55
+          BorderSpacing.CellAlignHorizontal = ccaLeftTop
+          BorderSpacing.CellAlignVertical = ccaCenter
+          Caption = 'File Size :'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object labelFileSize: TLabel
+          Left = 119
+          Height = 19
+          Top = 46
+          Width = 123
+          Caption = 'labelFileSize'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object Label4: TLabel
+          Left = 8
+          Height = 19
+          Top = 67
+          Width = 107
+          Caption = 'Used Records :'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object labelUsedRecords: TLabel
+          Left = 119
+          Height = 19
+          Top = 67
+          Width = 123
+          Caption = 'labelUsedRecords'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object Label5: TLabel
+          Left = 8
+          Height = 19
+          Top = 88
+          Width = 107
+          Caption = 'Used Dir Entries :'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object labelUsedDirEntries: TLabel
+          Left = 119
+          Height = 19
+          Top = 88
+          Width = 123
+          Caption = 'labelUsedDirEntries'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object Label6: TLabel
+          Left = 8
+          Height = 19
+          Top = 109
+          Width = 56
+          BorderSpacing.CellAlignHorizontal = ccaLeftTop
+          BorderSpacing.CellAlignVertical = ccaCenter
+          Caption = 'Created :'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object labelCreated: TLabel
+          Left = 119
+          Height = 19
+          Top = 109
+          Width = 123
+          Caption = 'labelCreated'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object Label7: TLabel
+          Left = 8
+          Height = 19
+          Top = 130
+          Width = 61
+          BorderSpacing.CellAlignHorizontal = ccaLeftTop
+          BorderSpacing.CellAlignVertical = ccaCenter
+          Caption = 'Updated :'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object labelUpdated: TLabel
+          Left = 119
+          Height = 19
+          Top = 130
+          Width = 123
+          Caption = 'labelUpdated'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object Label8: TLabel
+          Left = 8
+          Height = 19
+          Top = 151
+          Width = 72
+          BorderSpacing.CellAlignHorizontal = ccaLeftTop
+          BorderSpacing.CellAlignVertical = ccaCenter
+          Caption = 'last Access :'
+          Layout = tlCenter
+          ParentColor = False
+        end
+        object labelLastAccess: TLabel
+          Left = 119
+          Height = 19
+          Top = 151
+          Width = 123
+          Caption = 'labelLastAccess'
+          Layout = tlCenter
+          ParentColor = False
+        end
+      end
+    end
+    object sheetPermissions: TTabSheet
+      Caption = 'Permissions'
+      ClientHeight = 217
+      ClientWidth = 250
+      object checkgroupAttributes: TCheckGroup
+        Left = 2
+        Height = 116
+        Top = 0
+        Width = 246
+        Align = alTop
+        AutoFill = True
+        AutoSize = True
+        BorderSpacing.Left = 2
+        BorderSpacing.Right = 2
+        Caption = 'File Attributes'
+        ChildSizing.LeftRightSpacing = 12
+        ChildSizing.TopBottomSpacing = 6
+        ChildSizing.HorizontalSpacing = 32
+        ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+        ChildSizing.EnlargeVertical = crsHomogenousChildResize
+        ChildSizing.ShrinkHorizontal = crsScaleChilds
+        ChildSizing.ShrinkVertical = crsScaleChilds
+        ChildSizing.Layout = cclLeftToRightThenTopToBottom
+        ChildSizing.ControlsPerLine = 2
+        ClientHeight = 96
+        ClientWidth = 244
+        Columns = 2
+        Items.Strings = (
+          'F1'
+          'Read Only'
+          'F2'
+          'System'
+          'F3'
+          'Archived'
+          'F4'
+        )
+        TabOrder = 0
+        Data = {
+          0700000002020202020202
+        }
+      end
+      object checkgroupProtections: TCheckGroup
+        Left = 2
+        Height = 95
+        Top = 118
+        Width = 246
+        Align = alTop
+        AutoFill = True
+        AutoSize = True
+        BorderSpacing.Left = 2
+        BorderSpacing.Top = 2
+        BorderSpacing.Right = 2
+        BorderSpacing.Bottom = 4
+        Caption = 'File Protections'
+        ChildSizing.LeftRightSpacing = 12
+        ChildSizing.TopBottomSpacing = 6
+        ChildSizing.EnlargeHorizontal = crsHomogenousChildResize
+        ChildSizing.EnlargeVertical = crsHomogenousChildResize
+        ChildSizing.ShrinkHorizontal = crsScaleChilds
+        ChildSizing.ShrinkVertical = crsScaleChilds
+        ChildSizing.Layout = cclLeftToRightThenTopToBottom
+        ChildSizing.ControlsPerLine = 1
+        ClientHeight = 75
+        ClientWidth = 244
+        Items.Strings = (
+          'read Protect'
+          'write Protect'
+          'delete Protect'
+        )
+        TabOrder = 1
+        Data = {
+          03000000020202
+        }
+      end
+    end
   end
 end
