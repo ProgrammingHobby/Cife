@@ -49,6 +49,19 @@ type
         UsedDirEntries: integer;
     end;
 
+    TFileInfo = record
+        Name: string;
+        UserNumber: integer;
+        UsedBytes: integer;
+        UsedRecords: integer;
+        UsedDirEntries: integer;
+        MTime: double;
+        ATime: double;
+        CTime: double;
+        Attributes: integer;
+        Protections: integer;
+    end;
+
 function SettingsFile: string;
 procedure GetDiskDefsList(APath: string; ADiskDefsList: TStrings);
 
