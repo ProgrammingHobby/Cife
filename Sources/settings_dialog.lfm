@@ -35,17 +35,16 @@ object SettingsDialog: TSettingsDialog
       ReadOnly = True
       ScrollBars = ssAutoBoth
       ShowButtons = False
-      ShowLines = False
       ShowRoot = False
       TabOrder = 0
       ToolTips = False
       OnSelectionChanged = treeviewSettingPagesSelectionChanged
-      Options = [tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoThemedDraw]
+      Options = [tvoAutoItemHeight, tvoHideSelection, tvoKeepCollapsedNodes, tvoReadOnly, tvoShowLines, tvoThemedDraw]
       Items.Data = {
-        F9FFFFFF020002000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF000000000000
-        0000001000000047656E6572616C2053657474696E6773FFFFFFFFFFFFFFFFFF
-        FFFFFFFFFFFFFF000000000000000000110000004375742F436F707920536574
-        74696E6773
+        F9FFFFFF020001000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF020000000000
+        0000010800000053657474696E6773FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF00
+        00000000000000000700000047656E6572616CFFFFFFFFFFFFFFFFFFFFFFFFFF
+        FFFFFF0000000000000000000A000000437574202F20436F7079
       }
     end
     object Splitter: TSplitter

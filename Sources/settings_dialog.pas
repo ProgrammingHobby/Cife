@@ -95,8 +95,15 @@ end;
 
 // --------------------------------------------------------------------------------
 procedure TSettingsDialog.treeviewSettingPagesSelectionChanged(Sender: TObject);
+var
+    Index: integer;
 begin
-    Notebook.PageIndex := (Sender as TTreeView).Selected.AbsoluteIndex;
+    Index := (Sender as TTreeView).Selected.AbsoluteIndex;
+
+    if (Index = 0) then begin
+        Inc(Index);
+    end;
+    Notebook.PageIndex := Index - 1;
 end;
 
 // --------------------------------------------------------------------------------
@@ -115,7 +122,7 @@ begin
                 SetValue('DefaultUserNumber', spineditUserNumber.Value);
                 SetValue('TextFileEndings', memoTextfileEndings.Text);
                 SetValue('DiskdefsFile', editDiskdefsPath.Text);
-                SetValue('LastPage', treeviewSettingPages.Selected.Index);
+                SetValue('LastPage', treeviewSettingPages.Selected.AbsoluteIndex);
                 CloseKey;
             end;
 
@@ -150,7 +157,7 @@ end;
 // --------------------------------------------------------------------------------
 procedure TSettingsDialog.FormShow(Sender: TObject);
 var
-    MinWidth, MinHeight: integer;
+    MinWidth, MinHeight, Index: integer;
 begin
 
     with TXMLSettings.Create(SettingsFile) do begin
@@ -164,7 +171,13 @@ begin
             memoTextfileEndings.Text := GetValue('TextFileEndings', 'txt pip pas');
             editDiskdefsPath.Text := GetValue('DiskdefsFile', '');
             editDiskdefsPath.SelStart := editDiskdefsPath.GetTextLen;
-            treeviewSettingPages.Items[GetValue('LastPage', 0)].Selected := True;
+            Index := GetValue('LastPage', 0);
+
+            if (Index = 0) then begin
+                Inc(Index);
+            end;
+
+            treeviewSettingPages.Items[Index].Selected := True;
             CloseKey;
             RestoreFormState(TForm(self));
         finally
