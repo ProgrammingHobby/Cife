@@ -9,6 +9,7 @@ object SettingsDialog: TSettingsDialog
   OnClose = FormClose
   OnShow = FormShow
   Position = poOwnerFormCenter
+  LCLVersion = '2.2.6.0'
   object Panel1: TPanel
     Left = 4
     Height = 180
@@ -75,8 +76,8 @@ object SettingsDialog: TSettingsDialog
           AutoSize = True
           BorderSpacing.Around = 4
           BevelOuter = bvNone
-          ClientHeight = 29
-          ClientWidth = 340
+          ClientHeight = 33
+          ClientWidth = 344
           TabOrder = 0
           OnPaint = PanelPaint
           object checkboxOpenLastImage: TCheckBox
@@ -99,8 +100,8 @@ object SettingsDialog: TSettingsDialog
           AutoSize = True
           BorderSpacing.Around = 4
           BevelOuter = bvNone
-          ClientHeight = 29
-          ClientWidth = 340
+          ClientHeight = 33
+          ClientWidth = 344
           TabOrder = 1
           OnPaint = PanelPaint
           object checkboxUppercaseCpmCharacters: TCheckBox
@@ -146,8 +147,8 @@ object SettingsDialog: TSettingsDialog
             Align = alClient
             BorderSpacing.Around = 4
             BevelOuter = bvNone
-            ClientHeight = 33
-            ClientWidth = 332
+            ClientHeight = 37
+            ClientWidth = 336
             TabOrder = 0
             object editDiskdefsPath: TEdit
               Left = 0

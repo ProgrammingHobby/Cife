@@ -122,7 +122,6 @@ begin
                 SetValue('DefaultUserNumber', spineditUserNumber.Value);
                 SetValue('TextFileEndings', memoTextfileEndings.Text);
                 SetValue('DiskdefsFile', editDiskdefsPath.Text);
-                SetValue('LastPage', treeviewSettingPages.Selected.AbsoluteIndex);
                 CloseKey;
             end;
 
@@ -157,7 +156,7 @@ end;
 // --------------------------------------------------------------------------------
 procedure TSettingsDialog.FormShow(Sender: TObject);
 var
-    MinWidth, MinHeight, Index: integer;
+    MinWidth, MinHeight: integer;
 begin
 
     with TXMLSettings.Create(SettingsFile) do begin
@@ -171,13 +170,6 @@ begin
             memoTextfileEndings.Text := GetValue('TextFileEndings', 'txt pip pas');
             editDiskdefsPath.Text := GetValue('DiskdefsFile', '');
             editDiskdefsPath.SelStart := editDiskdefsPath.GetTextLen;
-            Index := GetValue('LastPage', 0);
-
-            if (Index = 0) then begin
-                Inc(Index);
-            end;
-
-            treeviewSettingPages.Items[Index].Selected := True;
             CloseKey;
             RestoreFormState(TForm(self));
         finally
@@ -189,7 +181,7 @@ begin
     CalculatePreferredSize(MinWidth, MinHeight, True);
     Constraints.MinWidth := MinWidth;
     Constraints.MinHeight := MinHeight;
-
+    treeviewSettingPages.Items[1].Selected := True;
 end;
 
 end.
