@@ -227,14 +227,21 @@ end;
 // --------------------------------------------------------------------------------
 procedure TImagePage.ShowFileCharacteristics;
 var
-    dialog: TCharacteristicsDialog;
+    Dialog: TCharacteristicsDialog;
+    FileName: string;
 begin
+
     try
-        dialog := TCharacteristicsDialog.Create(self);
-        dialog.ShowModal;
+        Dialog := TCharacteristicsDialog.Create(self);
+        FileName := DelSpace(FDirectoryList.Selected.Caption);
+        Dialog.SetFileInfo(FCpmTools.GetFileInfo(FileName));
+        if (Dialog.ShowModal = mrOk) then begin
+            FCpmTools.SetFileInfo(FileName, dialog.GetFileInfo);
+        end;
     finally
-        FreeAndNil(dialog);
+        FreeAndNil(Dialog);
     end;
+
 end;
 
 // --------------------------------------------------------------------------------
