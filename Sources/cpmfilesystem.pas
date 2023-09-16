@@ -69,7 +69,7 @@ type
     public    // Attribute
 
     public    // Methoden
-        function ReadDiskdefData(const AImageType: string): boolean;
+        function ReadDiskdefData(const AImageType: string; ADiskdefsPath: string): boolean;
         function InitDriveData(AUpperCase: boolean): boolean;
         procedure Glob(const AArgv: PChar; var AGargc: integer; var AGargv: TStringList);
         procedure StatFs(var ABuffer: TCpmStatFS);
@@ -169,7 +169,7 @@ type
     private   // Methoden
         procedure AlvInit;
         function AmstradReadSuper(): boolean;
-        function DiskdefsReadSuper(const AImageType: string): boolean;
+        function DiskdefsReadSuper(const AImageType: string; ADiskdefsPath: string): boolean;
         function BootOffset: integer;
         function ReadBlock(ABlockNr: integer; ABuffer: pbyte; AStart, AEnd: integer): boolean;
         function WriteBlock(ABlockNr: integer; const ABuffer: pbyte; AStart, AEnd: integer): boolean;
@@ -202,14 +202,14 @@ uses Character, StrUtils, DateUtils;
 // --------------------------------------------------------------------------------
 //  -- get DPB
 // --------------------------------------------------------------------------------
-function TCpmFileSystem.ReadDiskdefData(const AImageType: string): boolean;
+function TCpmFileSystem.ReadDiskdefData(const AImageType: string; ADiskdefsPath: string): boolean;
 begin
 
     if (AImageType.Contains('Amstrad (PCW16)')) then begin
         Result := AmstradReadSuper();
     end
     else begin
-        Result := DiskdefsReadSuper(AImageType);
+        Result := DiskdefsReadSuper(AImageType, ADiskdefsPath);
     end;
 
 end;
@@ -719,8 +719,10 @@ begin
 
     AInode.Ino := LowestExt;
     AInode.Mode := S_IFREG;
+
     // read timestamps
     ProtectMode := ReadTimeStamps(AInode, LowestExt);
+
     // Determine the inode attributes
     AInode.Attr := 0;
 
@@ -1182,7 +1184,7 @@ end;
 // --------------------------------------------------------------------------------
 //  -- read super block from diskdefs file
 // --------------------------------------------------------------------------------
-function TCpmFileSystem.DiskdefsReadSuper(const AImageType: string): boolean;
+function TCpmFileSystem.DiskdefsReadSuper(const AImageType: string; ADiskdefsPath: string): boolean;
 var
     DiskDefs: TStringList;
     FoundDefinition: boolean;
@@ -1211,7 +1213,7 @@ begin
     Result := True;
     try
         DiskDefs := TStringList.Create;
-        DiskDefs.LoadFromFile('diskdefs');
+        DiskDefs.LoadFromFile(ADiskdefsPath);
         for LineNumber := 1 to Diskdefs.Count do begin
             DefinitionLine := Diskdefs[LineNumber - 1].Trim.Split(' ');
 

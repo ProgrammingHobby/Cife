@@ -130,18 +130,22 @@ end;
 function TImagePage.Open(const AFileName: string; const AFileType: string): boolean;
 var
     UpperCase: boolean;
+    DiskdefsPath: string;
 begin
     UpperCase := False;
 
     with TXMLSettings.Create(SettingsFile) do begin
         try
-            UpperCase := GetValue('Settings/UseUppercaseCharacters', False);
+            OpenKey('Settings');
+            UpperCase := GetValue('UseUppercaseCharacters', False);
+            DiskdefsPath := GetValue('DiskdefsFile', '');
+            CloseKey;
         finally
             Free;
         end;
     end;
 
-    Result := FCpmTools.OpenImage(AFileName, AFileType, UpperCase);
+    Result := FCpmTools.OpenImage(AFileName, AFileType, DiskdefsPath, UpperCase);
 end;
 
 // --------------------------------------------------------------------------------
