@@ -1,21 +1,20 @@
-{***************************************************************************
- *                                                                         *
- *   This source is free software; you can redistribute it and/or modify   *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This code is distributed in the hope that it will be useful, but      *
- *   WITHOUT ANY WARRANTY; without even the implied warranty of            *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU     *
- *   General Public License for more details.                              *
- *                                                                         *
- *   A copy of the GNU General Public License is available on the World    *
- *   Wide Web at <http://www.gnu.org/copyleft/gpl.html>. You can also      *
- *   obtain it by writing to the Free Software Foundation,                 *
- *   Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1335, USA.   *
- *                                                                         *
- ***************************************************************************}
+{*
+ *  Copyright (C) 2023  Uwe Merker
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *}
 unit VersionInfo;
 
 {$mode objfpc}
@@ -50,6 +49,7 @@ implementation
 uses
     resource, versiontypes, versionresource, LCLVersion, InterfaceBase, lclplatformdef;
 
+// --------------------------------------------------------------------------------
 type
     TVersionInfo = class
     private
@@ -71,6 +71,7 @@ type
         property VarFileInfo: TVersionVarFileInfo read GetVarFileInfo;
     end;
 
+// --------------------------------------------------------------------------------
 function GetWidgetSet: string;
 begin
     case WidgetSet.LCLPlatform of
@@ -82,29 +83,34 @@ begin
         lpQT: Result := WIDGETSET_QT;
         lpfpGUI: Result := WIDGETSET_fpGUI;
         else Result := WIDGETSET_OTHER;
-        end;
+    end;
 end;
 
+// --------------------------------------------------------------------------------
 function GetCompilerInfo: string;
 begin
     Result := 'FPC ' + {$I %FPCVERSION%};
 end;
 
+// --------------------------------------------------------------------------------
 function GetTargetInfo: string;
 begin
     Result := {$I %FPCTARGETCPU%} + ' - ' + {$I %FPCTARGETOS%};
 end;
 
+// --------------------------------------------------------------------------------
 function GetOS: string;
 begin
     Result := {$I %FPCTARGETOS%};
 end;
 
+// --------------------------------------------------------------------------------
 function GetLCLVersion: string;
 begin
     Result := 'LCL ' + lcl_version;
 end;
 
+// --------------------------------------------------------------------------------
 function GetCompiledDate: string;
 var
     sDate, sTime: string;
@@ -120,14 +126,16 @@ end;
 var
     FInfo: TVersionInfo;
 
+// --------------------------------------------------------------------------------
 procedure CreateInfo;
 begin
     if not Assigned(FInfo) then begin
         FInfo := TVersionInfo.Create;
         FInfo.Load(HINSTANCE);
-        end;
+    end;
 end;
 
+// --------------------------------------------------------------------------------
 function GetResourceStrings(oStringList: TStringList): boolean;
 var
     i, j: integer;
@@ -146,15 +154,17 @@ begin
             for j := 0 to oTable.Count - 1 do
                 if Trim(oTable.ValuesByIndex[j]) <> '' then
                     oStringList.Values[oTable.Keys[j]] := oTable.ValuesByIndex[j];
-            end;
         end;
+    end;
 end;
 
+// --------------------------------------------------------------------------------
 function ProductVersionToString(PV: TFileProductVersion): string;
 begin
     Result := Format('%d.%d.%d.%d', [PV[0], PV[1], PV[2], PV[3]]);
 end;
 
+// --------------------------------------------------------------------------------
 function GetProductVersion: string;
 begin
     CreateInfo;
@@ -165,6 +175,7 @@ begin
         Result := 'No build information available';
 end;
 
+// --------------------------------------------------------------------------------
 function GetFileVersion: string;
 begin
     CreateInfo;
@@ -177,21 +188,25 @@ end;
 
 { TVersionInfo }
 
+// --------------------------------------------------------------------------------
 function TVersionInfo.GetFixedInfo: TVersionFixedInfo;
 begin
     Result := FVersResource.FixedInfo;
 end;
 
+// --------------------------------------------------------------------------------
 function TVersionInfo.GetStringFileInfo: TVersionStringFileInfo;
 begin
     Result := FVersResource.StringFileInfo;
 end;
 
+// --------------------------------------------------------------------------------
 function TVersionInfo.GetVarFileInfo: TVersionVarFileInfo;
 begin
     Result := FVersResource.VarFileInfo;
 end;
 
+// --------------------------------------------------------------------------------
 constructor TVersionInfo.Create;
 begin
     inherited Create;
@@ -200,6 +215,7 @@ begin
     FBuildInfoAvailable := False;
 end;
 
+// --------------------------------------------------------------------------------
 destructor TVersionInfo.Destroy;
 begin
     FVersResource.Free;
@@ -207,6 +223,7 @@ begin
     inherited Destroy;
 end;
 
+// --------------------------------------------------------------------------------
 procedure TVersionInfo.Load(Instance: THandle);
 var
     Stream: TResourceStream;
@@ -222,7 +239,7 @@ begin
         Exit;
 
     Stream := TResourceStream.CreateFromID(Instance, ResID, PChar(RT_VERSION));
-        try
+    try
         FVersResource.SetCustomRawDataStream(Stream);
 
         // access some property to load from the stream
@@ -232,11 +249,12 @@ begin
         FVersResource.SetCustomRawDataStream(nil);
 
         FBuildInfoAvailable := True;
-        finally
+    finally
         Stream.Free;
-        end;
+    end;
 end;
 
+// --------------------------------------------------------------------------------
 initialization
     FInfo := nil;
 

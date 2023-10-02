@@ -1,21 +1,20 @@
-{***************************************************************************
- *                                                                         *
- *   This source is free software; you can redistribute it and/or modify   *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- *   This code is distributed in the hope that it will be useful, but      *
- *   WITHOUT ANY WARRANTY; without even the implied warranty of            *
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU     *
- *   General Public License for more details.                              *
- *                                                                         *
- *   A copy of the GNU General Public License is available on the World    *
- *   Wide Web at <http://www.gnu.org/copyleft/gpl.html>. You can also      *
- *   obtain it by writing to the Free Software Foundation,                 *
- *   Inc., 51 Franklin Street - Fifth Floor, Boston, MA 02110-1335, USA.   *
- *                                                                         *
- ***************************************************************************}
+{*
+ *  Copyright (C) 2023  Uwe Merker
+ *
+ *  This program is free software: you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation, either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  This program is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ *  GNU General Public License for more details.
+ *
+ *  You should have received a copy of the GNU General Public License
+ *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *}
 unit QuickSort;
 
 {$mode ObjFPC}{$H+}
@@ -29,12 +28,14 @@ procedure QSort(var arr: TStringList; Start: longint; Finish: longint; SortUp: b
 
 implementation
 
+// --------------------------------------------------------------------------------
 procedure QSort(var arr: TStringList; Start: longint; Finish: longint; SortUp: boolean = True);
 var
     i, j: longint;
     x, temp: ansistring;
     u: array[0..255] of byte;  {look up table for speed}
 
+    // --------------------------------------------------------------------------------
     function lessthan(const a: ansistring; const b: ansistring): integer;
     var
         n, lim, lena, lenb: longint;
@@ -54,6 +55,7 @@ var
         exit(0);
     end;
 
+    // --------------------------------------------------------------------------------
     function morethan(const a: ansistring; const b: ansistring): integer;
     var
         n, lim, lena, lenb: longint;
@@ -73,6 +75,7 @@ var
         exit(0);
     end;
 
+    // --------------------------------------------------------------------------------
     procedure setlookuparray(var u: array of byte); // must run
     var
         x, r: integer;
@@ -120,5 +123,6 @@ begin
     if I < Finish then
         QSort(arr, I, Finish, SortUp);
 end;
+// --------------------------------------------------------------------------------
 
 end.

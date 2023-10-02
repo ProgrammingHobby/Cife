@@ -9,6 +9,7 @@ object RenameFileDialog: TRenameFileDialog
   ClientWidth = 306
   OnClose = FormClose
   Position = poOwnerFormCenter
+  LCLVersion = '2.2.6.0'
   object ButtonPanel1: TButtonPanel
     Left = 8
     Height = 34
@@ -85,8 +86,8 @@ object RenameFileDialog: TRenameFileDialog
       AutoSize = True
       BorderSpacing.Around = 4
       BevelOuter = bvNone
-      ClientHeight = 107
-      ClientWidth = 189
+      ClientHeight = 111
+      ClientWidth = 193
       TabOrder = 1
       object Panel4: TPanel
         Left = 4
@@ -97,8 +98,8 @@ object RenameFileDialog: TRenameFileDialog
         AutoSize = True
         BorderSpacing.Around = 4
         BevelOuter = bvNone
-        ClientHeight = 31
-        ClientWidth = 177
+        ClientHeight = 35
+        ClientWidth = 181
         TabOrder = 0
         object editOldUserNumber: TEdit
           Left = 0
@@ -136,8 +137,8 @@ object RenameFileDialog: TRenameFileDialog
         AutoSize = True
         BorderSpacing.Around = 4
         BevelOuter = bvNone
-        ClientHeight = 31
-        ClientWidth = 177
+        ClientHeight = 35
+        ClientWidth = 181
         TabOrder = 1
         object editNewUserNumber: TEdit
           Left = 0
