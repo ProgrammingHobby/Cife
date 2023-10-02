@@ -1,20 +1,21 @@
 object CharacteristicsDialog: TCharacteristicsDialog
   Left = 250
-  Height = 294
+  Height = 297
   Top = 250
-  Width = 268
+  Width = 241
   AutoSize = True
   Caption = 'File Characteristics'
-  ClientHeight = 294
-  ClientWidth = 268
+  ClientHeight = 297
+  ClientWidth = 241
   OnClose = FormClose
   OnShow = FormShow
   Position = poOwnerFormCenter
+  LCLVersion = '2.2.6.0'
   object ButtonPanel1: TButtonPanel
     Left = 4
     Height = 34
-    Top = 256
-    Width = 260
+    Top = 259
+    Width = 233
     BorderSpacing.Around = 4
     OKButton.Name = 'OKButton'
     OKButton.DefaultCaption = True
@@ -30,9 +31,9 @@ object CharacteristicsDialog: TCharacteristicsDialog
   end
   object PageControl: TPageControl
     Left = 4
-    Height = 248
+    Height = 251
     Top = 4
-    Width = 260
+    Width = 233
     ActivePage = sheetPermissions
     Align = alClient
     BorderSpacing.Around = 4
@@ -41,13 +42,14 @@ object CharacteristicsDialog: TCharacteristicsDialog
     object sheetGeneral: TTabSheet
       Caption = 'General'
       ClientHeight = 217
-      ClientWidth = 250
+      ClientWidth = 223
       object panelFileData: TPanel
         Left = 0
-        Height = 156
+        Height = 153
         Top = 4
-        Width = 250
+        Width = 223
         Align = alTop
+        AutoSize = True
         BorderSpacing.Top = 4
         BevelOuter = bvNone
         ChildSizing.LeftRightSpacing = 8
@@ -59,23 +61,23 @@ object CharacteristicsDialog: TCharacteristicsDialog
         ChildSizing.ShrinkHorizontal = crsHomogenousSpaceResize
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 2
-        ClientHeight = 156
-        ClientWidth = 250
+        ClientHeight = 153
+        ClientWidth = 223
         TabOrder = 0
         object Label1: TLabel
           Left = 8
           Height = 19
           Top = 4
-          Width = 107
+          Width = 92
           Caption = 'User Number :'
           Layout = tlCenter
           ParentColor = False
         end
         object labelUserNumber: TLabel
-          Left = 119
+          Left = 104
           Height = 19
           Top = 4
-          Width = 123
+          Width = 111
           Caption = 'labelUserNumber'
           Layout = tlCenter
           ParentColor = False
@@ -92,10 +94,10 @@ object CharacteristicsDialog: TCharacteristicsDialog
           ParentColor = False
         end
         object labelFileName: TLabel
-          Left = 119
+          Left = 104
           Height = 19
           Top = 25
-          Width = 123
+          Width = 111
           Caption = 'labelFileName'
           Layout = tlCenter
           ParentColor = False
@@ -112,10 +114,10 @@ object CharacteristicsDialog: TCharacteristicsDialog
           ParentColor = False
         end
         object labelFileSize: TLabel
-          Left = 119
+          Left = 104
           Height = 19
           Top = 46
-          Width = 123
+          Width = 111
           Caption = 'labelFileSize'
           Layout = tlCenter
           ParentColor = False
@@ -124,39 +126,43 @@ object CharacteristicsDialog: TCharacteristicsDialog
           Left = 8
           Height = 19
           Top = 67
-          Width = 107
+          Width = 92
           Caption = 'Used Records :'
           Layout = tlCenter
           ParentColor = False
         end
         object labelUsedRecords: TLabel
-          Left = 119
+          Left = 104
           Height = 19
           Top = 67
-          Width = 123
+          Width = 111
           Caption = 'labelUsedRecords'
           Layout = tlCenter
           ParentColor = False
         end
-        object Label5: TLabel
+        object Label6: TLabel
           Left = 8
           Height = 19
           Top = 88
-          Width = 107
-          Caption = 'Used Dir Entries :'
+          Width = 61
+          BorderSpacing.CellAlignHorizontal = ccaLeftTop
+          BorderSpacing.CellAlignVertical = ccaCenter
+          Caption = 'Updated :'
           Layout = tlCenter
           ParentColor = False
+          Visible = False
         end
-        object labelUsedDirEntries: TLabel
-          Left = 119
+        object labelUpdated: TLabel
+          Left = 104
           Height = 19
           Top = 88
-          Width = 123
-          Caption = 'labelUsedDirEntries'
+          Width = 111
+          Caption = 'labelUpdated'
           Layout = tlCenter
           ParentColor = False
+          Visible = False
         end
-        object Label6: TLabel
+        object Label7: TLabel
           Left = 8
           Height = 19
           Top = 109
@@ -166,67 +172,51 @@ object CharacteristicsDialog: TCharacteristicsDialog
           Caption = 'Created :'
           Layout = tlCenter
           ParentColor = False
+          Visible = False
         end
         object labelCreated: TLabel
-          Left = 119
+          Left = 104
           Height = 19
           Top = 109
-          Width = 123
+          Width = 111
           Caption = 'labelCreated'
           Layout = tlCenter
           ParentColor = False
-        end
-        object Label7: TLabel
-          Left = 8
-          Height = 19
-          Top = 130
-          Width = 61
-          BorderSpacing.CellAlignHorizontal = ccaLeftTop
-          BorderSpacing.CellAlignVertical = ccaCenter
-          Caption = 'Updated :'
-          Layout = tlCenter
-          ParentColor = False
-        end
-        object labelUpdated: TLabel
-          Left = 119
-          Height = 19
-          Top = 130
-          Width = 123
-          Caption = 'labelUpdated'
-          Layout = tlCenter
-          ParentColor = False
+          Visible = False
         end
         object Label8: TLabel
           Left = 8
           Height = 19
-          Top = 151
-          Width = 72
+          Top = 130
+          Width = 76
           BorderSpacing.CellAlignHorizontal = ccaLeftTop
           BorderSpacing.CellAlignVertical = ccaCenter
-          Caption = 'last Access :'
+          Caption = 'Last Access :'
           Layout = tlCenter
           ParentColor = False
+          Visible = False
         end
         object labelLastAccess: TLabel
-          Left = 119
+          Left = 104
           Height = 19
-          Top = 151
-          Width = 123
+          Top = 130
+          Width = 111
           Caption = 'labelLastAccess'
           Layout = tlCenter
           ParentColor = False
+          Visible = False
         end
       end
     end
     object sheetPermissions: TTabSheet
       Caption = 'Permissions'
       ClientHeight = 217
-      ClientWidth = 250
+      ClientWidth = 223
       object checkgroupAttributes: TCheckGroup
         Left = 2
         Height = 116
         Top = 0
-        Width = 246
+        Width = 219
         Align = alTop
         AutoFill = True
         AutoSize = True
@@ -243,7 +233,7 @@ object CharacteristicsDialog: TCharacteristicsDialog
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 2
         ClientHeight = 96
-        ClientWidth = 244
+        ClientWidth = 217
         Columns = 2
         Items.Strings = (
           'F1'
@@ -263,7 +253,7 @@ object CharacteristicsDialog: TCharacteristicsDialog
         Left = 2
         Height = 95
         Top = 118
-        Width = 246
+        Width = 219
         Align = alTop
         AutoFill = True
         AutoSize = True
@@ -281,7 +271,7 @@ object CharacteristicsDialog: TCharacteristicsDialog
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 1
         ClientHeight = 75
-        ClientWidth = 244
+        ClientWidth = 217
         Items.Strings = (
           'read Protect'
           'write Protect'
