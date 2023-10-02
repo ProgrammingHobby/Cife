@@ -76,6 +76,7 @@ type
         function Name2Inode(const AFilename: PChar; var AInode: TCpmInode): boolean;
         procedure Stat(const AInode: TCpmInode; var ABuffer: TCpmStat);
         procedure AttrGet(const AInode: TCpmInode; var AAttrib: cpm_attr_t);
+        procedure AttrSet(var AInode: TCpmInode; const AAttrib: cpm_attr_t);
         function Unmount: boolean;
         function Rename(const AOldName: PChar; const ANewName: PChar): boolean;
         function Delete(const AFileName: PChar): boolean;
@@ -168,6 +169,7 @@ type
 
     private   // Methoden
         procedure AlvInit;
+        procedure MemCpy7(var ADestination: array of char; const ASource: array of char; ACount: integer);
         function AmstradReadSuper(): boolean;
         function DiskdefsReadSuper(const AImageType: string; ADiskdefsPath: string): boolean;
         function BootOffset: integer;
@@ -798,11 +800,112 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-//  -- get CP/M attributes
+//  -- get CP/M attributes and protections
 // --------------------------------------------------------------------------------
 procedure TCpmFileSystem.AttrGet(const AInode: TCpmInode; var AAttrib: cpm_attr_t);
 begin
     AAttrib := AInode.Attr;
+end;
+
+// --------------------------------------------------------------------------------
+//  -- set CP/M attributes and protections
+// --------------------------------------------------------------------------------
+procedure TCpmFileSystem.AttrSet(var AInode: TCpmInode; const AAttrib: cpm_attr_t);
+var
+    ExtentNo, LowestExt: integer;
+    Name: array[0..7] of char;
+    Extension: array[0..2] of char;
+    User: byte;
+    ProtectMode: integer;
+begin
+    FillChar(Name, 8, Chr(0));
+    FillChar(Extension, 3, Chr(0));
+    ExtentNo := AInode.Ino;
+    FDrive.DirtyDirectory := True;
+    MemCpy7(Name, FDirectory[ExtentNo].Name, 8);
+    MemCpy7(Extension, FDirectory[ExtentNo].Ext, 3);
+    User := FDirectory[ExtentNo].Status;
+
+    // And set new ones
+    if ((AAttrib and CPM_ATTR_F1) <> 0) then begin
+        Name[0] := Chr(Ord(Name[0]) or $80);
+    end;
+
+    if ((AAttrib and CPM_ATTR_F2) <> 0) then begin
+        Name[1] := Chr(Ord(Name[1]) or $80);
+    end;
+
+    if ((AAttrib and CPM_ATTR_F3) <> 0) then begin
+        Name[2] := Chr(Ord(Name[2]) or $80);
+    end;
+
+    if ((AAttrib and CPM_ATTR_F4) <> 0) then begin
+        Name[3] := Chr(Ord(Name[3]) or $80);
+    end;
+
+    if ((AAttrib and CPM_ATTR_RO) <> 0) then begin
+        Extension[0] := Chr(Ord(Extension[0]) or $80);
+    end;
+
+    if ((AAttrib and CPM_ATTR_SYS) <> 0) then begin
+        Extension[1] := Chr(Ord(Extension[1]) or $80);
+    end;
+
+    if ((AAttrib and CPM_ATTR_ARCV) <> 0) then begin
+        Extension[2] := Chr(Ord(Extension[2]) or $80);
+    end;
+
+    repeat
+        FDirectory[ExtentNo].Name := Name;
+        FDirectory[ExtentNo].Ext := Extension;
+        ExtentNo := FindFileExtent(User, Name, Extension, ExtentNo + 1, -1);
+    until (ExtentNo = -1);
+
+    // Update the stored (inode) copies of the file attributes and mode
+    AInode.Attr := AAttrib;
+
+    if ((AAttrib and CPM_ATTR_RO) <> 0) then begin
+        AInode.Mode := (AInode.Mode and not (S_IWUSR or S_IWGRP or S_IWOTH));
+    end
+    else begin
+        AInode.Mode := (AInode.Mode or (S_IWUSR or S_IWGRP or S_IWOTH));
+    end;
+
+    ProtectMode := 0;
+    LowestExt := AInode.Ino;
+
+    if ((AAttrib and CPM_ATTR_PWDEL) <> 0) then begin
+        ProtectMode := (ProtectMode or $20);
+    end;
+
+    if ((AAttrib and CPM_ATTR_PWWRITE) <> 0) then begin
+        ProtectMode := (ProtectMode or $40);
+    end;
+
+    if ((AAttrib and CPM_ATTR_PWREAD) <> 0) then begin
+        ProtectMode := (ProtectMode or $80);
+    end;
+
+    if (((FDrive.OsType and CPMFS_CPM3_DATES) <> 0) and (FDirectory[LowestExt or 3].Status = $21)) then begin
+
+        case (LowestExt and 3) of
+
+            0: begin
+                FDirectory[LowestExt or 3].Ext[0] := Chr(ProtectMode);
+            end;
+
+            1: begin
+                FDirectory[LowestExt or 3].Pointers[3] := ProtectMode;
+            end;
+
+            2: begin
+                FDirectory[LowestExt or 3].Pointers[13] := ProtectMode;
+            end;
+
+        end;
+
+    end;
+
 end;
 
 // --------------------------------------------------------------------------------
@@ -1101,6 +1204,18 @@ begin
 
     end;
 
+end;
+
+// --------------------------------------------------------------------------------
+//  -- Copy string, leaving 8th bit alone
+// --------------------------------------------------------------------------------
+procedure TCpmFileSystem.MemCpy7(var ADestination: array of char; const ASource: array of char; ACount: integer);
+begin
+
+    while (ACount > 0) do begin
+        ADestination[ACount - 1] := Chr((Ord(ADestination[ACount - 1]) and $80) or (Ord(ASource[ACount - 1]) and $7F));
+        Dec(ACount);
+    end;
 end;
 
 // --------------------------------------------------------------------------------
