@@ -84,6 +84,10 @@ const
     S_IFDIR = 16384;
     S_IFREG = 32768;
 
+    S_IWUSR = &0200;
+    S_IWGRP = (S_IWUSR shr 3);
+    S_IWOTH = (S_IWGRP shr 3);
+
     O_RDONLY = 00;
     O_WRONLY = 01;
     O_RDWR = 02;
