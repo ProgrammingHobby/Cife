@@ -36,10 +36,6 @@ msgstr ""
 msgid "File Characteristics"
 msgstr ""
 
-#: tcharacteristicsdialog.checkboxchangeprotect.caption
-msgid "Attributes and Permissions read only"
-msgstr ""
-
 #: tcharacteristicsdialog.checkgroupattributes.caption
 msgid "File Attributes"
 msgstr ""
@@ -49,23 +45,38 @@ msgid "File Protections"
 msgstr ""
 
 #: tcharacteristicsdialog.label1.caption
-msgid "File Name :"
+msgctxt "tcharacteristicsdialog.label1.caption"
+msgid "User Number :"
 msgstr ""
 
 #: tcharacteristicsdialog.label2.caption
-msgid "File Size :"
+msgctxt "tcharacteristicsdialog.label2.caption"
+msgid "File Name :"
 msgstr ""
 
 #: tcharacteristicsdialog.label3.caption
-msgid "Created :"
+msgctxt "tcharacteristicsdialog.label3.caption"
+msgid "File Size :"
 msgstr ""
 
 #: tcharacteristicsdialog.label4.caption
+msgctxt "tcharacteristicsdialog.label4.caption"
+msgid "Used Records :"
+msgstr ""
+
+#: tcharacteristicsdialog.label6.caption
+msgctxt "tcharacteristicsdialog.label6.caption"
 msgid "Updated :"
 msgstr ""
 
-#: tcharacteristicsdialog.label5.caption
-msgid "last Access :"
+#: tcharacteristicsdialog.label7.caption
+msgctxt "tcharacteristicsdialog.label7.caption"
+msgid "Created :"
+msgstr ""
+
+#: tcharacteristicsdialog.label8.caption
+msgctxt "tcharacteristicsdialog.label8.caption"
+msgid "Last Access :"
 msgstr ""
 
 #: tcharacteristicsdialog.labelcreated.caption
@@ -86,6 +97,24 @@ msgstr ""
 
 #: tcharacteristicsdialog.labelupdated.caption
 msgid "labelUpdated"
+msgstr ""
+
+#: tcharacteristicsdialog.labelusedrecords.caption
+msgid "labelUsedRecords"
+msgstr ""
+
+#: tcharacteristicsdialog.labelusernumber.caption
+msgid "labelUserNumber"
+msgstr ""
+
+#: tcharacteristicsdialog.sheetgeneral.caption
+msgctxt "tcharacteristicsdialog.sheetgeneral.caption"
+msgid "General"
+msgstr ""
+
+#: tcharacteristicsdialog.sheetpermissions.caption
+msgctxt "tcharacteristicsdialog.sheetpermissions.caption"
+msgid "Permissions"
 msgstr ""
 
 #: tfiledialog.buttonopenboottrackfile.caption
@@ -246,6 +275,7 @@ msgid "Max Dir Entries :"
 msgstr ""
 
 #: tmainwindow.label17.caption
+msgctxt "tmainwindow.label17.caption"
 msgid "Used Dir Entries :"
 msgstr ""
 
