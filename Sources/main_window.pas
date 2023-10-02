@@ -301,7 +301,6 @@ var
     dialog: TSettingsDialog;
     OldUseUpperCase: boolean;
     OldDiskdefsFile: string;
-    OldSelection: integer;
 begin
     with TXMLSettings.Create(SettingsFile) do begin
         try
