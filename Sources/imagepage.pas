@@ -240,7 +240,8 @@ begin
         FileName := DelSpace(FDirectoryList.Selected.Caption);
         Dialog.SetFileInfo(FCpmTools.GetFileInfo(FileName));
         if (Dialog.ShowModal = mrOk) then begin
-            FCpmTools.SetFileInfo(FileName, dialog.GetFileInfo);
+            FCpmTools.SetNewAttributes(FileName, dialog.GetNewAttributes);
+            RefreshDirectory;
         end;
     finally
         FreeAndNil(Dialog);

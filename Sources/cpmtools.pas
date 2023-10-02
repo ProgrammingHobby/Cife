@@ -23,7 +23,7 @@ unit CpmTools;
 interface
 
 uses
-    Classes, SysUtils, CpmFileSystem, CpmDevice, CifeGlobals;
+    Classes, SysUtils, CpmFileSystem, CpmDevice, CifeGlobals, CpmDefs;
 
 type
 
@@ -36,14 +36,17 @@ type
 
     public    // Methoden
         procedure SetPrintDirectoryEntryCallBack(APrintDirectoryEntryCB: TPrintDirectoryEntryCB);
-        function OpenImage(const AFileName: string; const AFileType: string; AUpperCase: boolean): boolean;
+        function OpenImage(const AFileName: string; const AFileType: string; ADiskdefsPath: string;
+            AUpperCase: boolean): boolean;
         function CloseImage: boolean;
         procedure ShowDirectory;
         procedure RefreshDirectory(AUpperCase: boolean);
         function RenameFile(AOldName, ANewName: string): boolean;
-        function DeleteFile(AFiles: TStringList): boolean;
+        function DeleteFile(AFileNames: TStringList): boolean;
         function GetFileSystemInfo: TFileSystemInfo;
         function GetDirectoryStatistic: TDirStatistic;
+        function GetFileInfo(AFileName: string): TFileInfo;
+        procedure SetNewAttributes(AFileName: string; AAttributes: cpm_attr_t);
 
     public  // Konstruktor/Destruktor
         constructor Create; overload;
@@ -58,6 +61,7 @@ type
         FCpmFileSystem: TCpmFileSystem;
         FFileName: string;
         FFileType: string;
+        FDiskdefsPath: string;
         FDirStatistic: TDirStatistic;
         FPrintDirectoryEntry: TPrintDirectoryEntryCB;
 
@@ -72,7 +76,7 @@ implementation
 
 { TCpmTools }
 
-uses Dialogs, Controls, StrUtils, CpmDefs, QuickSort, Character;
+uses Dialogs, Controls, StrUtils, QuickSort, Character;
 
 // --------------------------------------------------------------------------------
 procedure TCpmTools.SetPrintDirectoryEntryCallBack(APrintDirectoryEntryCB: TPrintDirectoryEntryCB);
@@ -81,10 +85,12 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-function TCpmTools.OpenImage(const AFileName: string; const AFileType: string; AUpperCase: boolean): boolean;
+function TCpmTools.OpenImage(const AFileName: string; const AFileType: string; ADiskdefsPath: string;
+    AUpperCase: boolean): boolean;
 begin
     FFileName := AFileName;
     FFileType := AFileType;
+    FDiskdefsPath := ADiskdefsPath;
 
     if not (FCpmDevice.Open(AFileName, dmOpenReadWrite)) then begin
         if MessageDlg(Format('cannot open %s' + LineEnding + '(%s)', [ExtractFileName(AFileName), FCpmDevice.GetErrorMsg()])
@@ -94,7 +100,7 @@ begin
         end;
     end;
 
-    if not (FCpmFileSystem.ReadDiskdefData(AFileType)) then begin
+    if not (FCpmFileSystem.ReadDiskdefData(AFileType, ADiskdefsPath)) then begin
         if MessageDlg(Format('cannot read superblock' + LineEnding + '(%s)', [FCpmFileSystem.GetErrorMsg()])
             , mtError, [mbOK], 0) = mrOk then begin
             Result := False;
@@ -188,7 +194,7 @@ begin
                     end;
 
                     if ((Attrib and CPM_ATTR_F2) <> 0) then begin
-                        Attribute := Attribute + '3';
+                        Attribute := Attribute + '2';
                     end
                     else begin
                         Attribute := Attribute + '-';
@@ -336,16 +342,16 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-function TCpmTools.DeleteFile(AFiles: TStringList): boolean;
+function TCpmTools.DeleteFile(AFileNames: TStringList): boolean;
 var
     Gargc, IndexI: integer;
     Gargv: TStringList;
 begin
     try
         Gargv := TStringList.Create;
-        for IndexI := 0 to AFiles.Count - 1 do begin
+        for IndexI := 0 to AFileNames.Count - 1 do begin
 
-            FCpmFileSystem.Glob(PChar(AFiles[IndexI]), Gargc, Gargv);
+            FCpmFileSystem.Glob(PChar(AFileNames[IndexI]), Gargc, Gargv);
 
             if not ((Gargc > 0) and (FCpmFileSystem.Delete(PChar(Gargv[IndexI])))) then begin
 
@@ -382,6 +388,73 @@ end;
 function TCpmTools.GetDirectoryStatistic: TDirStatistic;
 begin
     Result := FDirStatistic;
+end;
+
+// --------------------------------------------------------------------------------
+function TCpmTools.GetFileInfo(AFileName: string): TFileInfo;
+var
+    Gargc: integer;
+    Gargv: TStringList;
+    DirFile: TCpmInode;
+    StatBuf: TCpmStat;
+    Index, Attrib: integer;
+    FileInfo: TFileInfo;
+begin
+    try
+        Gargv := TStringList.Create;
+        FCpmFileSystem.Glob(PChar(AFileName), Gargc, Gargv);
+
+        if (Gargc > 0) then begin
+            FCpmFileSystem.Name2Inode(PChar(Gargv[0]), DirFile);
+            FCpmFileSystem.Stat(DirFile, StatBuf);
+            FCpmFileSystem.AttrGet(DirFile, Attrib);
+            Index := Pos(':', AFileName);
+            FileInfo.UserNumber := StrToInt(LeftStr(AFileName, Index - 1));
+            FileInfo.Name := RightStr(AFileName, (Length(AFileName) - Index));
+            FileInfo.UsedBytes := StatBuf.Size;
+            FileInfo.UsedRecords := ((StatBuf.Size + 127) div 128);
+            FileInfo.Attributes := Attrib;
+            FileInfo.ATime := StatBuf.ATime;
+            FileInfo.CTime := StatBuf.CTime;
+            FileInfo.MTime := StatBuf.MTime;
+        end;
+
+
+    finally
+        FreeAndNil(Gargv);
+    end;
+
+    Result := FileInfo;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TCpmTools.SetNewAttributes(AFileName: string; AAttributes: cpm_attr_t);
+var
+    Gargc: integer;
+    Gargv: TStringList;
+    DirFile: TCpmInode;
+begin
+    try
+        Gargv := TStringList.Create;
+        FCpmFileSystem.Glob(PChar(AFileName), Gargc, Gargv);
+
+        if (FCpmFileSystem.Name2Inode(PChar(Gargv[0]), DirFile)) then begin
+            FCpmFileSystem.AttrSet(DirFile, AAttributes);
+        end
+        else begin
+
+            if MessageDlg(Format('can not find %s' + LineEnding + '(%s)',
+                [AFileName, FCpmFileSystem.GetErrorMsg]), mtError, [mbOK], 0) = mrOk then begin
+                Exit;
+            end;
+
+        end;
+
+        FCpmFileSystem.Sync;
+    finally
+        FreeAndNil(Gargv);
+    end;
+
 end;
 
 // --------------------------------------------------------------------------------
