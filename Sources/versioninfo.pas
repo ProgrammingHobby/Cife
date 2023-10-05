@@ -151,9 +151,11 @@ begin
         for i := 0 to FInfo.StringFileInfo.Count - 1 do begin
             oTable := FInfo.StringFileInfo.Items[i];
 
-            for j := 0 to oTable.Count - 1 do
-                if Trim(oTable.ValuesByIndex[j]) <> '' then
+            for j := 0 to oTable.Count - 1 do begin
+                if Trim(oTable.ValuesByIndex[j]) <> '' then begin
                     oStringList.Values[oTable.Keys[j]] := oTable.ValuesByIndex[j];
+                end;
+            end;
         end;
     end;
 end;
@@ -169,10 +171,12 @@ function GetProductVersion: string;
 begin
     CreateInfo;
 
-    if FInfo.BuildInfoAvailable then
-        Result := ProductVersionToString(FInfo.FixedInfo.ProductVersion)
-    else
+    if FInfo.BuildInfoAvailable then begin
+        Result := ProductVersionToString(FInfo.FixedInfo.ProductVersion);
+    end
+    else begin
         Result := 'No build information available';
+    end;
 end;
 
 // --------------------------------------------------------------------------------
@@ -180,10 +184,12 @@ function GetFileVersion: string;
 begin
     CreateInfo;
 
-    if FInfo.BuildInfoAvailable then
-        Result := ProductVersionToString(FInfo.FixedInfo.FileVersion)
-    else
+    if FInfo.BuildInfoAvailable then begin
+        Result := ProductVersionToString(FInfo.FixedInfo.FileVersion);
+    end
+    else begin
         Result := 'No build information available';
+    end;
 end;
 
 { TVersionInfo }
@@ -235,8 +241,9 @@ begin
 
     // Defensive code to prevent failure if no resource available...
     Res := FindResource(Instance, PChar(PtrInt(ResID)), PChar(RT_VERSION));
-    if Res = 0 then
+    if Res = 0 then begin
         Exit;
+    end;
 
     Stream := TResourceStream.CreateFromID(Instance, ResID, PChar(RT_VERSION));
     try
@@ -259,6 +266,7 @@ initialization
     FInfo := nil;
 
 finalization
-    if Assigned(FInfo) then
+    if Assigned(FInfo) then begin
         FInfo.Free;
+    end;
 end.
