@@ -159,6 +159,8 @@ object FileDialog: TFileDialog
       BorderSpacing.Right = 4
       BorderSpacing.Bottom = 4
       Constraints.MinWidth = 160
+      ParentShowHint = False
+      ShowHint = True
       TabOrder = 0
     end
     object buttonOpenBootTrackFile: TButton
@@ -175,6 +177,7 @@ object FileDialog: TFileDialog
       BorderSpacing.Right = 4
       BorderSpacing.CellAlignHorizontal = ccaLeftTop
       Caption = 'Browse'
+      OnClick = buttonOpenBootTrackFileClick
       TabOrder = 1
     end
     object Label4: TLabel

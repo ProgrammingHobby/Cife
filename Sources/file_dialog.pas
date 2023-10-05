@@ -46,6 +46,7 @@ type
         panelSystemData: TPanel;
         panelImageFile: TPanel;
         panelDialogNotice: TPanel;
+        procedure buttonOpenBootTrackFileClick(Sender: TObject);
         procedure buttonOpenImageFileClick(Sender: TObject);
         procedure comboboxImageTypeChange(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -68,6 +69,9 @@ type
         procedure SetWildcards(AWildcards: string);
         function GetFullFileName: string;
         function GetImageType: string;
+        function GetBootFileimage: string;
+        function GetFilesystemLabel: string;
+        function GetTimestampsUsed: boolean;
 
     end;
 
@@ -192,6 +196,24 @@ begin
     Result := comboboxImageType.Items[comboboxImageType.ItemIndex];
 end;
 
+// --------------------------------------------------------------------------------
+function TFileDialog.GetBootFileimage: string;
+begin
+    Result := editBootTrackFile.Hint;
+end;
+
+// --------------------------------------------------------------------------------
+function TFileDialog.GetFilesystemLabel: string;
+begin
+    Result := editFileSystemLabel.Text;
+end;
+
+// --------------------------------------------------------------------------------
+function TFileDialog.GetTimestampsUsed: boolean;
+begin
+    Result := checkboxUseTimestamps.Checked;
+end;
+
 
 // --------------------------------------------------------------------------------
 procedure TFileDialog.FormClose(Sender: TObject; var CloseAction: TCloseAction);
@@ -247,6 +269,7 @@ begin
                     editImageFile.Text := ExtractFileName(Dialog.FileName);
                     editImageFile.SelStart := editImageFile.GetTextLen;
                 end;
+
                 CheckImageFileData;
             finally
                 FreeAndNil(Dialog);
@@ -254,6 +277,86 @@ begin
 
         end;
 
+        cfdCreateNewImage: begin
+            try
+                Dialog := TSaveDialog.Create(self);
+                Dialog.Title := 'Select new CP/M Disk Image File';
+                Dialog.Filter := FWildcards;
+
+                if (FDefaultPath.IsEmpty) then begin
+
+                    with TXMLSettings.Create(SettingsFile) do begin
+
+                        try
+                            OpenKey('Settings');
+                            Dialog.InitialDir := ExtractFilePath(GetValue('DiskdefsFile', ''));
+                            CloseKey;
+                        finally
+                            Free;
+                        end;
+
+                    end;
+
+                end
+                else begin
+                    Dialog.InitialDir := FDefaultPath;
+                end;
+
+                if (Dialog.Execute) then begin
+                    editImageFile.Hint := Dialog.FileName;
+                    editImageFile.Text := ExtractFileName(Dialog.FileName);
+                    editImageFile.SelStart := editImageFile.GetTextLen;
+                end;
+
+                CheckImageFileData;
+            finally
+                FreeAndNil(Dialog);
+            end;
+        end;
+
+        cfdFormatCurrentImage: begin
+
+        end;
+    end;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TFileDialog.buttonOpenBootTrackFileClick(Sender: TObject);
+var
+    Dialog: TOpenDialog;
+begin
+    try
+        Dialog := TOpenDialog.Create(self);
+        Dialog.Title := 'Select CP/M Boot-Image File';
+        Dialog.Filter := FWildcards;
+
+        if (FDefaultPath.IsEmpty) then begin
+
+            with TXMLSettings.Create(SettingsFile) do begin
+
+                try
+                    OpenKey('Settings');
+                    Dialog.InitialDir := ExtractFilePath(GetValue('DiskdefsFile', ''));
+                    CloseKey;
+                finally
+                    Free;
+                end;
+
+            end;
+
+        end
+        else begin
+            Dialog.InitialDir := FDefaultPath;
+        end;
+
+        if (Dialog.Execute) then begin
+            editBootTrackFile.Hint := Dialog.FileName;
+            editBootTrackFile.Text := ExtractFileName(Dialog.FileName);
+            editBootTrackFile.SelStart := editImageFile.GetTextLen;
+        end;
+
+    finally
+        FreeAndNil(Dialog);
     end;
 end;
 
@@ -288,9 +391,9 @@ begin
             panelImageFile.Visible := True;
             panelImageFile.Align := alTop;
             panelSystemData.Visible := True;
-            panelSystemData.Align := alTop;
-            panelDialogNotice.Visible := True;
-            panelDialogNotice.Align := alClient;
+            panelSystemData.Align := alClient;
+            panelDialogNotice.Visible := False;
+            PrepareImageTypesComboBox;
         end;
 
         cfdFormatCurrentImage: begin
