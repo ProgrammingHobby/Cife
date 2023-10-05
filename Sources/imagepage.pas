@@ -43,6 +43,9 @@ type
         procedure SetMenuActionCallBack(AMenuActionEnableCB: TMenuActionEnableCB);
         procedure SetPopupMenu(APopupMenu: TPopupMenu);
         function Open(const AFileName: string; const AFileType: string): boolean;
+        function New(AImageFile: string; AImageType: string; ABootFile: string; AFileSystemLabel: string;
+            ATimeStampsUsed: boolean): boolean;
+        function Close:boolean;
         function GetFileName: string;
         procedure RefreshDirectory;
         procedure RenameFile;
@@ -145,6 +148,19 @@ begin
     end;
 
     Result := FCpmTools.OpenImage(AFileName, AFileType, DiskdefsPath, UpperCase);
+end;
+
+// --------------------------------------------------------------------------------
+function TImagePage.New(AImageFile: string; AImageType: string; ABootFile: string; AFileSystemLabel: string;
+    ATimeStampsUsed: boolean): boolean;
+begin
+    Result := FCpmTools.CreateNewImage(AImageFile, AImageType, ABootFile, AFileSystemLabel, ATimeStampsUsed);
+end;
+
+// --------------------------------------------------------------------------------
+function TImagePage.Close: boolean;
+begin
+    Result:=FCpmTools.CloseImage;
 end;
 
 // --------------------------------------------------------------------------------
@@ -261,7 +277,6 @@ end;
 // --------------------------------------------------------------------------------
 destructor TImagePage.Destroy;
 begin
-    FCpmTools.CloseImage;
     ClearFileSystemInfo;
     FreeAndNil(FCpmTools);
     inherited Destroy;

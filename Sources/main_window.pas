@@ -155,9 +155,10 @@ type
         procedure PageControlCloseTabClicked(Sender: TObject);
     private
         FImageFileHistory: TImageFileHistory;
-        procedure AddImagePage(ImageFile: string; ImageType: string);
+        procedure AddImagePage(AImageFile: string; AImageType: string; ABootFile: string = '#';
+            AFileSystemLabel: string = '#'; ATimeStampsUsed: boolean = False);
         procedure HistoryMenuItemClick(Sender: TObject);
-        procedure ShowImageInfo(Info: TFileSystemInfo);
+        procedure ShowImageInfo(AInfo: TFileSystemInfo);
         procedure ShowDirectoryStatistic(AStatistic: TDirStatistic);
         procedure MenuActionsControl(AMenuAction: TEnableAction);
 
@@ -180,14 +181,34 @@ uses File_Dialog, Settings_Dialog,
 // --------------------------------------------------------------------------------
 procedure TMainWindow.actionNewExecute(Sender: TObject);
 var
-    dialog: TFileDialog;
+    Dialog: TFileDialog;
+    ImageFile, ImageType, BootFile, FileSystemLabel: string;
+    TimeStampsUsed: boolean;
+    HistoryEntry: THistoryEntry;
 begin
+
     try
-        dialog := TFileDialog.Create(self);
-        dialog.ShowModal;
+        Dialog := TFileDialog.Create(self);
+        Dialog.SetDialogType(cfdCreateNewImage);
+        Dialog.SetDialogTitle('Create new CP/M Disk Image File');
+        Dialog.SetRootPath(GetUserDir);
+        HistoryEntry := FImageFileHistory.GetHistoryEntry(0);
+        Dialog.SetDefaultPath(ExtractFileDir(HistoryEntry.FileName));
+        Dialog.SetWildcards('Image Files (*.img,*.fdd,*.dsk)|*.img;*.IMG;*.fdd;*.FDD;*.dsk;*.DSK|all Files (*.*)|*');
+
+        if (Dialog.ShowModal = mrOk) then begin
+            ImageFile := Dialog.GetFullFileName;
+            ImageType := Dialog.GetImageType;
+            BootFile := Dialog.GetBootFileimage;
+            FileSystemLabel := Dialog.GetFilesystemLabel;
+            TimeStampsUsed := Dialog.GetTimestampsUsed;
+            AddImagePage(ImageFile, ImageType, BootFile, FileSystemLabel, TimeStampsUsed);
+        end;
+
     finally
-        FreeAndNil(dialog);
+        FreeAndNil(Dialog);
     end;
+
 end;
 
 // --------------------------------------------------------------------------------
@@ -196,9 +217,11 @@ var
     Page: TImagePage;
 begin
     Page := PageControl.ActivePage as TImagePage;
+
     if (Assigned(Page)) then begin
         Page.ShowFileCharacteristics;
     end;
+
 end;
 
 // --------------------------------------------------------------------------------
@@ -210,12 +233,18 @@ end;
 
 // --------------------------------------------------------------------------------
 procedure TMainWindow.actionCloseExecute(Sender: TObject);
+var
+    Page: TImagePage;
 begin
     MenuActionsControl([]);
-    PageControl.ActivePage.Free;
+    Page := PageControl.ActivePage as TImagePage;
+    Page.Close;
+    Page.Free;
+
     if (PageControl.PageCount <= 0) then begin
         actionClose.Enabled := False;
     end;
+
 end;
 
 // --------------------------------------------------------------------------------
@@ -224,46 +253,55 @@ var
     Page: TImagePage;
 begin
     Page := PageControl.ActivePage as TImagePage;
+
     if (Assigned(Page)) then begin
         Page.DeleteFile;
     end;
+
 end;
 
 // --------------------------------------------------------------------------------
 procedure TMainWindow.actionAboutExecute(Sender: TObject);
 var
-    dialog: TAboutDialog;
+    Dialog: TAboutDialog;
 begin
+
     try
-        dialog := TAboutDialog.Create(self);
-        dialog.ShowModal;
+        Dialog := TAboutDialog.Create(self);
+        Dialog.ShowModal;
     finally
-        FreeAndNil(dialog);
+        FreeAndNil(Dialog);
     end;
+
 end;
 
 // --------------------------------------------------------------------------------
 procedure TMainWindow.actionOpenExecute(Sender: TObject);
 var
-    dialog: TFileDialog;
+    Dialog: TFileDialog;
     ImageFile, ImageType: string;
     HistoryEntry: THistoryEntry;
 begin
+
     try
-        dialog := TFileDialog.Create(self);
-        dialog.SetDialogTitle('Open CP/M Disk Image File');
-        dialog.SetRootPath(GetUserDir);
+        Dialog := TFileDialog.Create(self);
+        Dialog.SetDialogType(cfdOpenImage);
+        Dialog.SetDialogTitle('Open CP/M Disk Image File');
+        Dialog.SetRootPath(GetUserDir);
         HistoryEntry := FImageFileHistory.GetHistoryEntry(0);
-        dialog.SetDefaultPath(ExtractFileDir(HistoryEntry.FileName));
-        dialog.SetWildcards('Image Files (*.img,*.fdd,*.dsk)|*.img;*.IMG;*.fdd;*.FDD;*.dsk;*.DSK|all Files (*.*)|*');
-        if (dialog.ShowModal = mrOk) then begin
-            ImageFile := dialog.GetFullFileName;
-            ImageType := dialog.GetImageType;
+        Dialog.SetDefaultPath(ExtractFileDir(HistoryEntry.FileName));
+        Dialog.SetWildcards('Image Files (*.img,*.fdd,*.dsk)|*.img;*.IMG;*.fdd;*.FDD;*.dsk;*.DSK|all Files (*.*)|*');
+
+        if (Dialog.ShowModal = mrOk) then begin
+            ImageFile := Dialog.GetFullFileName;
+            ImageType := Dialog.GetImageType;
             AddImagePage(ImageFile, ImageType);
         end;
+
     finally
-        FreeAndNil(dialog);
+        FreeAndNil(Dialog);
     end;
+
 end;
 
 // --------------------------------------------------------------------------------
@@ -278,9 +316,11 @@ var
     Page: TImagePage;
 begin
     Page := PageControl.ActivePage as TImagePage;
+
     if (Assigned(Page)) then begin
         Page.RefreshDirectory;
     end;
+
 end;
 
 // --------------------------------------------------------------------------------
@@ -289,19 +329,22 @@ var
     Page: TImagePage;
 begin
     Page := PageControl.ActivePage as TImagePage;
+
     if (Assigned(Page)) then begin
         Page.RenameFile;
     end;
+
 end;
 
 // --------------------------------------------------------------------------------
 procedure TMainWindow.actionSettingsExecute(Sender: TObject);
 var
-    dialog: TSettingsDialog;
+    Dialog: TSettingsDialog;
     OldUseUpperCase: boolean;
     OldDiskdefsFile: string;
 begin
     with TXMLSettings.Create(SettingsFile) do begin
+
         try
             OpenKey('Settings');
             OldUseUpperCase := GetValue('UseUppercaseCharacters', False);
@@ -310,16 +353,18 @@ begin
         finally
             Free;
         end;
+
     end;
 
     try
-        dialog := TSettingsDialog.Create(self);
-        dialog.ShowModal;
+        Dialog := TSettingsDialog.Create(self);
+        Dialog.ShowModal;
     finally
-        FreeAndNil(dialog);
+        FreeAndNil(Dialog);
     end;
 
     with TXMLSettings.Create(SettingsFile) do begin
+
         try
             OpenKey('Settings');
 
@@ -344,6 +389,7 @@ begin
         finally
             Free;
         end;
+
     end;
 end;
 
@@ -439,13 +485,16 @@ end;
 // --------------------------------------------------------------------------------
 procedure TMainWindow.PageControlCloseTabClicked(Sender: TObject);
 begin
+
     if (Sender is TTabSheet) then begin
         TTabSheet(Sender).Free;
     end;
+
 end;
 
 // --------------------------------------------------------------------------------
-procedure TMainWindow.AddImagePage(ImageFile: string; ImageType: string);
+procedure TMainWindow.AddImagePage(AImageFile: string; AImageType: string; ABootFile: string;
+    AFileSystemLabel: string; ATimeStampsUsed: boolean);
 var
     ImagePage: TImagePage;
 begin
@@ -454,19 +503,47 @@ begin
     ImagePage.SetDirectoryStatisticCallBack(@ShowDirectoryStatistic);
     ImagePage.SetMenuActionCallBack(@MenuActionsControl);
     ImagePage.SetPopupMenu(PopupMenu1);
-    if (ImagePage.Open(ImageFile, ImageType)) then begin
-        ImagePage.Caption := ExtractFileName(ImageFile);
-        ImagePage.PageControl := PageControl;
-        PageControl.ActivePage := ImagePage;
-        if (PageControl.PageCount > 0) then begin
-            actionClose.Enabled := True;
-            actionClearHistory.Enabled := True;
+
+    if ((ABootFile = '#') and (AFileSystemLabel = '#')) then begin
+
+        if (ImagePage.Open(AImageFile, AImageType)) then begin
+            ImagePage.Caption := ExtractFileName(AImageFile);
+            ImagePage.PageControl := PageControl;
+            PageControl.ActivePage := ImagePage;
+
+            if (PageControl.PageCount > 0) then begin
+                actionClose.Enabled := True;
+                actionClearHistory.Enabled := True;
+            end;
+
+            FImageFileHistory.AddItem(AImageFile, AImageType);
+        end
+        else begin
+            FreeAndNil(ImagePage);
         end;
-        FImageFileHistory.AddItem(ImageFile, ImageType);
+
     end
     else begin
-        FreeAndNil(ImagePage);
+
+        if (ImagePage.New(AImageFile, AImageType, ABootFile, AFileSystemLabel, ATimeStampsUsed) and
+            ImagePage.Open(AImageFile, AImageType)) then begin
+            ImagePage.Caption := ExtractFileName(AImageFile);
+            ImagePage.PageControl := PageControl;
+            PageControl.ActivePage := ImagePage;
+
+            if (PageControl.PageCount > 0) then begin
+                actionClose.Enabled := True;
+                actionClearHistory.Enabled := True;
+            end;
+
+            FImageFileHistory.AddItem(AImageFile, AImageType);
+        end
+        else begin
+            FreeAndNil(ImagePage);
+        end;
+
     end;
+
 end;
 
 // --------------------------------------------------------------------------------
@@ -478,40 +555,47 @@ var
     TabExisting: boolean;
     ImagePage: TImagePage;
 begin
+
     if (Sender is TMenuItem) then begin
         HistoryMenuItem := TMenuItem(Sender);
         HistoryEntry := FImageFileHistory.GetHistoryEntry(HistoryMenuItem.Tag);
         TabExisting := False;
+
         for Index := 0 to (PageControl.PageCount - 1) do begin
             ImagePage := TImagePage(PageControl.Pages[Index]);
+
             if (ImagePage.GetFileName = HistoryEntry.FileName) then begin
                 TabExisting := True;
                 break;
             end;
+
         end;
+
         if TabExisting then begin
             PageControl.ActivePage := PageControl.Pages[Index];
         end
         else begin
             AddImagePage(HistoryEntry.FileName, HistoryEntry.FileType);
         end;
+
     end;
+
 end;
 
 // --------------------------------------------------------------------------------
-procedure TMainWindow.ShowImageInfo(Info: TFileSystemInfo);
+procedure TMainWindow.ShowImageInfo(AInfo: TFileSystemInfo);
 begin
-    labelFile.Caption := Info.FileName;
-    labelType.Caption := Info.FileType;
-    labelTracks.Caption := Info.Tracks;
-    labelSectors.Caption := Info.Sectors;
-    labelSectorBytes.Caption := Info.SecBytes;
-    labelBlocksize.Caption := Info.BlockSize;
-    labelMaxdir.Caption := Info.MaxDir;
-    labelBootsectors.Caption := Info.BootSectors;
-    labelOffset.Caption := Info.Offset;
-    labelSkew.Caption := Info.skew;
-    labelOs.Caption := Info.System;
+    labelFile.Caption := AInfo.FileName;
+    labelType.Caption := AInfo.FileType;
+    labelTracks.Caption := AInfo.Tracks;
+    labelSectors.Caption := AInfo.Sectors;
+    labelSectorBytes.Caption := AInfo.SecBytes;
+    labelBlocksize.Caption := AInfo.BlockSize;
+    labelMaxdir.Caption := AInfo.MaxDir;
+    labelBootsectors.Caption := AInfo.BootSectors;
+    labelOffset.Caption := AInfo.Offset;
+    labelSkew.Caption := AInfo.skew;
+    labelOs.Caption := AInfo.System;
 end;
 
 // --------------------------------------------------------------------------------
