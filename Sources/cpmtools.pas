@@ -163,6 +163,7 @@ begin
     Row := 1;
     Gargv := TStringList.Create;
     FCpmFileSystem.Glob('*', Gargc, Gargv);
+    { #todo : Range-Check Fehler bei falsch angegebenem Image-Typ abfangen }
 
     if (Gargc > 0) then begin
         FilesCount := 0;
@@ -299,7 +300,7 @@ begin
 
         end;
 
-        //TODO: Statistiken (Records und 1kblocks) korrigieren, evtl. noch um TotalFreeBytes erweitern
+        { #todo : Statistiken (Records und 1kblocks) korrigieren, evtl. noch um TotalFreeBytes erweitern }
         FDirStatistic.TotalBytes := ((TotalBytes + 1023) div 1024);
         FDirStatistic.TotalRecords := TotalRecs;
         FDirStatistic.FilesFound := FilesCount;

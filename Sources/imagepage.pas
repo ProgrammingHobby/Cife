@@ -186,7 +186,7 @@ procedure TImagePage.RefreshDirectory;
 var
     UpperCase: boolean;
 begin
-    //TODO evtl. selektierte Items nach dem Refresh wieder herstellen.
+    { #todo : evtl. selektierte Items nach dem Refresh wieder herstellen. }
     FDirectoryList.Clear;
 
     with TXMLSettings.Create(SettingsFile) do begin
