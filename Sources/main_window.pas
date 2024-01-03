@@ -173,8 +173,7 @@ implementation
 
 {$R *.lfm}
 
-uses File_Dialog, Settings_Dialog,
-    About_Dialog, XMLSettings;
+uses File_Dialog, Settings_Dialog, About_Dialog, XMLSettings;
 
 { TMainWindow }
 
@@ -194,7 +193,7 @@ begin
         Dialog.SetRootPath(GetUserDir);
         HistoryEntry := FImageFileHistory.GetHistoryEntry(0);
         Dialog.SetDefaultPath(ExtractFileDir(HistoryEntry.FileName));
-        Dialog.SetWildcards('Image Files (*.img,*.fdd,*.dsk)|*.img;*.IMG;*.fdd;*.FDD;*.dsk;*.DSK|all Files (*.*)|*');
+        Dialog.SetWildcards('Image Files (*.img,*.bin,*.rel)|*.img;*.IMG;*.bin;*.BIN;*.rel;*.REL|all Files (*.*)|*');
 
         if (Dialog.ShowModal = mrOk) then begin
             ImageFile := Dialog.GetFullFileName;
@@ -202,6 +201,7 @@ begin
             BootFile := Dialog.GetBootFileimage;
             FileSystemLabel := Dialog.GetFilesystemLabel;
             TimeStampsUsed := Dialog.GetTimestampsUsed;
+            //TODO: Parameter 'NewImage_bool' für AddImagePage hinzufügen. Oder neue spezielle Methode z.B. 'NewImagePage'
             AddImagePage(ImageFile, ImageType, BootFile, FileSystemLabel, TimeStampsUsed);
         end;
 
@@ -524,9 +524,7 @@ begin
 
     end
     else begin
-
-        if (ImagePage.New(AImageFile, AImageType, ABootFile, AFileSystemLabel, ATimeStampsUsed) and
-            ImagePage.Open(AImageFile, AImageType)) then begin
+        if (ImagePage.New(AImageFile, AImageType, ABootFile, AFileSystemLabel, ATimeStampsUsed) and ImagePage.Open(AImageFile, AImageType)) then begin
             ImagePage.Caption := ExtractFileName(AImageFile);
             ImagePage.PageControl := PageControl;
             PageControl.ActivePage := ImagePage;

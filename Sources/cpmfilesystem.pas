@@ -17,7 +17,8 @@
  *}
 unit CpmFileSystem;
 
-{$mode ObjFPC}{$H+}
+{$mode ObjFPC}
+{$H+}
 
 interface
 
@@ -62,6 +63,11 @@ type
         Ino: TCpmInode;
     end;
 
+    TUTimeBuf = record
+        AcTime: TDateTime;
+        ModTime: TDatetime;
+    end;
+
     { TCpmFileSystem }
 
     TCpmFileSystem = class
@@ -76,13 +82,20 @@ type
         procedure Stat(const AInode: TCpmInode; var ABuffer: TCpmStat);
         procedure AttrGet(const AInode: TCpmInode; var AAttrib: cpm_attr_t);
         procedure AttrSet(var AInode: TCpmInode; const AAttrib: cpm_attr_t);
+        function MakeFileSystem(const AImageName: string; const ABootTracks: array of byte;
+            AFileSystemLabel: string; ATimeStampsUsed: boolean; AUseUpperCase: boolean): boolean;
         function Unmount: boolean;
         function Rename(const AOldName: PChar; const ANewName: PChar): boolean;
         function Delete(const AFileName: PChar): boolean;
+        function Create(ADirEntry: TCpmInode; const AFileName: string; var AInode: TCpmInode; AMode: mode_t): boolean;
+        function Open(AInode: TCpmInode; var AFile: TCpmFile; AMode: mode_t): boolean;
+        function Write(AFile: TCpmFile; ABuffer: pbyte; ACount: size_t): ssize_t;
+        function Close(AFile: TCpmFile): boolean;
+        procedure UpdateTime(AInode: TCpmInode; ATimes: TUTimeBuf);
         function Sync: boolean;
         function GetErrorMsg: string;
         function GetFileSystemInfo: TFileSystemInfo;
-
+        function GetBootTrackSize: integer;
     public  // Konstruktor/Destruktor
         constructor Create(ACpmDevice: TCpmDevice); overload;
         destructor Destroy; override;
@@ -168,6 +181,7 @@ type
 
     private   // Methoden
         procedure AlvInit;
+        function AllocBlock: integer;
         procedure MemCpy7(var ADestination: array of char; const ASource: array of char; ACount: integer);
         function AmstradReadSuper(): boolean;
         function DiskdefsReadSuper(const AImageType: string; ADiskdefsPath: string): boolean;
@@ -176,6 +190,9 @@ type
         function WriteBlock(ABlockNr: integer; const ABuffer: pbyte; AStart, AEnd: integer): boolean;
         function FindFileExtent(AUser: integer; const AName: array of char; const AExt: array of char;
             AStart: integer; AExtNo: integer): integer;
+        function FindFreeExtent: integer;
+        procedure UpdateTimeStamps(const AInode: TCpmInode; AExtent: integer);
+        procedure UpdateDateStamper(const AInode: TCpmInode; AExtent: integer);
         function ReadTimeStamps(var AInode: TCpmInode; ALowestExt: integer): integer;
         procedure ReadDsStamps(var AInode: TCpmInode; ALowestExt: integer);
         function CheckDateStamps: boolean;
@@ -187,7 +204,9 @@ type
             AUser2: integer; const AName2: array of char; const AExt2: array of char): boolean;
         function IsFileChar(AChar: char; AType: integer): boolean;
         function Cpm2UnixTime(ADays: integer; AHour: integer; AMin: integer): time_t;
+        procedure Unix2CpmTime(ANow: TDateTime; var ADays: integer; var AHour: integer; var AMin: integer);
         function Ds2UnixTime(const AEntry: TDsEntry): time_t;
+        procedure Unix2DsTime(ANow: TDateTime; var AEntry: TDsEntry);
         function SyncDateStamps: boolean;
         function OpenDir(var ADir: TCpmFile): boolean;
         function ReadDir(var ADir: TCpmFile; var AEnt: TCpmDirent): boolean;
@@ -908,6 +927,309 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
+//  -- create new empty binary Image-File
+// --------------------------------------------------------------------------------
+//int CpmFs::mkfs(char const *filename, char const *format, char const *label, char *bootTracks, int timeStamps, int uppercase) {
+function TCpmFileSystem.MakeFileSystem(const AImageName: string; const ABootTracks: array of byte;
+    AFileSystemLabel: string; ATimeStampsUsed: boolean; AUseUpperCase: boolean): boolean;
+var
+    ImageFile: file;
+    TrackBytes: longword;
+    IndexI, IndexJ, Count, DirBytes: longword;
+    Buffer, FirstBuffer: array[0..127] of byte;
+    DateTime: TDateTime;
+    Minute, Hour, Days, Offset: integer;
+    ImageSize, Records, CheckSum: longword;
+    DateStampsBuffer: array of byte = nil;
+    Inode: TCpmInode;
+    DateStampFile: TCpmFile;
+    Times: TUTimeBuf;
+const
+    Signature = '!!!TIME';
+begin
+    // check for empty label
+    if (AFileSystemLabel.IsEmpty) then begin
+        AFileSystemLabel := 'UNLABELED';
+    end;
+
+    // open image file
+    try
+        FileMode := fmOpenWrite;
+        AssignFile(ImageFile, AImageName);
+        Rewrite(ImageFile, 1);
+    except
+        on e: Exception do begin
+            FFileSystemError := e.Message;
+            Result := False;
+            exit;
+        end;
+    end;
+
+
+    ///* write system tracks */
+    ///* this initialises only whole tracks, so it skew is not an issue */
+    TrackBytes := (FDrive.SecLength * FDrive.SecTrk);
+    IndexI := 0;
+
+    while (IndexI < (TrackBytes * FDrive.BootTrk)) do begin
+
+        try
+            BlockWrite(ImageFile, ABootTracks[IndexI], FDrive.SecLength, Count);
+        except
+            on e: Exception do begin
+
+                if (Count <> FDrive.SecLength) then begin
+                    FFileSystemError := e.Message;
+                    CloseFile(ImageFile);
+                    Result := False;
+                    exit;
+                end;
+
+            end;
+        end;
+
+        Inc(IndexI, FDrive.SecLength);
+    end;
+
+    // write directory
+    for IndexI := Low(Buffer) to High(Buffer) do begin
+        Buffer[IndexI] := $E5;
+    end;
+
+    DirBytes := (FDrive.MaxDir * 32);
+
+    if ((DirBytes mod TrackBytes) <> 0) then begin
+        DirBytes := (((DirBytes + TrackBytes) div TrackBytes) * TrackBytes);
+    end;
+
+    if (ATimeStampsUsed and ((FDrive.OsType = CPMFS_P2DOS) or (FDrive.OsType = CPMFS_DR3))) then begin
+        Buffer[3 * 32] := $21;
+    end;
+
+    FirstBuffer := Buffer;
+
+    if (FDrive.OsType = CPMFS_DR3) then begin
+        FirstBuffer[0] := $20;
+
+        for IndexI := 1 to 11 do begin
+
+            if (IndexI <= Length(AFileSystemLabel)) then begin
+                FirstBuffer[IndexI] := (Ord(UpCase(AFileSystemLabel[IndexI])) and $7F);
+            end
+            else begin
+                FirstBuffer[IndexI] := Ord(' ');
+            end;
+
+        end;
+
+        // label set and first time stamp is creation date
+        if (ATimeStampsUsed) then begin
+            FirstBuffer[12] := $11;
+        end
+        else begin
+            FirstBuffer[12] := $01;
+        end;
+
+        FillByte(FirstBuffer[13], 1 + 2 + 8, 0);
+
+        if (ATimeStampsUsed) then begin
+            DateTime := Now;
+            Minute := (((MinuteOf(DateTime) div 10) shl 4) or (MinuteOf(DateTime) mod 10));
+            Hour := (((HourOf(DateTime) div 10) shl 4) or (HourOf(DateTime) mod 10));
+            Days := DaysBetween(DateTime, EncodeDate(1978, 1, 1)) + 1;
+            FirstBuffer[24] := (Days and $FF);
+            FirstBuffer[28] := (Days and $FF);
+            FirstBuffer[25] := (Days shr 8);
+            FirstBuffer[29] := (Days shr 8);
+            FirstBuffer[26] := Hour;
+            FirstBuffer[30] := Hour;
+            FirstBuffer[27] := Minute;
+            FirstBuffer[31] := Minute;
+        end;
+
+    end;
+
+    IndexI := 0;
+    while (IndexI < DirBytes) do begin
+
+        try
+
+            if (IndexI = 0) then begin
+                BlockWrite(ImageFile, FirstBuffer[0], 128, Count);
+            end
+            else begin
+                BlockWrite(ImageFile, Buffer[0], 128, Count);
+            end;
+
+        except
+            on e: Exception do begin
+
+                if (Count <> 128) then begin
+                    FFileSystemError := e.Message;
+                    CloseFile(ImageFile);
+                    Result := False;
+                    exit;
+                end;
+
+            end;
+        end;
+
+        Inc(IndexI, 128);
+
+    end;
+
+    // fill remaining size
+    for IndexI := Low(Buffer) to High(Buffer) do begin
+        Buffer[IndexI] := $E5;
+    end;
+
+    ImageSize := (FDrive.SecLength * FDrive.SecTrk * FDrive.Tracks);
+
+    IndexI := 0;
+    while (IndexI < (ImageSize - (DirBytes + (TrackBytes * FDrive.BootTrk)))) do begin
+        try
+            BlockWrite(ImageFile, Buffer[0], 128, Count);
+        except
+            on e: Exception do begin
+
+                if (Count <> 128) then begin
+                    FFileSystemError := e.Message;
+                    CloseFile(ImageFile);
+                    Result := False;
+                    exit;
+                end;
+
+            end;
+        end;
+
+        Inc(IndexI, 128);
+
+    end;
+
+    // close image file
+    try
+        CloseFile(ImageFile);
+    except
+        on e: Exception do begin
+
+            if (Count <> 128) then begin
+                FFileSystemError := e.Message;
+                Result := False;
+                exit;
+            end;
+
+        end;
+    end;
+
+    if (ATimeStampsUsed and not ((FDrive.OsType = CPMFS_P2DOS) or (FDrive.OsType = CPMFS_DR3))) then begin
+
+        if not FCpmDevice.Open(AImageName, dmOpenReadWrite) then begin
+            FFileSystemError := Format('Cannot open %s  (%s)', [ExtractFileName(AImageName), FCpmDevice.GetErrorMsg()]);
+            Result := False;
+            exit;
+        end;
+
+        InitDriveData(AUseUpperCase);
+        Records := ((FDrive.MaxDir + 7) div 8);
+
+        try
+            SetLength(DateStampsBuffer, (Records * 128 * SizeOf(TDateStamps)));
+        except
+            Sync;
+            Result := False;
+            exit;
+        end;
+
+        FillByte(DateStampsBuffer[0], (Records * 128 * SizeOf(TDateStamps)), 0);
+        Offset := 15;
+
+        for IndexI := 0 to (Records - 1) do begin
+
+            for IndexJ := 0 to 6 do begin
+                DateStampsBuffer[Offset] := Ord(Signature[IndexJ + 1]);
+                Inc(Offset, 16);
+            end;
+
+            // skip checksum byte
+            Inc(Offset, 16);
+            CheckSum := 0;
+
+            for IndexJ := 0 to 126 do begin
+                CheckSum := CheckSum + DateStampsBuffer[(IndexI * 128) + IndexJ];
+            end;
+
+            DateStampsBuffer[(IndexI * 128) + IndexJ + 1] := (CheckSum and $FF);
+            Inc(IndexJ);
+
+        end;
+
+        // The filesystem does not know about datestamper yet, because it was not there when it was mounted.
+        if (not Create(FRoot, '00!!!TIME&.DAT', Inode, &0222)) then begin
+            FFileSystemError := Format('Unable to create DateStamper file.  (%s)', [FFileSystemError]);
+            Result := False;
+            exit;
+        end;
+
+        if ((not Open(Inode, DateStampFile, O_WRONLY)) or (Write(DateStampFile, @DateStampsBuffer[0], (Records * 128)) <>
+            (Records * 128)) or (not Close(DateStampFile))) then begin
+            FFileSystemError := Format('Unable to write DateStamper file.  (%s)', [FFileSystemError]);
+            Result := False;
+            exit;
+        end;
+
+        AttrSet(Inode, 0);
+        Name2Inode('00!!!TIME&.DAT', Inode);
+        Times.AcTime := Now;
+        times.ModTime := Now;
+        UpdateTime(Inode, Times);
+
+        // allocate datestamps record
+        try
+            SetLength(FDateStamps, High(DateStampsBuffer));
+        except
+            on e: Exception do begin
+                FFileSystemError := e.Message;
+                Result := False;
+                exit;
+            end;
+        end;
+
+        // copy buffer into datestamps record
+        IndexI := Low(DateStampsBuffer);
+
+        while (IndexI <= High(DateStampsBuffer)) do begin
+
+            with (FDateStamps[(IndexI div SizeOf(TDateStamps))]) do begin
+                Create.Year := DateStampsBuffer[IndexI + 0];
+                Create.Month := DateStampsBuffer[IndexI + 1];
+                Create.Day := DateStampsBuffer[IndexI + 2];
+                Create.Hour := DateStampsBuffer[IndexI + 3];
+                Create.Minute := DateStampsBuffer[IndexI + 4];
+                Access.Year := DateStampsBuffer[IndexI + 5];
+                Access.Month := DateStampsBuffer[IndexI + 6];
+                Access.Day := DateStampsBuffer[IndexI + 7];
+                Access.Hour := DateStampsBuffer[IndexI + 8];
+                Access.Minute := DateStampsBuffer[IndexI + 9];
+                Modify.Year := DateStampsBuffer[IndexI + 10];
+                Modify.Month := DateStampsBuffer[IndexI + 11];
+                Modify.Day := DateStampsBuffer[IndexI + 12];
+                Modify.Hour := DateStampsBuffer[IndexI + 13];
+                Modify.Minute := DateStampsBuffer[IndexI + 14];
+                CheckSum := DateStampsBuffer[IndexI + 15];
+                Inc(IndexI, SizeOf(TDateStamps));
+            end;
+
+        end;
+
+        FDrive.DirtyDateStamp := True;
+        Sync;
+
+    end;
+
+    Result := True;
+end;
+
+// --------------------------------------------------------------------------------
 //  -- free actual drive
 // --------------------------------------------------------------------------------
 function TCpmFileSystem.Unmount: boolean;
@@ -1030,6 +1352,346 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
+//  -- creat new CP/M file
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.Create(ADirEntry: TCpmInode; const AFileName: string; var AInode: TCpmInode; AMode: mode_t): boolean;
+var
+    User: integer;
+    Name: array[0..7] of char;
+    Extension: array[0..2] of char;
+    Ext: integer;
+    DirEntry: TPhysDirectoryEntry;
+begin
+
+    if not (S_ISDIR(ADirEntry.Mode)) then begin
+        FFileSystemError := 'No such file or directory';
+        Result := False;
+        exit;
+    end;
+
+    if not (SplitFilename(PChar(AFileName), FDrive.OsType, Name, Extension, User)) then begin
+        Result := False;
+        exit;
+    end;
+
+    if (FindFileExtent(User, Name, Extension, 0, 1) <> -1) then begin
+        Result := False;
+        exit;
+    end;
+
+    Ext := FindFreeExtent;
+    if (Ext = -1) then begin
+        Result := False;
+        exit;
+    end;
+
+    FDrive.DirtyDirectory := True;
+    FillByte(DirEntry, 32, 0);
+    DirEntry.Status := User;
+    DirEntry.Name := Name;
+    DirEntry.Ext := Extension;
+    FDirectory[Ext] := DirEntry;
+    AInode.Ino := Ext;
+    AInode.Mode := (S_IFREG or AMode);
+    AInode.Size := 0;
+    AInode.ATime := Now;
+    AInode.MTime := Now;
+    AInode.CTime := Now;
+    UpdateTimeStamps(AInode, Ext);
+    UpdateDateStamper(AInode, Ext);
+    Result := True;
+end;
+
+// --------------------------------------------------------------------------------
+//  -- open
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.Open(AInode: TCpmInode; var AFile: TCpmFile; AMode: mode_t): boolean;
+begin
+
+    if (S_ISREG(AInode.Mode)) then begin
+
+        if (((AMode and O_WRONLY) <> 0) and ((AInode.Mode and &222) = 0)) then begin
+            FFileSystemError := 'permission denied';
+            Result := False;
+            exit;
+        end;
+
+        AFile.Pos := 0;
+        AFile.Ino := AInode;
+        AFile.Mode := AMode;
+        Result := True;
+    end
+    else begin
+        FFileSystemError := 'not a regular file';
+        Result := False;
+    end;
+
+end;
+
+// --------------------------------------------------------------------------------
+//  -- write a file to CP/M filesystem
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.Write(AFile: TCpmFile; ABuffer: pbyte; ACount: size_t): ssize_t;
+var
+    FindExt, FindBlock, Ext, ExtNo, Got, NextBlockPos, NextExtPos: integer;
+    Block, WrStart, WrEnd, DataPtr, Last: integer;
+    BlockSize, ExtCap: integer;
+    Buffer: array[0..16383] of byte;
+begin
+    FindExt := 1;
+    FindBlock := -1;
+    Ext := -1;
+    ExtNo := -1;
+    Got := 0;
+    NextBlockPos := -1;
+    NextExtPos := -1;
+    BlockSize := FDrive.BlkSiz;
+    Block := -1;
+    WrStart := -1;
+    WrEnd := -1;
+    DataPtr := -1;
+    Last := -1;
+
+    if (FDrive.Size <= 256) then begin
+        ExtCap := (16 * BlockSize);
+    end
+    else begin
+        ExtCap := (8 * BlockSize);
+    end;
+
+    if (ExtCap > 16384) then begin
+        ExtCap := (16384 * FDrive.Extents);
+    end;
+
+    while (ACount > 0) do begin
+
+        if (FindExt <> 0) then begin
+            ExtNo := (AFile.Pos div FDrive.Extentsize);
+            Ext := FindFileExtent(FDirectory[AFile.Ino.Ino].Status, FDirectory[AFile.Ino.Ino].Name,
+                FDirectory[AFile.Ino.Ino].Ext, 0, ExtNo);
+            NextExtPos := (((AFile.Pos div ExtCap) * ExtCap) + ExtCap);
+
+            if (Ext = -1) then begin
+                Ext := FindFreeExtent;
+
+                if (Ext = -1) then begin
+
+                    if (Got = 0) then begin
+                        Result := (-1);
+                    end
+                    else begin
+                        Result := (Got);
+                    end;
+
+                    exit;
+                end;
+
+                FDirectory[Ext] := FDirectory[AFile.Ino.Ino];
+                FillByte(FDirectory[Ext].Pointers, 16, 0);
+                FDirectory[Ext].Extnol := EXTENTL(ExtNo);
+                FDirectory[Ext].Extnoh := EXTENTH(ExtNo);
+                FDirectory[Ext].Blkcnt := 0;
+                FDirectory[Ext].Lrc := 0;
+                AFile.Ino.CTime := Now;
+                UpdateTimeStamps(AFile.Ino, Ext);
+                UpdateDateStamper(AFile.Ino, Ext);
+                //}
+            end;
+
+            FindExt := 0;
+            FindBlock := 1;
+        end;
+
+        if (FindBlock <> 0) then begin
+            DataPtr := ((AFile.Pos mod ExtCap) div BlockSize);
+
+            if (FDrive.Size > 256) then begin
+                DataPtr := (DataPtr * 2);
+            end;
+
+            Block := FDirectory[Ext].Pointers[DataPtr];
+
+            if (FDrive.Size > 256) then begin
+                Block := (Block + (FDirectory[Ext].Pointers[DataPtr + 1] shl 8));
+            end;
+
+            // allocate new block, set start/end to cover it
+            if (Block = 0) then begin
+                Block := AllocBlock;
+
+                if (Block = -1) then begin
+
+                    if (Got = 0) then begin
+                        Result := (-1);
+                    end
+                    else begin
+                        Result := (Got);
+                    end;
+
+                    exit;
+                end;
+
+                FDirectory[Ext].Pointers[DataPtr] := (Block and $FF);
+
+                if (FDrive.Size > 256) then begin
+                    FDirectory[Ext].Pointers[DataPtr + 1] := ((Block shr 8) and $FF);
+                end;
+
+                WrStart := 0;
+                // By setting end to the end of the block and not the end
+                // of the currently written data, the whole block gets
+                // wiped from the disk, which is slow, but convenient in
+                // case of sparse files.
+                WrEnd := ((BlockSize - 1) div FDrive.SecLength);
+                FillByte(Buffer, BlockSize, 0);
+                AFile.Ino.CTime := Now;
+                UpdateTimeStamps(AFile.Ino, Ext);
+                UpdateDateStamper(AFile.Ino, Ext);
+            end
+            // read existing block and set start/end to cover modified parts
+            else begin
+                WrStart := ((AFile.Pos mod BlockSize) div FDrive.SecLength);
+
+                if (((AFile.Pos mod BlockSize) + ACount) >= BlockSize) then begin
+                    WrEnd := ((BlockSize - 1) div FDrive.SecLength);
+                end
+                else begin
+                    WrEnd := (((AFile.Pos mod BlockSize) + ACount - 1) div FDrive.SecLength);
+                end;
+
+                if ((AFile.Pos mod FDrive.SecLength) <> 0) then begin
+
+                    if not ReadBlock(Block, Buffer, WrStart, WrStart) then begin
+
+                        if (Got = 0) then begin
+                            Got := -1;
+                        end;
+
+                        break;
+                    end;
+
+                end;
+
+                if ((WrEnd <> WrStart) and (((AFile.Pos mod BlockSize) + ACount) < BlockSize) and
+                    (((AFile.Pos + ACount) mod FDrive.SecLength) <> 0)) then begin
+
+                    if not ReadBlock(Block, Buffer, WrEnd, WrEnd) then begin
+
+                        if (Got = 0) then begin
+                            Got := -1;
+                        end;
+
+                        break;
+                    end;
+
+                end;
+
+            end;
+
+            NextBlockPos := (((AFile.Pos div BlockSize) * BlockSize) + BlockSize);
+            FindBlock := 0;
+        end;
+
+        // fill block and write it
+        FDrive.DirtyDirectory := True;
+
+        while ((AFile.Pos <> NextBlockPos) and (ACount <> 0)) do begin
+            Buffer[AFile.Pos mod BlockSize] := ABuffer^;
+            Inc(ABuffer);
+            Inc(AFile.Pos);
+
+            if (AFile.Ino.Size < AFile.Pos) then begin
+                AFile.Ino.Size := AFile.Pos;
+            end;
+
+            Inc(Got);
+            Dec(ACount);
+        end;
+
+        // In case the data only fills part of a sector, the rest is
+        // still initialized: A new block was cleared and the boundaries
+        // of an existing block were read.
+        WriteBlock(Block, Buffer, WrStart, WrEnd);
+        AFile.Ino.MTime := Now;
+
+        if (FDrive.Size <= 256) then begin
+            Last := 15;
+
+            while (Last >= 0) do begin
+
+                if (FDirectory[Ext].Pointers[Last] <> 0) then begin
+                    break;
+                end;
+
+                Dec(Last);
+            end;
+
+        end
+        else begin
+            Last := 14;
+
+            while (Last > 0) do begin
+
+                if ((FDirectory[Ext].Pointers[Last] <> 0) or (FDirectory[Ext].Pointers[Last + 1] <> 0)) then begin
+                    Last := (Last div 2);
+                    break;
+                end;
+
+                Dec(Last, 2);
+            end;
+        end;
+
+        if (Last > 0) then begin
+            ExtNo := (ExtNo + ((Last * BlockSize) div ExtCap));
+        end;
+
+        FDirectory[Ext].Extnol := EXTENTL(ExtNo);
+        FDirectory[Ext].Extnoh := EXTENTH(ExtNo);
+        FDirectory[Ext].Blkcnt := ((((AFile.Pos - 1) mod FDrive.Extentsize) div 128) + 1);
+
+        if ((FDrive.OsType and CPMFS_EXACT_SIZE) <> 0) then begin
+            FDirectory[Ext].Lrc := ((128 - (AFile.Pos mod 128)) and $7F);
+        end
+        else begin
+            FDirectory[Ext].Lrc := (AFile.Pos mod 128);
+        end;
+
+        UpdateTimeStamps(AFile.Ino, Ext);
+        UpdateDateStamper(AFile.Ino, Ext);
+
+        if (AFile.Pos = NextExtPos) then begin
+            FindExt := 1;
+        end
+        else if (AFile.Pos = NextBlockPos) then begin
+            FindBlock := 1;
+        end;
+
+    end;
+
+    Result := (Got);
+end;
+
+// --------------------------------------------------------------------------------
+//  -- close
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.Close(AFile: TCpmFile): boolean;
+begin
+    Result := True;
+end;
+
+// --------------------------------------------------------------------------------
+//  -- set timestamps
+// --------------------------------------------------------------------------------
+procedure TCpmFileSystem.UpdateTime(AInode: TCpmInode; ATimes: TUTimeBuf);
+begin
+    AInode.ATime := ATimes.AcTime;
+    AInode.MTime := ATimes.ModTime;
+    AInode.CTime := Now;
+    UpdateTimeStamps(AInode, AInode.Ino);
+    UpdateDateStamper(AInode, AInode.Ino);
+end;
+
+// --------------------------------------------------------------------------------
 //  -- write directory back
 // --------------------------------------------------------------------------------
 function TCpmFileSystem.Sync: boolean;
@@ -1139,6 +1801,21 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
+function TCpmFileSystem.GetBootTrackSize: integer;
+begin
+
+    if (FDrive.BootTrk >= 0) then begin
+        Result := (FDrive.BootTrk * FDrive.SecLength * FDrive.SecTrk);
+    end
+    else if (FDrive.BootSec >= 0) then begin
+        Result := (FDrive.BootSec * FDrive.SecLength);
+    end
+    else begin
+        Result := 0;
+    end;
+end;
+
+// --------------------------------------------------------------------------------
 constructor TCpmFileSystem.Create(ACpmDevice: TCpmDevice);
 begin
     inherited Create;
@@ -1151,6 +1828,8 @@ begin
     inherited Destroy;
 end;
 
+// --------------------------------------------------------------------------------
+//  -- init allocation vector
 // --------------------------------------------------------------------------------
 procedure TCpmFileSystem.AlvInit;
 var
@@ -1203,6 +1882,43 @@ begin
 
     end;
 
+end;
+
+// --------------------------------------------------------------------------------
+//  -- allocate a new disk block
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.AllocBlock: integer;
+var
+    IndexI, IndexJ: integer;
+    Bits, Block: integer;
+begin
+
+    for IndexI := 0 to (FDrive.AlvSize - 1) do begin
+        Bits := FAllocationVector[IndexI];
+
+        for IndexJ := 0 to (INTBITS - 1) do begin
+
+            if ((Bits and $01) = 0) then begin
+                Block := ((IndexI * INTBITS) + IndexJ);
+
+                if (Block >= FDrive.Size) then begin
+                    FFileSystemError := 'device full';
+                    Result := (-1);
+                    exit;
+                end;
+
+                FAllocationVector[IndexI] := (FAllocationVector[IndexI] or (1 shl IndexJ));
+                Result := (Block);
+                exit;
+            end;
+
+            Bits := (Bits shr 1);
+        end;
+
+    end;
+
+    FFileSystemError := 'device full';
+    Result := (-1);
 end;
 
 // --------------------------------------------------------------------------------
@@ -1732,6 +2448,119 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
+//  -- find first free extent
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.FindFreeExtent: integer;
+var
+    IndexI: integer;
+begin
+
+    for IndexI := 0 to FDrive.MaxDir - 1 do begin
+
+        if (FDirectory[IndexI].Status = $E5) then begin
+            Result := (IndexI);
+            exit;
+        end;
+
+    end;
+
+    FFileSystemError := 'directory full';
+    Result := (-1);
+end;
+
+// --------------------------------------------------------------------------------
+//  -- convert time stamps to CP/M format
+// --------------------------------------------------------------------------------
+procedure TCpmFileSystem.UpdateTimeStamps(const AInode: TCpmInode; AExtent: integer);
+var
+    CpmDate: TPhysDirectoryEntry;
+    Ca_Min, Ca_Hour, Ca_Days: integer;
+    U_Min, U_Hour, U_Days: integer;
+begin
+
+    if not S_ISREG(AInode.Mode) then begin
+        exit;
+    end;
+
+    if (FDrive.CnotaTime <> 0) then begin
+        Unix2CpmTime(AInode.CTime, Ca_Days, Ca_Hour, Ca_Min);
+    end
+    else begin
+        Unix2CpmTime(AInode.ATime, Ca_Days, Ca_Hour, Ca_Min);
+    end;
+
+    Unix2CpmTime(AInode.MTime, U_Days, U_Hour, U_Min);
+    CpmDate := FDirectory[AExtent or 3];
+
+    if (((FDrive.OsType and CPMFS_CPM3_DATES) <> 0) and (CpmDate.Status = $21)) then begin
+        FDrive.DirtyDirectory := True;
+
+        case (AExtent and 3) of
+
+            0: begin  // first entry
+                CpmDate.Name[0] := Chr(Ca_Days and $FF);
+                CpmDate.Name[1] := Chr(Ca_Days shr 8);
+                CpmDate.Name[2] := Chr(Ca_Hour);
+                CpmDate.Name[3] := Chr(Ca_Min);
+                CpmDate.Name[4] := Chr(U_Days and $FF);
+                CpmDate.Name[5] := Chr(U_Days shr 8);
+                CpmDate.Name[6] := Chr(U_Hour);
+                CpmDate.Name[7] := Chr(U_Min);
+            end;
+
+            1: begin  // second entry
+                CpmDate.Ext[2] := Chr(Ca_Days and $FF);
+                CpmDate.Extnol := (Ca_Days shr 8);
+                CpmDate.Lrc := Ca_Hour;
+                CpmDate.Extnoh := Ca_Min;
+                CpmDate.Blkcnt := (U_Days and $FF);
+                CpmDate.Pointers[0] := (U_Days shr 8);
+                CpmDate.Pointers[1] := U_Hour;
+                CpmDate.Pointers[2] := U_Min;
+            end;
+
+            2: begin  // third entry
+                CpmDate.Pointers[5] := (Ca_Days and $FF);
+                CpmDate.Pointers[6] := (Ca_Days shr 8);
+                CpmDate.Pointers[7] := Ca_Hour;
+                CpmDate.Pointers[8] := Ca_Min;
+                CpmDate.Pointers[9] := (U_Days and $FF);
+                CpmDate.Pointers[10] := (U_Days shr 8);
+                CpmDate.Pointers[11] := U_Hour;
+                CpmDate.Pointers[12] := U_Min;
+            end;
+
+        end;
+
+        FDirectory[AExtent or 3] := CpmDate;
+    end;
+end;
+
+// --------------------------------------------------------------------------------
+//  -- set time in datestamper file
+// --------------------------------------------------------------------------------
+procedure TCpmFileSystem.UpdateDateStamper(const AInode: TCpmInode; AExtent: integer);
+var
+    Stamp: TDateStamps;
+begin
+
+    if not S_ISREG(AInode.Mode) then begin
+        exit;
+    end;
+
+    if not ((FDrive.OsType and CPMFS_DS_DATES) <> 0) then begin
+        exit;
+    end;
+
+    // Get datestamp struct
+    Stamp := FDateStamps[AExtent];
+    Unix2DsTime(AInode.ATime, Stamp.Modify);
+    Unix2DsTime(AInode.CTime, Stamp.Create);
+    Unix2DsTime(AInode.ATime, Stamp.Access);
+    FDrive.DirtyDateStamp := True;
+end;
+
+// --------------------------------------------------------------------------------
 //  -- read CP/M time stamp
 // --------------------------------------------------------------------------------
 function TCpmFileSystem.ReadTimeStamps(var AInode: TCpmInode; ALowestExt: integer): integer;
@@ -1969,7 +2798,6 @@ begin
 
     while ((IndexI < 8) and (AFullname[IndexI] <> char(0)) and (AFullname[IndexI] <> '.')) do begin
 
-        //if not (ISFILECHAR(IndexI, AFullname[IndexI])) then begin
         if not (IsFileChar(ToUpper(AFullname[IndexI]), AOsType)) then begin
             FFileSystemError := 'illegal CP/M filename';
             Result := False;
@@ -2194,6 +3022,19 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
+//  -- convert UTC to CP/M time
+// --------------------------------------------------------------------------------
+procedure TCpmFileSystem.Unix2CpmTime(ANow: TDateTime; var ADays: integer; var AHour: integer; var AMin: integer);
+var
+    DateTime: TDateTime;
+begin
+    DateTime := ANow;
+    AMin := (((MinuteOf(DateTime) div 10) shl 4) or (MinuteOf(DateTime) mod 10));
+    AHour := (((HourOf(DateTime) div 10) shl 4) or (HourOf(DateTime) mod 10));
+    ADays := DaysBetween(DateTime, EncodeDate(1978, 1, 1)) + 1;
+end;
+
+// --------------------------------------------------------------------------------
 //  -- convert DateStamper to Unix time
 // --------------------------------------------------------------------------------
 function TCpmFileSystem.Ds2UnixTime(const AEntry: TDsEntry): time_t;
@@ -2214,6 +3055,28 @@ begin
 
     Result := EncodeDateTime(Year, BCDToInt(AEntry.Month), BCDToInt(AEntry.Day), BCDToInt(AEntry.Hour),
         BCDToInt(AEntry.Minute), 0, 0);
+end;
+
+// --------------------------------------------------------------------------------
+//  -- convert Unix to DS time
+// --------------------------------------------------------------------------------
+procedure TCpmFileSystem.Unix2DsTime(ANow: TDateTime; var AEntry: TDsEntry);
+begin
+
+    if (ANow = 0) then begin
+        AEntry.Minute := 0;
+        AEntry.Hour := 0;
+        AEntry.Day := 0;
+        AEntry.Month := 0;
+        AEntry.Year := 0;
+    end
+    else begin
+        AEntry.Minute := BIN2BCD(MinuteOf(ANow));
+        AEntry.Hour := BIN2BCD(HourOf(ANow));
+        AEntry.Day := BIN2BCD(DayOf(ANow));
+        AEntry.Month := BIN2BCD(MonthOf(ANow) + 1);
+        AEntry.Year := BIN2BCD(YearOf(ANow));
+    end;
 end;
 
 // --------------------------------------------------------------------------------

@@ -17,7 +17,8 @@
  *}
 unit CpmTools;
 
-{$mode ObjFPC}{$H+}
+{$mode ObjFPC}
+{$H+}
 
 interface
 
@@ -35,18 +36,19 @@ type
 
     public    // Methoden
         procedure SetPrintDirectoryEntryCallBack(APrintDirectoryEntryCB: TPrintDirectoryEntryCB);
-        function OpenImage(const AFileName: string; const AFileType: string; ADiskdefsPath: string;
-            AUpperCase: boolean): boolean;
+        procedure SetDiskDefsPath(ADiskdefsPath: string);
+        function OpenImage(const AFileName: string; const AFileType: string; AUpperCase: boolean): boolean;
         function CloseImage: boolean;
         procedure ShowDirectory;
         procedure RefreshDirectory(AUpperCase: boolean);
         function RenameFile(AOldName, ANewName: string): boolean;
         function DeleteFile(AFileNames: TStringList): boolean;
+        function CreateNewImage(AImageFile: string; AImageType: string; ABootFile: string;
+            AFileSystemLabel: string; ATimeStampsUsed: boolean; AUseUpperCase: boolean): boolean;
         function GetFileSystemInfo: TFileSystemInfo;
         function GetDirectoryStatistic: TDirStatistic;
         function GetFileInfo(AFileName: string): TFileInfo;
         procedure SetNewAttributes(AFileName: string; AAttributes: cpm_attr_t);
-
     public  // Konstruktor/Destruktor
         constructor Create; overload;
         destructor Destroy; override;
@@ -84,12 +86,16 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-function TCpmTools.OpenImage(const AFileName: string; const AFileType: string; ADiskdefsPath: string;
-    AUpperCase: boolean): boolean;
+procedure TCpmTools.SetDiskDefsPath(ADiskdefsPath: string);
+begin
+    FDiskdefsPath := ADiskdefsPath;
+end;
+
+// --------------------------------------------------------------------------------
+function TCpmTools.OpenImage(const AFileName: string; const AFileType: string; AUpperCase: boolean): boolean;
 begin
     FFileName := AFileName;
     FFileType := AFileType;
-    FDiskdefsPath := ADiskdefsPath;
 
     if not (FCpmDevice.Open(AFileName, dmOpenReadWrite)) then begin
         if MessageDlg(Format('cannot open %s' + LineEnding + '(%s)', [ExtractFileName(AFileName), FCpmDevice.GetErrorMsg()])
@@ -99,7 +105,7 @@ begin
         end;
     end;
 
-    if not (FCpmFileSystem.ReadDiskdefData(AFileType, ADiskdefsPath)) then begin
+    if not (FCpmFileSystem.ReadDiskdefData(AFileType, FDiskdefsPath)) then begin
         if MessageDlg(Format('cannot read superblock' + LineEnding + '(%s)', [FCpmFileSystem.GetErrorMsg()])
             , mtError, [mbOK], 0) = mrOk then begin
             Result := False;
@@ -293,6 +299,7 @@ begin
 
         end;
 
+        //TODO: Statistiken (Records und 1kblocks) korrigieren, evtl. noch um TotalFreeBytes erweitern
         FDirStatistic.TotalBytes := ((TotalBytes + 1023) div 1024);
         FDirStatistic.TotalRecords := TotalRecs;
         FDirStatistic.FilesFound := FilesCount;
@@ -369,6 +376,111 @@ begin
     end;
 
     FCpmFileSystem.Sync;
+    Result := True;
+end;
+
+// --------------------------------------------------------------------------------
+function TCpmTools.CreateNewImage(AImageFile: string; AImageType: string; ABootFile: string;
+    AFileSystemLabel: string; ATimeStampsUsed: boolean; AUseUpperCase: boolean): boolean;
+var
+    BootTracks: array of byte = nil;
+    BootTrackSize: integer;
+    IndexI: integer;
+    BootFile: file;
+    BootFileSize, ReadSize: integer;
+begin
+
+    if not (FCpmFileSystem.ReadDiskdefData(AImageType, FDiskdefsPath)) then begin
+        if MessageDlg(Format('cannot read superblock' + LineEnding + '(%s)', [FCpmFileSystem.GetErrorMsg()])
+            , mtError, [mbOK], 0) = mrOk then begin
+            Result := False;
+            Exit;
+        end;
+    end;
+
+    BootTrackSize := FCpmFileSystem.GetBootTrackSize;
+
+    try
+        SetLength(BootTracks, BootTrackSize);
+    except
+        on e: Exception do begin
+
+            if MessageDlg(Format('can not allocate boot track buffer' + LineEnding + '(%s)', [e.Message]), mtError, [mbOK], 0) =
+                mrOk then begin
+                Result := False;
+                Exit;
+            end;
+        end;
+    end;
+
+    for IndexI := Low(BootTracks) to High(BootTracks) do begin
+        BootTracks[IndexI] := $E5;
+    end;
+
+    if ((Length(BootTracks) > 0) and (BootTrackSize > 0)) then begin
+
+        try
+            AssignFile(BootFile, ABootFile);
+            Reset(BootFile, 1);
+        except
+            on e: Exception do begin
+
+                if MessageDlg(Format('can not open %s' + LineEnding + '(%s)', [ExtractFileName(ABootFile), e.Message]),
+                    mtError, [mbOK], 0) = mrOk then begin
+                    Result := False;
+                    Exit;
+                end;
+
+            end;
+        end;
+
+        BootFileSize := FileSize(BootFile);
+
+        if (BootFileSize > BootTrackSize) then begin
+
+            if MessageDlg('boottrack file is bigger than boottracks size.', mtError, [mbOK], 0) = mrOk then begin
+                Result := False;
+                Exit;
+            end;
+
+        end;
+
+        try
+            Reset(BootFile, 1);
+            BlockRead(BootFile, BootTracks[0], BootFileSize, ReadSize);
+        except
+            on e: Exception do begin
+                if MessageDlg(Format('error Reading Boottrack-File' + LineEnding + '(%s)', [e.Message]), mtError, [mbOK], 0) =
+                    mrOk then begin
+                    Result := False;
+                    Exit;
+                end;
+            end;
+        end;
+
+        if (ReadSize < BootFileSize) then begin
+
+            if MessageDlg('Boottrack-File is bigger than Boottrack space', mtError, [mbOK], 0) = mrOk then begin
+                Result := False;
+                Exit;
+            end;
+
+        end;
+
+    end;
+
+    if not (FCpmFileSystem.ReadDiskdefData(AImageType, FDiskdefsPath) and
+        FCpmFileSystem.MakeFileSystem(AImageFile, BootTracks, AFileSystemLabel, ATimeStampsUsed, AUseUpperCase)) then begin
+
+        if MessageDlg(Format('can not make new file system' + LineEnding + '(%s)', [FCpmFileSystem.GetErrorMsg]),
+            mtError, [mbOK], 0) = mrOk then begin
+            Result := False;
+            Exit;
+        end;
+
+    end;
+
+    MessageDlg(Format('new Image-File ''%s'' successful created.', [ExtractFileName(AImageFile)]), mtInformation, [mbOK], 0);
     Result := True;
 end;
 

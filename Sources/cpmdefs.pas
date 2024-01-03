@@ -17,31 +17,19 @@
  *}
 unit CpmDefs;
 
-{$mode ObjFPC}{$H+}
+{$mode ObjFPC}
+{$H+}
 
 interface
 
 type
     off_t = longint;
     size_t = cardinal;
+    ssize_t = longint;
     ino_t = cardinal;
     mode_t = nativeuint;
     cpm_attr_t = integer;
     time_t = TDateTime;
-
-    TTm = packed record
-        tm_sec: integer;            // Seconds. [0-60] (1 leap second)
-        tm_min: integer;            // Minutes. [0-59]
-        tm_hour: integer;           // Hours.[0-23]
-        tm_mday: integer;           // Day.[1-31]
-        tm_mon: integer;            // Month.[0-11]
-        tm_year: integer;           // Year since 1900
-        tm_wday: integer;           // Day of week [0-6] (Sunday = 0)
-        tm_yday: integer;           // Days of year [0-365]
-        tm_isdst: integer;          // Daylight Savings flag [-1/0/1]
-        tm_gmtoff: integer;         // Seconds east of UTC
-        tm_zone: pansichar;         // Timezone abbreviation
-    end;
 
 const
     INTBITS = (sizeof(integer) * 8);
@@ -100,28 +88,37 @@ const
     C6 = ' ';
     C7 = ' ';
 
-//PB = ((PChar)(C0+C1+C2+C3+C4+C5+C6+C7));
-//PC0 =((char)(C7^PB));
-//PC1 =((char)(C6^PB));
-//PC2 =((char)(C5^PB));
-//PC3 =((char)(C4^PB));
-//PC4 =((char)(C3^PB));
-//PC5 =((char)(C2^PB));
-//PC6 =((char)(C1^PB));
-//PC7 =((char)(C0^PB));
+    //PB = ((PChar)(C0+C1+C2+C3+C4+C5+C6+C7));
+    //PC0 =((char)(C7^PB));
+    //PC1 =((char)(C6^PB));
+    //PC2 =((char)(C5^PB));
+    //PC3 =((char)(C4^PB));
+    //PC4 =((char)(C3^PB));
+    //PC5 =((char)(C2^PB));
+    //PC6 =((char)(C1^PB));
+    //PC7 =((char)(C0^PB));
 
-//function BCD2BIN(x):
-//function BIN2BCD(x):
-//function ISFILECHAR(notFirst,c):
-//function EXTENT(low,high) (((low)&0x1f)|(((high)&0x3f)<<5))
-//function EXTENTL(extent):
-//function EXTENTH(extent):
-
+function BCD2BIN(AValue: integer): integer;
+function BIN2BCD(AValue: integer): integer;
 function S_ISDIR(AMode: mode_t): boolean; inline;
 function S_ISREG(AMode: mode_t): boolean; inline;
 function EXTENT(ALow: byte; AHigh: byte): integer; inline;
+function EXTENTL(AExtent: integer): integer; inline;
+function EXTENTH(AExtent: integer): integer; inline;
 
 implementation
+
+// --------------------------------------------------------------------------------
+function BCD2BIN(AValue: integer): integer;
+begin
+    Result := ((((AValue shr 4) and $0F) * 10) + (AValue and $0F));
+end;
+
+// --------------------------------------------------------------------------------
+function BIN2BCD(AValue: integer): integer;
+begin
+    Result := ((((AValue div 10) and $0F) shl 4) + ((AValue mod 10) and $0f));
+end;
 
 // --------------------------------------------------------------------------------
 function S_ISDIR(AMode: mode_t): boolean;
@@ -139,6 +136,18 @@ end;
 function EXTENT(ALow: byte; AHigh: byte): integer;
 begin
     Result := ((ALow and $1F) or ((AHigh and $3F) shl 5));
+end;
+
+// --------------------------------------------------------------------------------
+function EXTENTL(AExtent: integer): integer;
+begin
+    Result := (AExtent and $1F);
+end;
+
+// --------------------------------------------------------------------------------
+function EXTENTH(AExtent: integer): integer;
+begin
+    Result := ((AExtent shr 5) and $3F);
 end;
 
 end.

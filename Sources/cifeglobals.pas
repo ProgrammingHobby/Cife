@@ -81,6 +81,7 @@ var
     Line: TStringArray;
     Index: integer;
 begin
+    { #todo : TStrings durch TComboBox (Items) ersetzen und Items mit Info ob Boottrack vorhanden }
     try
         Diskdefs := TStringList.Create;
         DiskDefs.LoadFromFile(APath);

@@ -45,7 +45,7 @@ type
         function Open(const AFileName: string; const AFileType: string): boolean;
         function New(AImageFile: string; AImageType: string; ABootFile: string; AFileSystemLabel: string;
             ATimeStampsUsed: boolean): boolean;
-        function Close:boolean;
+        function Close: boolean;
         function GetFileName: string;
         procedure RefreshDirectory;
         procedure RenameFile;
@@ -132,7 +132,6 @@ end;
 function TImagePage.Open(const AFileName: string; const AFileType: string): boolean;
 var
     UpperCase: boolean;
-    DiskdefsPath: string;
 begin
     UpperCase := False;
 
@@ -140,27 +139,40 @@ begin
         try
             OpenKey('Settings');
             UpperCase := GetValue('UseUppercaseCharacters', False);
-            DiskdefsPath := GetValue('DiskdefsFile', '');
             CloseKey;
         finally
             Free;
         end;
     end;
 
-    Result := FCpmTools.OpenImage(AFileName, AFileType, DiskdefsPath, UpperCase);
+    Result := FCpmTools.OpenImage(AFileName, AFileType, UpperCase);
 end;
 
 // --------------------------------------------------------------------------------
 function TImagePage.New(AImageFile: string; AImageType: string; ABootFile: string; AFileSystemLabel: string;
     ATimeStampsUsed: boolean): boolean;
+var
+    UseUpperCase: boolean;
 begin
-    Result := FCpmTools.CreateNewImage(AImageFile, AImageType, ABootFile, AFileSystemLabel, ATimeStampsUsed);
+    with TXMLSettings.Create(SettingsFile) do begin
+
+        try
+            OpenKey('Settings');
+            UseUpperCase := GetValue('UseUppercaseCharacters', False);
+            CloseKey;
+        finally
+            Free;
+        end;
+
+    end;
+
+    Result := FCpmTools.CreateNewImage(AImageFile, AImageType, ABootFile, AFileSystemLabel, ATimeStampsUsed, UseUpperCase);
 end;
 
 // --------------------------------------------------------------------------------
 function TImagePage.Close: boolean;
 begin
-    Result:=FCpmTools.CloseImage;
+    Result := FCpmTools.CloseImage;
 end;
 
 // --------------------------------------------------------------------------------
@@ -266,11 +278,24 @@ end;
 
 // --------------------------------------------------------------------------------
 constructor TImagePage.Create(ATheOwner: TComponent);
+var
+        DiskdefsPath: string;
 begin
     inherited Create(ATheOwner);
     CreateDirectoryListView;
+    with TXMLSettings.Create(SettingsFile) do begin
+        try
+            OpenKey('Settings');
+            DiskdefsPath := GetValue('DiskdefsFile', '');
+            CloseKey;
+        finally
+            Free;
+        end;
+    end;
+
     FCpmTools := TCpmTools.Create;
     FCpmTools.SetPrintDirectoryEntryCallBack(@PrintDirectoryEntry);
+    FCpmTools.SetDiskDefsPath(DiskdefsPath);
     FEnableAction := [];
 end;
 
