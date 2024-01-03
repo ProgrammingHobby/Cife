@@ -17,7 +17,8 @@
  *}
 unit Main_Window;
 
-{$mode objfpc}{$H+}
+{$mode objfpc}
+{$H+}
 
 interface
 
@@ -155,13 +156,12 @@ type
         procedure PageControlCloseTabClicked(Sender: TObject);
     private
         FImageFileHistory: TImageFileHistory;
-        procedure AddImagePage(AImageFile: string; AImageType: string; ABootFile: string = '#';
-            AFileSystemLabel: string = '#'; ATimeStampsUsed: boolean = False);
+        procedure AddImagePage(AImageFile: string; AImageType: string; ANewImage: boolean;
+            ABootFile: string = ''; AFileSystemLabel: string = ''; ATimeStampsUsed: boolean = False);
         procedure HistoryMenuItemClick(Sender: TObject);
         procedure ShowImageInfo(AInfo: TFileSystemInfo);
         procedure ShowDirectoryStatistic(AStatistic: TDirStatistic);
         procedure MenuActionsControl(AMenuAction: TEnableAction);
-
     public
 
     end;
@@ -175,7 +175,7 @@ implementation
 
 uses File_Dialog, Settings_Dialog, About_Dialog, XMLSettings;
 
-{ TMainWindow }
+    { TMainWindow }
 
 // --------------------------------------------------------------------------------
 procedure TMainWindow.actionNewExecute(Sender: TObject);
@@ -201,8 +201,7 @@ begin
             BootFile := Dialog.GetBootFileimage;
             FileSystemLabel := Dialog.GetFilesystemLabel;
             TimeStampsUsed := Dialog.GetTimestampsUsed;
-            //TODO: Parameter 'NewImage_bool' für AddImagePage hinzufügen. Oder neue spezielle Methode z.B. 'NewImagePage'
-            AddImagePage(ImageFile, ImageType, BootFile, FileSystemLabel, TimeStampsUsed);
+            AddImagePage(ImageFile, ImageType, True, BootFile, FileSystemLabel, TimeStampsUsed);
         end;
 
     finally
@@ -295,7 +294,7 @@ begin
         if (Dialog.ShowModal = mrOk) then begin
             ImageFile := Dialog.GetFullFileName;
             ImageType := Dialog.GetImageType;
-            AddImagePage(ImageFile, ImageType);
+            AddImagePage(ImageFile, ImageType, False);
         end;
 
     finally
@@ -493,8 +492,8 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-procedure TMainWindow.AddImagePage(AImageFile: string; AImageType: string; ABootFile: string;
-    AFileSystemLabel: string; ATimeStampsUsed: boolean);
+procedure TMainWindow.AddImagePage(AImageFile: string; AImageType: string; ANewImage: boolean;
+    ABootFile: string; AFileSystemLabel: string; ATimeStampsUsed: boolean);
 var
     ImagePage: TImagePage;
 begin
@@ -504,42 +503,28 @@ begin
     ImagePage.SetMenuActionCallBack(@MenuActionsControl);
     ImagePage.SetPopupMenu(PopupMenu1);
 
-    if ((ABootFile = '#') and (AFileSystemLabel = '#')) then begin
+    if (ANewImage) then begin
 
-        if (ImagePage.Open(AImageFile, AImageType)) then begin
-            ImagePage.Caption := ExtractFileName(AImageFile);
-            ImagePage.PageControl := PageControl;
-            PageControl.ActivePage := ImagePage;
-
-            if (PageControl.PageCount > 0) then begin
-                actionClose.Enabled := True;
-                actionClearHistory.Enabled := True;
-            end;
-
-            FImageFileHistory.AddItem(AImageFile, AImageType);
-        end
-        else begin
-            FreeAndNil(ImagePage);
+        if not (ImagePage.New(AImageFile, AImageType, ABootFile, AFileSystemLabel, ATimeStampsUsed)) then begin
+            exit;
         end;
 
+    end;
+
+    if (ImagePage.Open(AImageFile, AImageType)) then begin
+        ImagePage.Caption := ExtractFileName(AImageFile);
+        ImagePage.PageControl := PageControl;
+        PageControl.ActivePage := ImagePage;
+
+        if (PageControl.PageCount > 0) then begin
+            actionClose.Enabled := True;
+            actionClearHistory.Enabled := True;
+        end;
+
+        FImageFileHistory.AddItem(AImageFile, AImageType);
     end
     else begin
-        if (ImagePage.New(AImageFile, AImageType, ABootFile, AFileSystemLabel, ATimeStampsUsed) and ImagePage.Open(AImageFile, AImageType)) then begin
-            ImagePage.Caption := ExtractFileName(AImageFile);
-            ImagePage.PageControl := PageControl;
-            PageControl.ActivePage := ImagePage;
-
-            if (PageControl.PageCount > 0) then begin
-                actionClose.Enabled := True;
-                actionClearHistory.Enabled := True;
-            end;
-
-            FImageFileHistory.AddItem(AImageFile, AImageType);
-        end
-        else begin
-            FreeAndNil(ImagePage);
-        end;
-
+        FreeAndNil(ImagePage);
     end;
 
 end;
@@ -573,7 +558,7 @@ begin
             PageControl.ActivePage := PageControl.Pages[Index];
         end
         else begin
-            AddImagePage(HistoryEntry.FileName, HistoryEntry.FileType);
+            AddImagePage(HistoryEntry.FileName, HistoryEntry.FileType, False);
         end;
 
     end;

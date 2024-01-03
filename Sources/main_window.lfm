@@ -9,7 +9,7 @@ object MainWindow: TMainWindow
   Menu = MainMenu
   OnClose = FormClose
   OnShow = FormShow
-  LCLVersion = '2.2.6.0'
+  LCLVersion = '3.0.0.3'
   object StatusBar1: TStatusBar
     Left = 4
     Height = 21
