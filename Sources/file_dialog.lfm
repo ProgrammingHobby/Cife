@@ -1,20 +1,19 @@
 object FileDialog: TFileDialog
   Left = 2160
-  Height = 268
+  Height = 272
   Top = 250
   Width = 363
   AutoSize = True
-  ClientHeight = 268
+  ClientHeight = 272
   ClientWidth = 363
   OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poMainFormCenter
-  LCLVersion = '2.2.6.0'
   object ButtonPanel1: TButtonPanel
     Left = 8
     Height = 34
-    Top = 226
+    Top = 230
     Width = 347
     BorderSpacing.Around = 8
     OKButton.Name = 'OKButton'
@@ -85,8 +84,8 @@ object FileDialog: TFileDialog
       AutoSize = True
       BorderSpacing.Right = 4
       Caption = 'Browse'
-      OnClick = buttonOpenImageFileClick
       TabOrder = 1
+      OnClick = buttonOpenImageFileClick
     end
     object Label2: TLabel
       AnchorSideLeft.Control = panelImageFile
@@ -113,11 +112,11 @@ object FileDialog: TFileDialog
       BorderSpacing.Left = 4
       BorderSpacing.Bottom = 4
       ItemHeight = 0
-      OnChange = comboboxImageTypeChange
       ReadOnly = True
       Sorted = True
       TabOrder = 2
       TextHint = 'Select Image Type'
+      OnChange = comboboxImageTypeChange
     end
   end
   object panelSystemData: TPanel
@@ -159,6 +158,7 @@ object FileDialog: TFileDialog
       BorderSpacing.Right = 4
       BorderSpacing.Bottom = 4
       Constraints.MinWidth = 160
+      Enabled = False
       ParentShowHint = False
       ShowHint = True
       TabOrder = 0
@@ -177,8 +177,9 @@ object FileDialog: TFileDialog
       BorderSpacing.Right = 4
       BorderSpacing.CellAlignHorizontal = ccaLeftTop
       Caption = 'Browse'
-      OnClick = buttonOpenBootTrackFileClick
+      Enabled = False
       TabOrder = 1
+      OnClick = buttonOpenBootTrackFileClick
     end
     object Label4: TLabel
       AnchorSideLeft.Control = panelSystemData
@@ -205,6 +206,7 @@ object FileDialog: TFileDialog
       Width = 160
       BorderSpacing.Left = 4
       BorderSpacing.Bottom = 6
+      Enabled = False
       MaxLength = 11
       TabOrder = 2
     end
@@ -225,7 +227,7 @@ object FileDialog: TFileDialog
   end
   object panelDialogNotice: TPanel
     Left = 8
-    Height = 17
+    Height = 21
     Top = 201
     Width = 347
     Align = alClient
@@ -233,14 +235,14 @@ object FileDialog: TFileDialog
     BorderSpacing.Around = 8
     BevelOuter = bvNone
     ClientHeight = 17
-    ClientWidth = 347
+    ClientWidth = 343
     TabOrder = 2
     OnPaint = PanelPaint
     object labelDialogNotice: TLabel
       Left = 8
       Height = 1
       Top = 8
-      Width = 331
+      Width = 327
       Align = alClient
       AutoSize = False
       BorderSpacing.Around = 8

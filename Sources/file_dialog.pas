@@ -17,7 +17,8 @@
  *}
 unit File_Dialog;
 
-{$mode ObjFPC}{$H+}
+{$mode ObjFPC}
+{$H+}
 
 interface
 
@@ -60,7 +61,6 @@ type
         FWildcards: string;
         procedure PrepareImageTypesComboBox;
         procedure CheckImageFileData;
-
     public
         procedure SetDialogType(ADialogType: TCfdType);
         procedure SetDialogTitle(ATitle: string);
@@ -84,7 +84,7 @@ implementation
 
 { TFileDialog }
 
-uses XMLSettings, CifeGlobals, Dialogs, Math, LCLType;
+uses XMLSettings, CifeGlobals, Dialogs, Math, LCLType, ImageTypeInfo;
 
 // --------------------------------------------------------------------------------
 procedure TFileDialog.PanelPaint(Sender: TObject);
@@ -112,7 +112,7 @@ begin
 
         try
             OpenKey('Settings');
-            GetDiskDefsList(GetValue('DiskdefsFile', ''), comboboxImageType.Items);
+            GetDiskDefsList(GetValue('DiskdefsFile', ''), comboboxImageType);
             CloseKey;
         finally
             Free;
@@ -149,9 +149,11 @@ end;
 // --------------------------------------------------------------------------------
 procedure TFileDialog.CheckImageFileData;
 begin
+
     if ((comboboxImageType.ItemIndex > -1) and (editImageFile.Hint <> '')) then begin
         ButtonPanel1.OKButton.Enabled := True;
     end;
+
 end;
 
 // --------------------------------------------------------------------------------
@@ -217,6 +219,8 @@ end;
 
 // --------------------------------------------------------------------------------
 procedure TFileDialog.FormClose(Sender: TObject; var CloseAction: TCloseAction);
+var
+    IndexI: integer;
 begin
     with TXMLSettings.Create(SettingsFile) do begin
 
@@ -228,6 +232,10 @@ begin
 
     end;
 
+    for IndexI := 0 to comboboxImageType.Items.Count - 1 do begin
+        comboboxImageType.Items.Objects[IndexI].Free;
+    end;
+
     CloseAction := caFree;
 end;
 
@@ -235,6 +243,7 @@ end;
 procedure TFileDialog.buttonOpenImageFileClick(Sender: TObject);
 var
     Dialog: TOpenDialog;
+    ImageTypeInfo: TImageTypeInfo;
 begin
     case (FDialogType) of
 
@@ -309,6 +318,10 @@ begin
                 end;
 
                 CheckImageFileData;
+                ImageTypeInfo := TImageTypeInfo(comboboxImageType.Items.Objects[comboboxImageType.ItemIndex]);
+                editBootTrackFile.Enabled := ImageTypeInfo.BootTrackUsed;
+                buttonOpenBootTrackFile.Enabled := ImageTypeInfo.BootTrackUsed;
+                editFileSystemLabel.Enabled := ImageTypeInfo.LabelUsed;
             finally
                 FreeAndNil(Dialog);
             end;
