@@ -506,6 +506,7 @@ begin
     if (ANewImage) then begin
 
         if not (ImagePage.New(AImageFile, AImageType, ABootFile, AFileSystemLabel, ATimeStampsUsed)) then begin
+            FreeAndNil(ImagePage);
             exit;
         end;
 
