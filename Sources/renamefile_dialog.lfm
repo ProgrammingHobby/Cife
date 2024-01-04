@@ -4,12 +4,13 @@ object RenameFileDialog: TRenameFileDialog
   Top = 250
   Width = 306
   AutoSize = True
+  BorderStyle = bsToolWindow
   Caption = 'Rename CP/M File'
   ClientHeight = 177
   ClientWidth = 306
   OnClose = FormClose
   Position = poOwnerFormCenter
-  LCLVersion = '2.2.6.0'
+  LCLVersion = '3.0.0.3'
   object ButtonPanel1: TButtonPanel
     Left = 8
     Height = 34
@@ -174,8 +175,8 @@ object RenameFileDialog: TRenameFileDialog
         Align = alTop
         BorderSpacing.Around = 4
         Caption = 'change user number too.'
-        OnClick = checkboxChangeUserNumberClick
         TabOrder = 2
+        OnClick = checkboxChangeUserNumberClick
       end
     end
   end

@@ -1,10 +1,11 @@
 object FileDialog: TFileDialog
   Left = 2160
-  Height = 272
+  Height = 268
   Top = 250
   Width = 363
   AutoSize = True
-  ClientHeight = 272
+  BorderStyle = bsSizeToolWin
+  ClientHeight = 268
   ClientWidth = 363
   OnClose = FormClose
   OnCreate = FormCreate
@@ -13,7 +14,7 @@ object FileDialog: TFileDialog
   object ButtonPanel1: TButtonPanel
     Left = 8
     Height = 34
-    Top = 230
+    Top = 226
     Width = 347
     BorderSpacing.Around = 8
     OKButton.Name = 'OKButton'
@@ -227,7 +228,7 @@ object FileDialog: TFileDialog
   end
   object panelDialogNotice: TPanel
     Left = 8
-    Height = 21
+    Height = 17
     Top = 201
     Width = 347
     Align = alClient
@@ -235,14 +236,14 @@ object FileDialog: TFileDialog
     BorderSpacing.Around = 8
     BevelOuter = bvNone
     ClientHeight = 17
-    ClientWidth = 343
+    ClientWidth = 347
     TabOrder = 2
     OnPaint = PanelPaint
     object labelDialogNotice: TLabel
       Left = 8
       Height = 1
       Top = 8
-      Width = 327
+      Width = 331
       Align = alClient
       AutoSize = False
       BorderSpacing.Around = 8

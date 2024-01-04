@@ -4,6 +4,7 @@ object AboutDialog: TAboutDialog
   Top = 250
   Width = 484
   AutoSize = True
+  BorderStyle = bsToolWindow
   Caption = 'About CP/M Image-File Explorer'
   ChildSizing.EnlargeHorizontal = crsHomogenousSpaceResize
   ChildSizing.EnlargeVertical = crsHomogenousSpaceResize
@@ -14,7 +15,7 @@ object AboutDialog: TAboutDialog
   OnClose = FormClose
   OnShow = FormShow
   Position = poMainFormCenter
-  LCLVersion = '2.2.6.0'
+  LCLVersion = '3.0.0.3'
   object Panel1: TPanel
     Left = 24
     Height = 91

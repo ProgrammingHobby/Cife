@@ -3,13 +3,13 @@ object SettingsDialog: TSettingsDialog
   Height = 242
   Top = 250
   Width = 513
+  BorderStyle = bsSizeToolWin
   Caption = 'Settings'
   ClientHeight = 242
   ClientWidth = 513
   OnClose = FormClose
   OnShow = FormShow
   Position = poOwnerFormCenter
-  LCLVersion = '2.2.6.0'
   object Panel1: TPanel
     Left = 4
     Height = 180
@@ -69,14 +69,14 @@ object SettingsDialog: TSettingsDialog
       object Page1: TPage
         object Panel2: TPanel
           Left = 4
-          Height = 33
+          Height = 29
           Top = 4
           Width = 344
           Align = alTop
           AutoSize = True
           BorderSpacing.Around = 4
           BevelOuter = bvNone
-          ClientHeight = 33
+          ClientHeight = 29
           ClientWidth = 344
           TabOrder = 0
           OnPaint = PanelPaint
@@ -93,14 +93,14 @@ object SettingsDialog: TSettingsDialog
         end
         object Panel3: TPanel
           Left = 4
-          Height = 33
-          Top = 41
+          Height = 29
+          Top = 37
           Width = 344
           Align = alTop
           AutoSize = True
           BorderSpacing.Around = 4
           BevelOuter = bvNone
-          ClientHeight = 33
+          ClientHeight = 29
           ClientWidth = 344
           TabOrder = 1
           OnPaint = PanelPaint
@@ -117,14 +117,14 @@ object SettingsDialog: TSettingsDialog
         end
         object Panel7: TPanel
           Left = 4
-          Height = 68
-          Top = 78
+          Height = 64
+          Top = 70
           Width = 344
           Align = alTop
           AutoSize = True
           BorderSpacing.Around = 4
           BevelOuter = bvNone
-          ClientHeight = 68
+          ClientHeight = 64
           ClientWidth = 344
           TabOrder = 2
           OnPaint = PanelPaint
@@ -141,33 +141,33 @@ object SettingsDialog: TSettingsDialog
           end
           object Panel8: TPanel
             Left = 4
-            Height = 37
+            Height = 33
             Top = 27
             Width = 336
             Align = alClient
             BorderSpacing.Around = 4
             BevelOuter = bvNone
-            ClientHeight = 37
+            ClientHeight = 33
             ClientWidth = 336
             TabOrder = 0
             object editDiskdefsPath: TEdit
               Left = 0
               Height = 33
               Top = 0
-              Width = 257
+              Width = 261
               Align = alClient
               ReadOnly = True
               TabOrder = 0
             end
             object buttonBrowseDiskdefsFile: TButton
-              Left = 257
+              Left = 261
               Height = 33
               Top = 0
               Width = 75
               Align = alRight
               Caption = 'Browse'
-              OnClick = buttonBrowseDiskdefsFileClick
               TabOrder = 1
+              OnClick = buttonBrowseDiskdefsFileClick
             end
           end
         end
