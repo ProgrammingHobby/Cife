@@ -17,12 +17,13 @@
  *}
 unit CifeGlobals;
 
-{$mode ObjFPC}{$H+}
+{$mode ObjFPC}
+{$H+}
 
 interface
 
 uses
-    Classes, SysUtils;
+    Classes, SysUtils, StdCtrls;
 
 type
     TFileSystemInfo = record
@@ -60,38 +61,72 @@ type
     end;
 
 function SettingsFile: string;
-procedure GetDiskDefsList(APath: string; ADiskDefsList: TStrings);
+procedure GetDiskDefsList(APath: string; ADiskDefsList: TComboBox);
 
 implementation
+
+uses ImageTypeInfo;
 
 // --------------------------------------------------------------------------------
 function SettingsFile: string;
 begin
     Result := GetAppConfigDir(False);
+
     if (not DirectoryExists(Result, False)) then begin
         MkDir(Result);
     end;
+
     Result := Result + 'cife.xml';
 end;
 
 // --------------------------------------------------------------------------------
-procedure GetDiskDefsList(APath: string; ADiskDefsList: TStrings);
+procedure GetDiskDefsList(APath: string; ADiskDefsList: TComboBox);
 var
     Diskdefs: TStringList;
     Line: TStringArray;
-    Index: integer;
+    Index, BootTrk, BootSec: integer;
+    LabelUsed, BootTrackUsed: boolean;
+    ImageTypeName, OsType: string;
 begin
-    { #todo : TStrings durch TComboBox (Items) ersetzen und Items mit Info ob Boottrack vorhanden }
     try
         Diskdefs := TStringList.Create;
         DiskDefs.LoadFromFile(APath);
-        ADiskDefsList.Add('Amstrad (PCW16)');
-        for Index := 0 to Diskdefs.Count - 1 do begin
+        ADiskDefsList.AddItem('Amstrad (PCW16)', TImageTypeInfo.Create(True, False));
+        Index := 0;
+
+        while (Index < Diskdefs.Count) do begin
             Line := Diskdefs[Index].Trim.Split(' ');
+
             if ((Length(Line) = 2) and (Line[0] = 'diskdef')) then begin
-                ADiskDefsList.Add(Line[1]);
+                ImageTypeName := Line[1];
+                BootTrk := -1;
+                BootSec := -1;
+                OsType := '';
+
+                while not ((Length(Line) >= 1) and (Line[0] = 'end')) do begin
+                    Inc(Index);
+                    Line := Diskdefs[Index].Trim.Split(' ');
+
+                    if (Line[0] = 'boottrk') then begin
+                        BootTrk := StrToIntDef(Line[1], -1);
+                    end
+                    else if (Line[0] = 'bootsec') then begin
+                        BootSec := StrToIntDef(Line[1], -1);
+                    end
+                    else if (Line[0] = 'os') then begin
+                        OsType := Line[1];
+                    end;
+
+                end;
+
+                LabelUsed := (OsType = '3');
+                BootTrackUsed := ((BootTrk > 0) or (BootSec > 0));
+                ADiskDefsList.AddItem(ImageTypeName, TImageTypeInfo.Create(LabelUsed, BootTrackUsed));
             end;
+
+            Inc(Index);
         end;
+
     finally
         FreeAndNil(Diskdefs);
     end;
