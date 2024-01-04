@@ -243,7 +243,6 @@ end;
 procedure TFileDialog.buttonOpenImageFileClick(Sender: TObject);
 var
     Dialog: TOpenDialog;
-    ImageTypeInfo: TImageTypeInfo;
 begin
     case (FDialogType) of
 
@@ -318,10 +317,6 @@ begin
                 end;
 
                 CheckImageFileData;
-                ImageTypeInfo := TImageTypeInfo(comboboxImageType.Items.Objects[comboboxImageType.ItemIndex]);
-                editBootTrackFile.Enabled := ImageTypeInfo.BootTrackUsed;
-                buttonOpenBootTrackFile.Enabled := ImageTypeInfo.BootTrackUsed;
-                editFileSystemLabel.Enabled := ImageTypeInfo.LabelUsed;
             finally
                 FreeAndNil(Dialog);
             end;
@@ -375,8 +370,14 @@ end;
 
 // --------------------------------------------------------------------------------
 procedure TFileDialog.comboboxImageTypeChange(Sender: TObject);
+var
+    ImageTypeInfo: TImageTypeInfo;
 begin
     CheckImageFileData;
+    ImageTypeInfo := TImageTypeInfo(comboboxImageType.Items.Objects[comboboxImageType.ItemIndex]);
+    editBootTrackFile.Enabled := ImageTypeInfo.BootTrackUsed;
+    buttonOpenBootTrackFile.Enabled := ImageTypeInfo.BootTrackUsed;
+    editFileSystemLabel.Enabled := ImageTypeInfo.LabelUsed;
 end;
 
 // --------------------------------------------------------------------------------
