@@ -367,7 +367,7 @@ begin
         try
             OpenKey('Settings');
 
-            if (OldUseUpperCase <> GetValue('Settings/UseUppercaseCharacters', False)) then begin
+            if (OldUseUpperCase <> GetValue('UseUppercaseCharacters', False)) then begin
                 (PageControl.ActivePage as TImagePage).RefreshDirectory;
             end;
 
