@@ -282,7 +282,7 @@ var
     ImageFile, ImageType: string;
     HistoryEntry: THistoryEntry;
 begin
-    { #todo : Prüfen dieses Image schon geöffnet ist. }
+
     try
         Dialog := TFileDialog.Create(self);
         Dialog.SetDialogType(cfdOpenImage);
@@ -295,7 +295,11 @@ begin
         if (Dialog.ShowModal = mrOk) then begin
             ImageFile := Dialog.GetFullFileName;
             ImageType := Dialog.GetImageType;
-            AddImagePage(ImageFile, ImageType, False);
+
+            if not IsTabExisting(ImageFile, ImageType) then begin
+                AddImagePage(ImageFile, ImageType, False);
+            end;
+
         end;
 
     finally
