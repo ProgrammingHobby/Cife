@@ -162,6 +162,7 @@ type
         procedure ShowImageInfo(AInfo: TFileSystemInfo);
         procedure ShowDirectoryStatistic(AStatistic: TDirStatistic);
         procedure MenuActionsControl(AMenuAction: TEnableAction);
+        function IsTabExisting(AImageFile, AImageType: string): boolean;
     public
 
     end;
@@ -185,7 +186,7 @@ var
     TimeStampsUsed: boolean;
     HistoryEntry: THistoryEntry;
 begin
-
+    { #todo : Prüfen ob ein solches Image schon existiert. }
     try
         Dialog := TFileDialog.Create(self);
         Dialog.SetDialogType(cfdCreateNewImage);
@@ -281,7 +282,7 @@ var
     ImageFile, ImageType: string;
     HistoryEntry: THistoryEntry;
 begin
-
+    { #todo : Prüfen dieses Image schon geöffnet ist. }
     try
         Dialog := TFileDialog.Create(self);
         Dialog.SetDialogType(cfdOpenImage);
@@ -535,30 +536,13 @@ procedure TMainWindow.HistoryMenuItemClick(Sender: TObject);
 var
     HistoryMenuItem: TMenuItem;
     HistoryEntry: THistoryEntry;
-    Index: integer;
-    TabExisting: boolean;
-    ImagePage: TImagePage;
 begin
 
     if (Sender is TMenuItem) then begin
         HistoryMenuItem := TMenuItem(Sender);
         HistoryEntry := FImageFileHistory.GetHistoryEntry(HistoryMenuItem.Tag);
-        TabExisting := False;
 
-        for Index := 0 to (PageControl.PageCount - 1) do begin
-            ImagePage := TImagePage(PageControl.Pages[Index]);
-
-            if (ImagePage.GetFileName = HistoryEntry.FileName) then begin
-                TabExisting := True;
-                break;
-            end;
-
-        end;
-
-        if TabExisting then begin
-            PageControl.ActivePage := PageControl.Pages[Index];
-        end
-        else begin
+        if not IsTabExisting(HistoryEntry.FileName, HistoryEntry.FileType) then begin
             AddImagePage(HistoryEntry.FileName, HistoryEntry.FileType, False);
         end;
 
@@ -606,6 +590,26 @@ begin
     actionCharacteristics.Enabled := (MAcharacteristic in AMenuAction);
     actionRefresh.Enabled := (MArefresh in AMenuAction);
     actionCheckImage.Enabled := (MAcheck in AMenuAction);
+end;
+
+// --------------------------------------------------------------------------------
+function TMainWindow.IsTabExisting(AImageFile, AImageType: string): boolean;
+var
+    Index: integer;
+    ImagePage: TImagePage;
+begin
+    Result := False;
+
+    for Index := 0 to (PageControl.PageCount - 1) do begin
+        ImagePage := TImagePage(PageControl.Pages[Index]);
+
+        if (ImagePage.GetFileName = AImageFile) then begin
+            PageControl.ActivePage := PageControl.Pages[Index];
+            Result := True;
+            break;
+        end;
+
+    end;
 end;
 
 // --------------------------------------------------------------------------------
