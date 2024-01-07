@@ -17,7 +17,8 @@
  *}
 unit CpmDevice;
 
-{$mode ObjFPC}{$H+}
+{$mode ObjFPC}
+{$H+}
 
 interface
 
@@ -41,7 +42,6 @@ type
         function WriteSector(const ATrack, ASector: integer; const ABuffer: array of byte): boolean;
         function IsOpen(): boolean;
         function GetErrorMsg(): string;
-
     public  // Konstruktor/Destruktor
         constructor Create; overload;
         destructor Destroy; override;

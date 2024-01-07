@@ -17,7 +17,8 @@
  *}
 unit Settings_Dialog;
 
-{$mode ObjFPC}{$H+}
+{$mode ObjFPC}
+{$H+}
 
 interface
 

@@ -145,6 +145,7 @@ type
         procedure actionClearHistoryExecute(Sender: TObject);
         procedure actionCloseExecute(Sender: TObject);
         procedure actionDeleteExecute(Sender: TObject);
+        procedure actionFormatCurrentExecute(Sender: TObject);
         procedure actionNewExecute(Sender: TObject);
         procedure actionOpenExecute(Sender: TObject);
         procedure actionQuitExecute(Sender: TObject);
@@ -186,7 +187,7 @@ var
     TimeStampsUsed: boolean;
     HistoryEntry: THistoryEntry;
 begin
-    { #todo : Prüfen ob ein solches Image schon existiert. }
+
     try
         Dialog := TFileDialog.Create(self);
         Dialog.SetDialogType(cfdCreateNewImage);
@@ -194,7 +195,6 @@ begin
         Dialog.SetRootPath(GetUserDir);
         HistoryEntry := FImageFileHistory.GetHistoryEntry(0);
         Dialog.SetDefaultPath(ExtractFileDir(HistoryEntry.FileName));
-        Dialog.SetWildcards('Image Files (*.img,*.bin,*.rel)|*.img;*.IMG;*.bin;*.BIN;*.rel;*.REL|all Files (*.*)|*');
 
         if (Dialog.ShowModal = mrOk) then begin
             ImageFile := Dialog.GetFullFileName;
@@ -265,6 +265,20 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
+procedure TMainWindow.actionFormatCurrentExecute(Sender: TObject);
+var
+    Page: TImagePage;
+begin
+    Page := PageControl.ActivePage as TImagePage;
+
+    if (Assigned(Page)) then begin
+        Page.Format;
+        Page.RefreshDirectory;
+    end;
+
+end;
+
+// --------------------------------------------------------------------------------
 procedure TMainWindow.actionAboutExecute(Sender: TObject);
 var
     Dialog: TAboutDialog;
@@ -294,7 +308,6 @@ begin
         Dialog.SetRootPath(GetUserDir);
         HistoryEntry := FImageFileHistory.GetHistoryEntry(0);
         Dialog.SetDefaultPath(ExtractFileDir(HistoryEntry.FileName));
-        Dialog.SetWildcards('Image Files (*.img,*.fdd,*.dsk)|*.img;*.IMG;*.fdd;*.FDD;*.dsk;*.DSK|all Files (*.*)|*');
 
         if (Dialog.ShowModal = mrOk) then begin
             ImageFile := Dialog.GetFullFileName;

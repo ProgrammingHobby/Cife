@@ -555,8 +555,8 @@ begin
         end
         else begin
 
-            if MessageDlg(Format('can not find %s' + LineEnding + '(%s)', [AFileName,
-                FCpmFileSystem.GetErrorMsg]), mtError, [mbOK], 0) = mrOk then begin
+            if MessageDlg(Format('can not find %s' + LineEnding + '(%s)',
+                [AFileName, FCpmFileSystem.GetErrorMsg]), mtError, [mbOK], 0) = mrOk then begin
                 Exit;
             end;
 

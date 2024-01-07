@@ -17,7 +17,8 @@
  *}
 unit ImagePage;
 
-{$mode ObjFPC}{$H+}
+{$mode ObjFPC}
+{$H+}
 
 interface
 
@@ -45,13 +46,13 @@ type
         function Open(const AFileName: string; const AFileType: string): boolean;
         function New(AImageFile: string; AImageType: string; ABootFile: string; AFileSystemLabel: string;
             ATimeStampsUsed: boolean): boolean;
+        procedure Format;
         function Close: boolean;
         function GetFileName: string;
         procedure RefreshDirectory;
         procedure RenameFile;
         procedure DeleteFile;
         procedure ShowFileCharacteristics;
-
     public  // Konstruktor/Destruktor
         constructor Create(ATheOwner: TComponent); override;
         destructor Destroy; override;
@@ -81,7 +82,7 @@ implementation
 
 { TImagePage }
 
-uses Controls, StdCtrls, RenameFile_Dialog, StrUtils, Graphics, XMLSettings, Dialogs, Characteristics_Dialog;
+uses Controls, StdCtrls, RenameFile_Dialog, StrUtils, Graphics, XMLSettings, Dialogs, Characteristics_Dialog, File_Dialog;
 
 // --------------------------------------------------------------------------------
 procedure TImagePage.DoShow;
@@ -167,6 +168,52 @@ begin
     end;
 
     Result := FCpmTools.CreateNewImage(AImageFile, AImageType, ABootFile, AFileSystemLabel, ATimeStampsUsed, UseUpperCase);
+end;
+
+// --------------------------------------------------------------------------------
+procedure TImagePage.Format;
+var
+    Info: TFileSystemInfo;
+    Dialog: TFileDialog;
+    BootFile, FileSystemLabel: string;
+    TimeStampsUsed, UseUpperCase: boolean;
+begin
+    Info := FCpmTools.GetFileSystemInfo;
+
+    try
+        Dialog := TFileDialog.Create(self);
+        Dialog.SetDialogType(cfdFormatCurrentImage);
+        Dialog.SetDialogTitle('Format current CP/M Disk Image File');
+        Dialog.SetDefaultPath(Info.FileName);
+        Dialog.SetDefaultType(Info.FileType);
+        Dialog.SetBoottracksUsed(StrToInt(Info.BootSectors) > 0);
+
+        if (Dialog.ShowModal = mrOk) then begin
+            BootFile := Dialog.GetBootFileimage;
+            FileSystemLabel := Dialog.GetFilesystemLabel;
+            TimeStampsUsed := Dialog.GetTimestampsUsed;
+
+            with TXMLSettings.Create(SettingsFile) do begin
+
+                try
+                    OpenKey('Settings');
+                    UseUpperCase := GetValue('UseUppercaseCharacters', False);
+                    CloseKey;
+                finally
+                    Free;
+                end;
+
+            end;
+
+            FCpmTools.CreateNewImage(Info.FileName, Info.FileType, BootFile, FileSystemLabel, TimeStampsUsed, UseUpperCase);
+            Open(Info.FileName, Info.FileType);
+
+        end;
+
+    finally
+        FreeAndNil(Dialog);
+    end;
+
 end;
 
 // --------------------------------------------------------------------------------
@@ -279,7 +326,7 @@ end;
 // --------------------------------------------------------------------------------
 constructor TImagePage.Create(ATheOwner: TComponent);
 var
-        DiskdefsPath: string;
+    DiskdefsPath: string;
 begin
     inherited Create(ATheOwner);
     CreateDirectoryListView;

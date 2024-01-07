@@ -58,7 +58,8 @@ type
         FDialogType: TCfdType;
         FRootPath: string;
         FDefaultPath: string;
-        FWildcards: string;
+        FDefaultType: string;
+        FBootTracks: boolean;
         procedure PrepareImageTypesComboBox;
         procedure CheckImageFileData;
     public
@@ -66,7 +67,8 @@ type
         procedure SetDialogTitle(ATitle: string);
         procedure SetRootPath(ARootPath: string);
         procedure SetDefaultPath(ADefaultPath: string);
-        procedure SetWildcards(AWildcards: string);
+        procedure SetDefaultType(ADefaultType: string);
+        procedure SetBoottracksUsed(AEnable: boolean);
         function GetFullFileName: string;
         function GetImageType: string;
         function GetBootFileimage: string;
@@ -181,9 +183,15 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-procedure TFileDialog.SetWildcards(AWildcards: string);
+procedure TFileDialog.SetDefaultType(ADefaultType: string);
 begin
-    FWildcards := AWildcards;
+    FDefaultType := ADefaultType;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TFileDialog.SetBoottracksUsed(AEnable: boolean);
+begin
+    FBootTracks := AEnable;
 end;
 
 // --------------------------------------------------------------------------------
@@ -251,7 +259,8 @@ begin
             try
                 Dialog := TOpenDialog.Create(self);
                 Dialog.Title := 'Select CP/M Disk Image File';
-                Dialog.Filter := FWildcards;
+                Dialog.Filter :=
+                    'Image Files (*.img,*.fdd,*.hdd, *.dsk)|*.img;*.IMG;*.fdd;*.FDD;*.hdd;*.HDD;*.dsk;*.DSK|all Files (*.*)|*';
 
                 if (FDefaultPath.IsEmpty) then begin
 
@@ -289,7 +298,8 @@ begin
             try
                 Dialog := TSaveDialog.Create(self);
                 Dialog.Title := 'Select new CP/M Disk Image File';
-                Dialog.Filter := FWildcards;
+                Dialog.Filter :=
+                    'Image Files (*.img,*.fdd,*.hdd, *.dsk)|*.img;*.IMG;*.fdd;*.FDD;*.hdd;*.HDD;*.dsk;*.DSK|all Files (*.*)|*';
 
                 if (FDefaultPath.IsEmpty) then begin
 
@@ -336,7 +346,7 @@ begin
     try
         Dialog := TOpenDialog.Create(self);
         Dialog.Title := 'Select CP/M Boot-Image File';
-        Dialog.Filter := FWildcards;
+        Dialog.Filter := 'Boot-Images (*.bin,*.rel)|*.bin;*.BIN;*.rel;*.REL|all Files (*.*)|*';
 
         if (FDefaultPath.IsEmpty) then begin
 
@@ -411,7 +421,16 @@ begin
         end;
 
         cfdFormatCurrentImage: begin
-            panelImageFile.Visible := False;
+            panelImageFile.Visible := True;
+            editImageFile.Enabled := False;
+            editImageFile.Hint := FDefaultPath;
+            editImageFile.Text := ExtractFileName(FDefaultPath);
+            buttonOpenImageFile.Enabled := False;
+            PrepareImageTypesComboBox;
+            comboboxImageType.Enabled := False;
+            comboboxImageType.Text := FDefaultType;
+            comboboxImageType.ItemIndex := comboboxImageType.Items.IndexOf(FDefaultType);
+            comboboxImageTypeChange(nil);
             panelSystemData.Visible := True;
             panelSystemData.Align := alTop;
             panelDialogNotice.Visible := True;

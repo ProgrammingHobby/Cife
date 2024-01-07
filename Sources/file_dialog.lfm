@@ -11,6 +11,7 @@ object FileDialog: TFileDialog
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poMainFormCenter
+  LCLVersion = '3.0.0.3'
   object ButtonPanel1: TButtonPanel
     Left = 8
     Height = 34
