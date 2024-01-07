@@ -202,7 +202,11 @@ begin
             BootFile := Dialog.GetBootFileimage;
             FileSystemLabel := Dialog.GetFilesystemLabel;
             TimeStampsUsed := Dialog.GetTimestampsUsed;
-            AddImagePage(ImageFile, ImageType, True, BootFile, FileSystemLabel, TimeStampsUsed);
+
+            if not IsTabExisting(ImageFile, ImageType) then begin
+                AddImagePage(ImageFile, ImageType, True, BootFile, FileSystemLabel, TimeStampsUsed);
+            end;
+
         end;
 
     finally
@@ -602,6 +606,7 @@ var
     Index: integer;
     ImagePage: TImagePage;
 begin
+    { #todo : Evtl. unterscheiden ob nur der Name oder auch der Typ geprüft werden soll. }
     Result := False;
 
     for Index := 0 to (PageControl.PageCount - 1) do begin
