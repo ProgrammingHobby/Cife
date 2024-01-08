@@ -230,8 +230,14 @@ end;
 
 // --------------------------------------------------------------------------------
 procedure TMainWindow.actionCheckImageExecute(Sender: TObject);
+var
+    Page: TImagePage;
 begin
-   //
+    Page := PageControl.ActivePage as TImagePage;
+
+    if (Assigned(Page)) then begin
+        Page.CheckImage;
+    end;
 end;
 
 // --------------------------------------------------------------------------------
