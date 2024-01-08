@@ -183,7 +183,6 @@ begin
     try
         Dialog := TFileDialog.Create(self);
         Dialog.SetDialogType(cfdFormatCurrentImage);
-        Dialog.SetDialogTitle('Format current CP/M Disk Image File');
         Dialog.SetDefaultPath(Info.FileName);
         Dialog.SetDefaultType(Info.FileType);
         Dialog.SetBoottracksUsed(StrToInt(Info.BootSectors) > 0);

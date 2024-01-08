@@ -191,7 +191,6 @@ begin
     try
         Dialog := TFileDialog.Create(self);
         Dialog.SetDialogType(cfdCreateNewImage);
-        Dialog.SetDialogTitle('Create new CP/M Disk Image File');
         Dialog.SetRootPath(GetUserDir);
         HistoryEntry := FImageFileHistory.GetHistoryEntry(0);
         Dialog.SetDefaultPath(ExtractFileDir(HistoryEntry.FileName));
@@ -304,7 +303,6 @@ begin
     try
         Dialog := TFileDialog.Create(self);
         Dialog.SetDialogType(cfdOpenImage);
-        Dialog.SetDialogTitle('Open CP/M Disk Image File');
         Dialog.SetRootPath(GetUserDir);
         HistoryEntry := FImageFileHistory.GetHistoryEntry(0);
         Dialog.SetDefaultPath(ExtractFileDir(HistoryEntry.FileName));

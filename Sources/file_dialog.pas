@@ -64,7 +64,6 @@ type
         procedure CheckImageFileData;
     public
         procedure SetDialogType(ADialogType: TCfdType);
-        procedure SetDialogTitle(ATitle: string);
         procedure SetRootPath(ARootPath: string);
         procedure SetDefaultPath(ADefaultPath: string);
         procedure SetDefaultType(ADefaultType: string);
@@ -162,12 +161,6 @@ end;
 procedure TFileDialog.SetDialogType(ADialogType: TCfdType);
 begin
     FDialogType := ADialogType;
-end;
-
-// --------------------------------------------------------------------------------
-procedure TFileDialog.SetDialogTitle(ATitle: string);
-begin
-    self.Caption := ATitle;
 end;
 
 // --------------------------------------------------------------------------------
@@ -404,6 +397,7 @@ begin
     case (FDialogType) of
 
         cfdOpenImage: begin
+            self.Caption:='Open CP/M Disk Image File';
             panelImageFile.Visible := True;
             panelImageFile.Align := alClient;
             panelSystemData.Visible := False;
@@ -412,6 +406,7 @@ begin
         end;
 
         cfdCreateNewImage: begin
+            self.Caption:='Create new CP/M Disk Image File';
             panelImageFile.Visible := True;
             panelImageFile.Align := alTop;
             panelSystemData.Visible := True;
@@ -421,6 +416,7 @@ begin
         end;
 
         cfdFormatCurrentImage: begin
+            self.Caption:='Format current CP/M Disk Image File';
             panelImageFile.Visible := True;
             editImageFile.Enabled := False;
             editImageFile.Hint := FDefaultPath;
