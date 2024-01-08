@@ -446,6 +446,7 @@ begin
 
     SetAutoSize(True);
     Constraints.MinWidth := Width;
+    Constraints.MaxWidth := Width;
     Constraints.MinHeight := Height;
     Constraints.MaxHeight := Height;
     SetAutoSize(False);
