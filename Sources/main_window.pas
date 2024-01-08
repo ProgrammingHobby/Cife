@@ -142,6 +142,7 @@ type
         StatusBar1: TStatusBar;
         procedure actionAboutExecute(Sender: TObject);
         procedure actionCharacteristicsExecute(Sender: TObject);
+        procedure actionCheckImageExecute(Sender: TObject);
         procedure actionClearHistoryExecute(Sender: TObject);
         procedure actionCloseExecute(Sender: TObject);
         procedure actionDeleteExecute(Sender: TObject);
@@ -225,6 +226,12 @@ begin
         Page.ShowFileCharacteristics;
     end;
 
+end;
+
+// --------------------------------------------------------------------------------
+procedure TMainWindow.actionCheckImageExecute(Sender: TObject);
+begin
+   //
 end;
 
 // --------------------------------------------------------------------------------
