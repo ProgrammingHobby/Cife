@@ -2,20 +2,20 @@ object RenameFileDialog: TRenameFileDialog
   Left = 2160
   Height = 177
   Top = 250
-  Width = 306
+  Width = 311
   AutoSize = True
   BorderStyle = bsToolWindow
   Caption = 'Rename CP/M File'
   ClientHeight = 177
-  ClientWidth = 306
+  ClientWidth = 311
   OnClose = FormClose
+  OnShow = FormShow
   Position = poOwnerFormCenter
-  LCLVersion = '3.0.0.3'
   object ButtonPanel1: TButtonPanel
     Left = 8
     Height = 34
     Top = 131
-    Width = 286
+    Width = 291
     BorderSpacing.Right = 4
     BorderSpacing.Bottom = 4
     BorderSpacing.Around = 8
@@ -35,31 +35,31 @@ object RenameFileDialog: TRenameFileDialog
     Left = 4
     Height = 119
     Top = 4
-    Width = 298
+    Width = 303
     Align = alClient
     AutoSize = True
     BorderSpacing.Around = 4
     BevelOuter = bvNone
     ClientHeight = 119
-    ClientWidth = 298
+    ClientWidth = 303
     TabOrder = 1
     object Panel2: TPanel
       Left = 4
       Height = 111
       Top = 4
-      Width = 93
+      Width = 96
       Align = alLeft
       AutoSize = True
       BorderSpacing.Around = 4
       BevelOuter = bvNone
       ClientHeight = 111
-      ClientWidth = 93
+      ClientWidth = 96
       TabOrder = 0
       object Label1: TLabel
         Left = 0
         Height = 19
         Top = 9
-        Width = 93
+        Width = 96
         Align = alTop
         BorderSpacing.Top = 9
         Caption = 'old File Name :'
@@ -70,7 +70,7 @@ object RenameFileDialog: TRenameFileDialog
         Left = 0
         Height = 19
         Top = 45
-        Width = 93
+        Width = 96
         Align = alTop
         BorderSpacing.Top = 17
         Caption = 'new File Name:'
@@ -79,28 +79,28 @@ object RenameFileDialog: TRenameFileDialog
       end
     end
     object Panel3: TPanel
-      Left = 101
+      Left = 104
       Height = 111
       Top = 4
-      Width = 193
+      Width = 195
       Align = alClient
       AutoSize = True
       BorderSpacing.Around = 4
       BevelOuter = bvNone
-      ClientHeight = 111
-      ClientWidth = 193
+      ClientHeight = 107
+      ClientWidth = 191
       TabOrder = 1
       object Panel4: TPanel
         Left = 4
         Height = 35
         Top = 4
-        Width = 181
+        Width = 183
         Align = alTop
         AutoSize = True
         BorderSpacing.Around = 4
         BevelOuter = bvNone
-        ClientHeight = 35
-        ClientWidth = 181
+        ClientHeight = 31
+        ClientWidth = 179
         TabOrder = 0
         object editOldUserNumber: TEdit
           Left = 0
@@ -121,7 +121,7 @@ object RenameFileDialog: TRenameFileDialog
           Height = 31
           Hint = 'old File Name'
           Top = 0
-          Width = 138
+          Width = 140
           Align = alClient
           Constraints.MinWidth = 64
           Enabled = False
@@ -133,13 +133,13 @@ object RenameFileDialog: TRenameFileDialog
         Left = 4
         Height = 35
         Top = 43
-        Width = 181
+        Width = 183
         Align = alTop
         AutoSize = True
         BorderSpacing.Around = 4
         BevelOuter = bvNone
-        ClientHeight = 35
-        ClientWidth = 181
+        ClientHeight = 31
+        ClientWidth = 179
         TabOrder = 1
         object editNewUserNumber: TEdit
           Left = 0
@@ -160,7 +160,7 @@ object RenameFileDialog: TRenameFileDialog
           Height = 31
           Hint = 'new File Name'
           Top = 0
-          Width = 138
+          Width = 140
           Align = alClient
           Constraints.MinWidth = 64
           MaxLength = 12
@@ -171,7 +171,7 @@ object RenameFileDialog: TRenameFileDialog
         Left = 4
         Height = 21
         Top = 82
-        Width = 181
+        Width = 183
         Align = alTop
         BorderSpacing.Around = 4
         Caption = 'change user number too.'

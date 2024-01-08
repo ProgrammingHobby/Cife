@@ -17,7 +17,8 @@
  *}
 unit RenameFile_Dialog;
 
-{$mode ObjFPC}{$H+}
+{$mode ObjFPC}
+{$H+}
 
 interface
 
@@ -45,6 +46,7 @@ type
         Panel5: TPanel;
         procedure checkboxChangeUserNumberClick(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+        procedure FormShow(Sender: TObject);
     private
         FOldName: string;
         FNewName: string;
@@ -61,9 +63,10 @@ var
 implementation
 
 {$R *.lfm}
-uses StrUtils;
 
-{ TRenameFileDialog }
+uses StrUtils, XMLSettings, CifeGlobals;
+
+    { TRenameFileDialog }
 
 // --------------------------------------------------------------------------------
 procedure TRenameFileDialog.checkboxChangeUserNumberClick(Sender: TObject);
@@ -73,8 +76,10 @@ end;
 
 procedure TRenameFileDialog.FormClose(Sender: TObject; var CloseAction: TCloseAction);
 begin
+
     if (ModalResult = mrOk) then begin
         FNewName := editNewUserNumber.Text + ':' + editNewFileName.Text;
+
         if (FNewName <> FOldName) then begin
             ModalResult := mrOk;
         end
@@ -82,8 +87,44 @@ begin
             FNewName := '';
             ModalResult := mrCancel;
         end;
+
     end;
+
+    with TXMLSettings.Create(SettingsFile) do begin
+
+        try
+            SaveFormState(TForm(self));
+        finally
+            Free;
+        end;
+
+    end;
+
     CloseAction := caFree;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TRenameFileDialog.FormShow(Sender: TObject);
+var
+    MinWidth, MinHeight: integer;
+begin
+
+    with TXMLSettings.Create(SettingsFile) do begin
+
+        try
+            RestoreFormState(TForm(self));
+        finally
+            Free;
+        end;
+
+    end;
+
+    SetAutoSize(True);
+    Constraints.MinWidth := Width;
+    Constraints.MaxWidth := Width;
+    Constraints.MinHeight := Height;
+    Constraints.MaxHeight := Height;
+    SetAutoSize(False);
 end;
 
 // --------------------------------------------------------------------------------
