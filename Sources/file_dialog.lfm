@@ -1,22 +1,21 @@
 object FileDialog: TFileDialog
   Left = 2160
-  Height = 268
+  Height = 272
   Top = 250
-  Width = 363
+  Width = 366
   AutoSize = True
   BorderStyle = bsSizeToolWin
-  ClientHeight = 268
-  ClientWidth = 363
+  ClientHeight = 272
+  ClientWidth = 366
   OnClose = FormClose
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poMainFormCenter
-  LCLVersion = '3.0.0.3'
   object ButtonPanel1: TButtonPanel
     Left = 8
     Height = 34
-    Top = 226
-    Width = 347
+    Top = 230
+    Width = 350
     BorderSpacing.Around = 8
     OKButton.Name = 'OKButton'
     OKButton.DefaultCaption = True
@@ -34,13 +33,13 @@ object FileDialog: TFileDialog
     Left = 8
     Height = 76
     Top = 8
-    Width = 347
+    Width = 350
     Align = alTop
     AutoSize = True
     BorderSpacing.Around = 8
     BevelOuter = bvNone
     ClientHeight = 76
-    ClientWidth = 347
+    ClientWidth = 350
     TabOrder = 1
     OnPaint = PanelPaint
     object Label1: TLabel
@@ -50,7 +49,7 @@ object FileDialog: TFileDialog
       Left = 4
       Height = 19
       Top = 10
-      Width = 71
+      Width = 73
       BorderSpacing.Left = 4
       Caption = 'Image File :'
       Layout = tlCenter
@@ -60,7 +59,7 @@ object FileDialog: TFileDialog
       AnchorSideLeft.Control = comboboxImageType
       AnchorSideTop.Control = panelImageFile
       AnchorSideRight.Control = buttonOpenImageFile
-      Left = 85
+      Left = 87
       Height = 31
       Top = 4
       Width = 196
@@ -78,10 +77,10 @@ object FileDialog: TFileDialog
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = panelImageFile
       AnchorSideRight.Side = asrBottom
-      Left = 285
+      Left = 287
       Height = 33
       Top = 3
-      Width = 58
+      Width = 59
       Anchors = [akTop, akRight]
       AutoSize = True
       BorderSpacing.Right = 4
@@ -96,7 +95,7 @@ object FileDialog: TFileDialog
       Left = 4
       Height = 19
       Top = 47
-      Width = 77
+      Width = 79
       BorderSpacing.Left = 4
       Caption = 'ImageType :'
       Layout = tlCenter
@@ -107,7 +106,7 @@ object FileDialog: TFileDialog
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = editImageFile
       AnchorSideTop.Side = asrBottom
-      Left = 85
+      Left = 87
       Height = 31
       Top = 41
       Width = 100
@@ -125,13 +124,13 @@ object FileDialog: TFileDialog
     Left = 8
     Height = 101
     Top = 92
-    Width = 347
+    Width = 350
     Align = alTop
     AutoSize = True
     BorderSpacing.Around = 8
     BevelOuter = bvNone
     ClientHeight = 101
-    ClientWidth = 347
+    ClientWidth = 350
     TabOrder = 3
     OnPaint = PanelPaint
     object Label3: TLabel
@@ -141,7 +140,7 @@ object FileDialog: TFileDialog
       Left = 4
       Height = 19
       Top = 10
-      Width = 97
+      Width = 98
       BorderSpacing.Left = 4
       Caption = 'Boot-Track File :'
       Layout = tlCenter
@@ -151,7 +150,7 @@ object FileDialog: TFileDialog
       AnchorSideLeft.Control = editFileSystemLabel
       AnchorSideTop.Control = panelSystemData
       AnchorSideRight.Control = buttonOpenBootTrackFile
-      Left = 121
+      Left = 123
       Height = 31
       Top = 4
       Width = 160
@@ -170,10 +169,10 @@ object FileDialog: TFileDialog
       AnchorSideTop.Side = asrCenter
       AnchorSideRight.Control = panelSystemData
       AnchorSideRight.Side = asrBottom
-      Left = 285
+      Left = 287
       Height = 33
       Top = 3
-      Width = 58
+      Width = 59
       Anchors = [akTop, akRight]
       AutoSize = True
       BorderSpacing.Right = 4
@@ -191,7 +190,7 @@ object FileDialog: TFileDialog
       Left = 4
       Height = 19
       Top = 45
-      Width = 113
+      Width = 115
       BorderSpacing.Left = 4
       Caption = 'File-System Label :'
       Layout = tlCenter
@@ -202,7 +201,7 @@ object FileDialog: TFileDialog
       AnchorSideLeft.Side = asrBottom
       AnchorSideTop.Control = editBootTrackFile
       AnchorSideTop.Side = asrBottom
-      Left = 121
+      Left = 123
       Height = 31
       Top = 39
       Width = 160
@@ -216,10 +215,10 @@ object FileDialog: TFileDialog
       AnchorSideLeft.Control = editFileSystemLabel
       AnchorSideTop.Control = editFileSystemLabel
       AnchorSideTop.Side = asrBottom
-      Left = 121
+      Left = 123
       Height = 21
       Top = 76
-      Width = 123
+      Width = 126
       BorderSpacing.Bottom = 4
       Caption = 'use Timestamps'
       Checked = True
@@ -229,22 +228,22 @@ object FileDialog: TFileDialog
   end
   object panelDialogNotice: TPanel
     Left = 8
-    Height = 17
+    Height = 21
     Top = 201
-    Width = 347
+    Width = 350
     Align = alClient
     AutoSize = True
     BorderSpacing.Around = 8
     BevelOuter = bvNone
     ClientHeight = 17
-    ClientWidth = 347
+    ClientWidth = 346
     TabOrder = 2
     OnPaint = PanelPaint
     object labelDialogNotice: TLabel
       Left = 8
       Height = 1
       Top = 8
-      Width = 331
+      Width = 330
       Align = alClient
       AutoSize = False
       BorderSpacing.Around = 8

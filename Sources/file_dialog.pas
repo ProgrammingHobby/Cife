@@ -397,7 +397,7 @@ begin
     case (FDialogType) of
 
         cfdOpenImage: begin
-            self.Caption:='Open CP/M Disk Image File';
+            self.Caption := 'Open CP/M Disk Image File';
             panelImageFile.Visible := True;
             panelImageFile.Align := alClient;
             panelSystemData.Visible := False;
@@ -406,7 +406,7 @@ begin
         end;
 
         cfdCreateNewImage: begin
-            self.Caption:='Create new CP/M Disk Image File';
+            self.Caption := 'Create new CP/M Disk Image File';
             panelImageFile.Visible := True;
             panelImageFile.Align := alTop;
             panelSystemData.Visible := True;
@@ -416,7 +416,7 @@ begin
         end;
 
         cfdFormatCurrentImage: begin
-            self.Caption:='Format current CP/M Disk Image File';
+            self.Caption := 'Format current CP/M Disk Image File';
             panelImageFile.Visible := True;
             editImageFile.Enabled := False;
             editImageFile.Hint := FDefaultPath;
@@ -431,6 +431,7 @@ begin
             panelSystemData.Align := alTop;
             panelDialogNotice.Visible := True;
             panelDialogNotice.Align := alClient;
+            labelDialogNotice.Caption := 'Are you sure you want recreate existing Image-File ? All existing Data will be lost !';
         end;
 
     end;
