@@ -212,6 +212,17 @@ type
         function SyncDateStamps: boolean;
         function OpenDir(var ADir: TCpmFile): boolean;
         function ReadDir(var ADir: TCpmFile; var AEnt: TCpmDirent): boolean;
+        //int bcdCheck(int n, int max, const char *msg, const char *unit, int extent1, int extent2);
+        function BcdCheck(AValue: integer; AMax: integer; AMessage: array of char; AUnit: array of char;
+            AExtent1: integer; AExtent2: integer): boolean;
+        //int pwdCheck(int extent, const char *pwd, char decode);
+        function PwdCheck(AExtent: integer; APassword: array of char; ADecode: char): boolean;
+        //int dirCheck(char const *str, size_t len, int allow_empty, int type);
+        function DirCheck(AValue: array of char; ALen: size_t; AAllowEmpty: boolean; AType: integer): boolean;
+        //int filesize(CpmFs::CpmSuperBlock_t const *sb, int extent);
+        function FileSize(AExtent: integer): integer;
+        //char *prfile(CpmFs::CpmSuperBlock_t *sb, int extent);
+        function PrintFile(AExtent: integer): string;
 
     end;
 
@@ -1699,7 +1710,7 @@ end;
 //int CpmTools::fsck(const char *image, bool repair) {
 function TCpmFileSystem.FsCheck(ADoRepair: boolean; AMessage: TCheckMessageCallBack): integer;
 begin
-
+    { #todo : TCpmFileSystem.FsCheck muß noch konvertiert werden. }
 end;
 
 // --------------------------------------------------------------------------------
@@ -3351,6 +3362,37 @@ begin
 
         Inc(ADir.Pos);
     end;
+end;
+
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.BcdCheck(AValue: integer; AMax: integer; AMessage: array of char;
+    AUnit: array of char; AExtent1: integer; AExtent2: integer): boolean;
+begin
+    { #todo : TCpmFileSystem.BcdCheck muß noch konvertiert werden. }
+end;
+
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.PwdCheck(AExtent: integer; APassword: array of char; ADecode: char): boolean;
+begin
+    { #todo : TCpmFileSystem.PwdCheck muß noch konvertiert werden. }
+end;
+
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.DirCheck(AValue: array of char; ALen: size_t; AAllowEmpty: boolean; AType: integer): boolean;
+begin
+    { #todo : TCpmFileSystem.DirCheck muß noch konvertiert werden. }
+end;
+
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.FileSize(AExtent: integer): integer;
+begin
+    { #todo : TCpmFileSystem.FileSize muß noch konvertiert werden. }
+end;
+
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.PrintFile(AExtent: integer): string;
+begin
+    { #todo : TCpmFileSystem.PrintFile muß noch konvertiert werden. }
 end;
 
 // --------------------------------------------------------------------------------
