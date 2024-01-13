@@ -10,8 +10,8 @@ uses
     StdCtrls;
 
 type
-    TCheckMessageCallBack = procedure(AMessage:string) of object;
-    TCheckFunctionCallBack = procedure(ADoRepair: boolean; AMessage:TCheckMessageCallBack) of object;
+    TCheckMessageCallBack = procedure(AMessage: string) of object;
+    TCheckFunctionCallBack = procedure(ADoRepair: boolean; AMessage: TCheckMessageCallBack) of object;
 
     { TCheckImageDialog }
 

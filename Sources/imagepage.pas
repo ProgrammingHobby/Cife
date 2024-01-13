@@ -53,6 +53,7 @@ type
         procedure RenameFile;
         procedure DeleteFile;
         procedure ShowFileCharacteristics;
+        procedure CheckImage;
     public  // Konstruktor/Destruktor
         constructor Create(ATheOwner: TComponent); override;
         destructor Destroy; override;
@@ -82,7 +83,8 @@ implementation
 
 { TImagePage }
 
-uses Controls, StdCtrls, RenameFile_Dialog, StrUtils, Graphics, XMLSettings, Dialogs, Characteristics_Dialog, File_Dialog;
+uses Controls, StdCtrls, RenameFile_Dialog, StrUtils, Graphics, XMLSettings, Dialogs, Characteristics_Dialog,
+    File_Dialog, CheckImage_Dialog;
 
 // --------------------------------------------------------------------------------
 procedure TImagePage.DoShow;
@@ -323,12 +325,30 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
+procedure TImagePage.CheckImage;
+var
+    Dialog: TCheckImageDialog;
+begin
+
+    try
+        Dialog := TCheckImageDialog.Create(self);
+        Dialog.SetImageFile(FCpmTools.GetFileSystemInfo.FileName);
+        Dialog.SetCheckFunctionCallBack(@FCpmTools.CheckImage);
+        Dialog.ShowModal;
+    finally
+        FreeAndNil(Dialog);
+    end;
+
+end;
+
+// --------------------------------------------------------------------------------
 constructor TImagePage.Create(ATheOwner: TComponent);
 var
     DiskdefsPath: string;
 begin
     inherited Create(ATheOwner);
     CreateDirectoryListView;
+
     with TXMLSettings.Create(SettingsFile) do begin
         try
             OpenKey('Settings');
@@ -439,7 +459,11 @@ begin
         SortType := stNone;
         AutoWidthLastColumn := False;
         RowSelect := True;
+        {$ifdef Windows}
         Font.Name := 'Consolas';
+        {$else}
+        Font.Name := 'Liberation Mono';
+        {$endif}
         BeginUpdate;
         DirColumn := Columns.Add;
         DirColumn.Caption := 'User : Name';

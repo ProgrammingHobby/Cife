@@ -64,9 +64,9 @@ const
     RESERVED_ENTRIES = 4;
     RESERVED_INODES = 3;
 
-    OK = 0;
-    MODIFIED = 1;
-    BROKEN = 2;
+    FS_OK = 0;
+    FS_MODIFIED = 1;
+    FS_BROKEN = 2;
 
     S_IFDIR = 16384;
     S_IFREG = 32768;

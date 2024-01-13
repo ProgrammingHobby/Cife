@@ -26,6 +26,7 @@ uses
     Classes, SysUtils, CpmDevice, CpmDefs, CifeGlobals;
 
 type
+    TCheckMessageCallBack = procedure(AMessage: string) of object;
 
     TCpmInode = record
         Ino: ino_t;
@@ -92,6 +93,7 @@ type
         function Write(AFile: TCpmFile; ABuffer: pbyte; ACount: size_t): ssize_t;
         function Close(AFile: TCpmFile): boolean;
         procedure UpdateTime(AInode: TCpmInode; ATimes: TUTimeBuf);
+        function FsCheck(ADoRepair: boolean; AMessage: TCheckMessageCallBack): integer;
         function Sync: boolean;
         function GetErrorMsg: string;
         function GetFileSystemInfo: TFileSystemInfo;
@@ -1692,6 +1694,15 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
+//  -- file system check
+// --------------------------------------------------------------------------------
+//int CpmTools::fsck(const char *image, bool repair) {
+function TCpmFileSystem.FsCheck(ADoRepair: boolean; AMessage: TCheckMessageCallBack): integer;
+begin
+
+end;
+
+// --------------------------------------------------------------------------------
 //  -- write directory back
 // --------------------------------------------------------------------------------
 function TCpmFileSystem.Sync: boolean;
@@ -1769,6 +1780,7 @@ end;
 function TCpmFileSystem.GetErrorMsg: string;
 begin
     Result := FFileSystemError;
+    FFileSystemError := '';
 end;
 
 // --------------------------------------------------------------------------------

@@ -45,6 +45,7 @@ type
         function DeleteFile(AFileNames: TStringList): boolean;
         function CreateNewImage(AImageFile: string; AImageType: string; ABootFile: string;
             AFileSystemLabel: string; ATimeStampsUsed: boolean; AUseUpperCase: boolean): boolean;
+        procedure CheckImage(ADoRepair: boolean; AMessage: TCheckMessageCallBack);
         function GetFileSystemInfo: TFileSystemInfo;
         function GetDirectoryStatistic: TDirStatistic;
         function GetFileInfo(AFileName: string): TFileInfo;
@@ -483,6 +484,31 @@ begin
 
     MessageDlg(Format('new Image-File ''%s'' successful created.', [ExtractFileName(AImageFile)]), mtInformation, [mbOK], 0);
     Result := True;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TCpmTools.CheckImage(ADoRepair: boolean; AMessage: TCheckMessageCallBack);
+var
+    CheckResult: integer;
+begin
+    CheckResult := FCpmFileSystem.FsCheck(ADoRepair, AMessage);
+
+    if ((CheckResult and FS_MODIFIED) <> 0) then begin
+
+        if not FCpmFileSystem.Sync then begin
+            AMessage(Format('write error on ''%s''  (%s)', [ExtractFileName(FCpmFileSystem.GetFileSystemInfo.FileName),
+                FCpmFileSystem.GetErrorMsg]));
+            CheckResult := (CheckResult or FS_BROKEN);
+        end;
+
+        AMessage(Format('file system on ''%s'' modified', [ExtractFileName(FCpmFileSystem.GetFileSystemInfo.FileName)]));
+
+        if ((CheckResult and FS_BROKEN) <> 0) then begin
+            AMessage('please check again');
+        end;
+
+    end;
+
 end;
 
 // --------------------------------------------------------------------------------
