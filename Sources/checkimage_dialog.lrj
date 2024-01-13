@@ -1,0 +1,4 @@
+{"version":1,"strings":[
+{"hash":134453155,"name":"tcheckimagedialog.checkrepairfilesystemerrors.caption","sourcebytes":[82,101,112,97,105,114,32,70,105,108,101,115,121,115,116,101,109,32,69,114,114,111,114,115],"value":"Repair Filesystem Errors"},
+{"hash":34567387,"name":"tcheckimagedialog.buttoncheckimage.caption","sourcebytes":[83,116,97,114,116,32,73,109,97,103,101,45,67,104,101,99,107],"value":"Start Image-Check"}
+]}

@@ -1,0 +1,93 @@
+object CheckImageDialog: TCheckImageDialog
+  Left = 1520
+  Height = 144
+  Top = 250
+  Width = 328
+  BorderStyle = bsToolWindow
+  ClientHeight = 144
+  ClientWidth = 328
+  OnClose = FormClose
+  OnShow = FormShow
+  object Panel1: TPanel
+    Left = 0
+    Height = 98
+    Top = 0
+    Width = 328
+    Align = alClient
+    AutoSize = True
+    BevelOuter = bvNone
+    ClientHeight = 94
+    ClientWidth = 324
+    ParentBackground = False
+    ParentColor = False
+    TabOrder = 0
+    object Panel2: TPanel
+      Left = 0
+      Height = 37
+      Top = 57
+      Width = 324
+      Align = alBottom
+      AutoSize = True
+      BevelOuter = bvNone
+      ClientHeight = 33
+      ClientWidth = 320
+      ParentBackground = False
+      ParentColor = False
+      TabOrder = 0
+      object checkRepairFilesystemErrors: TCheckBox
+        Left = 149
+        Height = 33
+        Top = 0
+        Width = 167
+        Align = alClient
+        BorderSpacing.Left = 16
+        BorderSpacing.Right = 4
+        Caption = 'Repair Filesystem Errors'
+        TabOrder = 0
+      end
+      object buttonCheckImage: TButton
+        Left = 4
+        Height = 33
+        Top = 0
+        Width = 129
+        Align = alLeft
+        AutoSize = True
+        BorderSpacing.Left = 4
+        BorderSpacing.Right = 4
+        Caption = 'Start Image-Check'
+        TabOrder = 1
+        OnClick = buttonCheckImageClick
+      end
+    end
+    object memoCheckMessages: TMemo
+      Left = 4
+      Height = 45
+      Top = 4
+      Width = 316
+      Align = alClient
+      BorderSpacing.Bottom = 4
+      BorderSpacing.Around = 4
+      ReadOnly = True
+      ScrollBars = ssAutoVertical
+      TabOrder = 1
+      WordWrap = False
+    end
+  end
+  object ButtonPanel1: TButtonPanel
+    Left = 6
+    Height = 34
+    Top = 104
+    Width = 316
+    OKButton.Name = 'OKButton'
+    OKButton.DefaultCaption = True
+    HelpButton.Name = 'HelpButton'
+    HelpButton.DefaultCaption = True
+    CloseButton.Name = 'CloseButton'
+    CloseButton.DefaultCaption = True
+    CancelButton.Name = 'CancelButton'
+    CancelButton.DefaultCaption = True
+    TabOrder = 1
+    ShowButtons = [pbClose]
+    ShowBevel = False
+  end
+end
