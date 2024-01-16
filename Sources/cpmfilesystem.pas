@@ -1368,12 +1368,14 @@ end;
 //  -- creat new CP/M file
 // --------------------------------------------------------------------------------
 function TCpmFileSystem.Create(ADirEntry: TCpmInode; const AFileName: string; var AInode: TCpmInode; AMode: mode_t): boolean;
+type
+    PPhysDirectoryEntry = ^TPhysDirectoryEntry;
 var
     User: integer;
     Name: array[0..7] of char;
     Extension: array[0..2] of char;
     Ext: integer;
-    DirEntry: TPhysDirectoryEntry;
+    DirEntry: PPhysDirectoryEntry;
 begin
 
     if not (S_ISDIR(ADirEntry.Mode)) then begin
@@ -1398,12 +1400,12 @@ begin
         exit;
     end;
 
+    DirEntry := @FDirectory[Ext];
     FDrive.DirtyDirectory := True;
-    FillByte(DirEntry, 32, 0);
-    DirEntry.Status := User;
-    DirEntry.Name := Name;
-    DirEntry.Ext := Extension;
-    FDirectory[Ext] := DirEntry;
+    FillByte(DirEntry^, 32, 0);
+    DirEntry^.Status := User;
+    DirEntry^.Name := Name;
+    DirEntry^.Ext := Extension;
     AInode.Ino := Ext;
     AInode.Mode := (S_IFREG or AMode);
     AInode.Size := 0;
@@ -1720,20 +1722,20 @@ begin
     //guiintf->printMsg("====================================================================================================\n",
     //                  CpmGuiInterface::msgColGreen);
     //guiintf->printMsg("  Phase 1: check extent fields\n", CpmGuiInterface::msgColGreen);
-    //
+
     //for (extent = 0; extent < drive.maxdir; ++extent) {
     //    char *status;
     //    int usedBlocks = 0;
     //    dir = drive.dir + extent;
     //    status = &dir->status;
-    //
+
     //    if (*status >= 0
     //            && *status <= (drive.type == CPMFS_P2DOS ? 31 : 15)) { /* directory entry */
     //        /* check name and extension */
     //        if (dirCheck(dir->name, 8, 0, drive.type) == -1) {
     //            guiintf->printMsg(wxString::Format("    Error: Bad name (extent=%d, name=\"%s\")\n",
     //                                               extent, prfile(&drive, extent)), CpmGuiInterface::msgColGreen);
-    //
+
     //            if (repair && ask("Remove file")) {
     //                *status = (char)0xE5;
     //                ret |= MODIFIED;
@@ -1743,11 +1745,11 @@ begin
     //                ret |= BROKEN;
     //            }
     //        }
-    //
+
     //        if (dirCheck(dir->ext, 3, 1, drive.type) == -1) {
     //            guiintf->printMsg(wxString::Format("    Error: Bad extension (extent=%d, name=\"%s\")\n",
     //                                               extent, prfile(&drive, extent)), CpmGuiInterface::msgColGreen);
-    //
+
     //            if (repair && ask("Remove file")) {
     //                *status = (char)0xE5;
     //                ret |= MODIFIED;
@@ -1757,13 +1759,13 @@ begin
     //                ret |= BROKEN;
     //            }
     //        }
-    //
+
     //        /* check extent number */
     //        if ((dir->extnol & 0xff) > 0x1f) {
     //            guiintf->printMsg(
     //                wxString::Format("    Error: Bad lower bits of extent number (extent=%d, name=\"%s\", low bits=%d)\n",
     //                                 extent, prfile(&drive, extent), dir->extnol & 0xff), CpmGuiInterface::msgColGreen);
-    //
+
     //            if (repair && ask("Remove file")) {
     //                *status = (char)0xE5;
     //                ret |= MODIFIED;
@@ -1772,16 +1774,16 @@ begin
     //                ret |= BROKEN;
     //            }
     //        }
-    //
+
     //        if (*status == (char)0xe5) {
     //            continue;
     //        }
-    //
+
     //        if ((dir->extnoh & 0xff) > 0x3f) {
     //            guiintf->printMsg(
     //                wxString::Format("    Error: Bad higher bits of extent number (extent=%d, name=\"%s\", high bits=%d)\n",
     //                                 extent, prfile(&drive, extent), dir->extnoh & 0xff), CpmGuiInterface::msgColGreen);
-    //
+
     //            if (repair && ask("Remove file")) {
     //                *status = (char)0xE5;
     //                ret |= MODIFIED;
@@ -1790,17 +1792,17 @@ begin
     //                ret |= BROKEN;
     //            }
     //        }
-    //
+
     //        if (*status == (char)0xe5) {
     //            continue;
     //        }
-    //
+
     //        /* check last record byte count */
     //        if ((dir->lrc & 0xff) > 128) {
     //            guiintf->printMsg(
     //                wxString::Format("    Error: Bad last record byte count (extent=%d, name=\"%s\", lrc=%d)\n",
     //                                 extent, prfile(&drive, extent), dir->lrc & 0xff), CpmGuiInterface::msgColGreen);
-    //
+
     //            if (repair && ask("Clear last record byte count")) {
     //                dir->lrc = (char)0;
     //                ret |= MODIFIED;
@@ -1809,32 +1811,32 @@ begin
     //                ret |= BROKEN;
     //            }
     //        }
-    //
+
     //        if (*status == (char)0xe5) {
     //            continue;
     //        }
-    //
+
     //        /* check block number range */
     //        {
     //            int block, min, max, i;
     //            min = drive.dirblks;
     //            max = drive.size;
-    //
+
     //            for (i = 0; i < 16; ++i) {
     //                block = dir->pointers[i] & 0xff;
-    //
+
     //                if (drive.size > 256) {
     //                    block += (dir->pointers[++i] & 0xff) << 8;
     //                }
-    //
+
     //                if (block > 0) {
     //                    ++usedBlocks;
-    //
+
     //                    if (block < min || block >= max) {
     //                        guiintf->printMsg(
     //                            wxString::Format("    Error: Bad block number (extent=%d, name=\"%s\", block=%d)\n",
     //                                             extent, prfile(&drive, extent), block), CpmGuiInterface::msgColGreen);
-    //
+
     //                        if (repair && ask("Remove file")) {
     //                            *status = (char)0xE5;
     //                            ret |= MODIFIED;
@@ -1846,7 +1848,7 @@ begin
     //                    }
     //                }
     //            }
-    //
+
     //            if (*status == (char)0xe5) {
     //                continue;
     //            }
@@ -1857,24 +1859,24 @@ begin
     //            int i, min, max, recordsInBlocks, used = 0;
     //            min = (dir->extnol % drive.extents) * 16 / drive.extents;
     //            max = ((dir->extnol % drive.extents) + 1) * 16 / drive.extents;
-    //
+
     //            for (i = min; i < max; ++i) {
     //                if (dir->pointers[i] || (drive.size > 256 && dir->pointers[i + 1])) {
     //                    ++used;
     //                }
-    //
+
     //                if (drive.size > 256) {
     //                    ++i;
     //                }
     //            }
-    //
+
     //            recordsInBlocks = (((unsigned char)dir->blkcnt) * 128 + drive.blksiz - 1) / drive.blksiz;
-    //
+
     //            if (recordsInBlocks != used) {
     //                guiintf->printMsg(
     //                    wxString::Format("    Error: Bad record count (extent=%d, name=\"%s\", record count=%d)\n",
     //                                     extent, prfile(&drive, extent), dir->blkcnt & 0xff), CpmGuiInterface::msgColGreen);
-    //
+
     //                if (repair && ask("Remove file")) {
     //                    *status = (char)0xE5;
     //                    ret |= MODIFIED;
@@ -1883,12 +1885,12 @@ begin
     //                    ret |= BROKEN;
     //                }
     //            }
-    //
+
     //            if (*status == (char)0xe5) {
     //                continue;
     //            }
     //        }
-    //
+
     //        /* check for too large .com files */
     //        if (((EXTENT(dir->extnol, dir->extnoh) == 3 && dir->blkcnt >= 126)
     //                || EXTENT(dir->extnol, dir->extnoh) >= 4) && (dir->ext[0] & 0x7f) == 'C'
@@ -1897,7 +1899,7 @@ begin
     //                wxString::Format("    Warning: Oversized .COM file (extent=%d, name=\"%s\")\n", extent,
     //                                 prfile(&drive, extent)), CpmGuiInterface::msgColGreen);
     //        }
-    //
+
     //        /* check DateStamper file */
     //        if ((dir->name[0] & 0x7f) == '!' && (dir->name[1] & 0x7f) == '!'
     //                && (dir->name[2] & 0x7f) == '!' && (dir->name[3] & 0x7f) == 'T'
@@ -1906,35 +1908,35 @@ begin
     //                && (dir->ext[0] & 0x7f) == 'D' && (dir->ext[1] & 0x7f) == 'A'
     //                && (dir->ext[2] & 0x7f) == 'T') {
     //            int has_size, should_size;
-    //
+
     //            if (extent) {
     //                guiintf->printMsg(
     //                    wxString::Format("    Warning: DateStamper file not first file (extent=%d, name=\"%s\")\n",
     //                                     extent, prfile(&drive, extent)), CpmGuiInterface::msgColGreen);
     //            }
-    //
+
     //            if (!(dir->ext[0] & 0x80)) {
     //                guiintf->printMsg(
     //                    wxString::Format("    Warning: DateStamper file not read-only (extent=%d, name=\"%s\")\n",
     //                                     extent, prfile(&drive, extent)), CpmGuiInterface::msgColGreen);
     //            }
-    //
+
     //            should_size = drive.maxdir * 16;
     //            has_size = filesize(&drive, extent);
-    //
+
     //            if (has_size != should_size) {
     //                guiintf->printMsg(
     //                    wxString::Format("    Warning: DateStamper file is %d, should be %d (extent=%d, name=\"%s\")\n",
     //                                     has_size, should_size, extent, prfile(&drive, extent)), CpmGuiInterface::msgColGreen);
     //            }
     //        }
-    //
+
     //    }
     //    else if ((drive.type == CPMFS_P2DOS || drive.type == CPMFS_DR3)
     //             && *status == 33) { /* check time stamps ? */
     //        unsigned long created, modified;
     //        char s;
-    //
+
     //        if ((s = drive.dir[extent2 = (extent & ~3)].status) >= 0
     //                && s <= (drive.type == CPMFS_P2DOS ? 31 :
     //                         15)) { /* time stamps for first of the three extents */
@@ -1948,14 +1950,14 @@ begin
     //                      dir->name[3];
     //            modified = (dir->name[0] + (dir->name[5] << 8)) * (0x60 * 0x60) + dir->name[6] * 0x60 +
     //                       dir->name[7];
-    //
+
     //            if (drive.cnotatime && modified < created) {
     //                guiintf->printMsg(
     //                    wxString::Format("    Warning: Modification date earlier than creation date (extent=%d/%d)\n",
     //                                     extent, extent2), CpmGuiInterface::msgColGreen);
     //            }
     //        }
-    //
+
     //        if ((s = drive.dir[extent2 = (extent & ~3) + 1].status) >= 0
     //                && s <= (drive.type == CPMFS_P2DOS ? 31 : 15)) { /* time stamps for second */
     //            bcdCheck(dir->lrc, 24, drive.cnotatime ? "creation date" : "access date", "hour", extent,
@@ -1968,14 +1970,14 @@ begin
     //                      dir->extnoh;
     //            modified = (dir->blkcnt + (dir->pointers[0] << 8)) * (0x60 * 0x60) + dir->pointers[1] *
     //                       0x60 + dir->pointers[2];
-    //
+
     //            if (drive.cnotatime && modified < created) {
     //                guiintf->printMsg(
     //                    wxString::Format("    Warning: Modification date earlier than creation date (extent=%d/%d)\n",
     //                                     extent, extent2), CpmGuiInterface::msgColGreen);
     //            }
     //        }
-    //
+
     //        if ((s = drive.dir[extent2 = (extent & ~3) + 2].status) >= 0
     //                && s <= (drive.type == CPMFS_P2DOS ? 31 : 15)) { /* time stamps for third */
     //            bcdCheck(dir->pointers[7], 24, drive.cnotatime ? "creation date" : "access date", "hour",
@@ -1988,7 +1990,7 @@ begin
     //                      * 0x60 + dir->pointers[8];
     //            modified = (dir->pointers[9] + (dir->pointers[10] << 8)) * (0x60 * 0x60) +
     //                       dir->pointers[11] * 0x60 + dir->pointers[12];
-    //
+
     //            if (drive.cnotatime && modified < created) {
     //                guiintf->printMsg(
     //                    wxString::Format("    Warning: Modification date earlier than creation date (extent=%d/%d)\n",
@@ -2008,18 +2010,18 @@ begin
     //                  * 0x60 + dir->pointers[11];
     //        modified = (dir->pointers[12] + (dir->pointers[13] << 8)) * (0x60 * 0x60) +
     //                   dir->pointers[14] * 0x60 + dir->pointers[15];
-    //
+
     //        if (drive.cnotatime && modified < created) {
     //            guiintf->printMsg(
     //                wxString::Format("    Warning: Label modification date earlier than creation date (extent=%d)\n",
     //                                 extent), CpmGuiInterface::msgColGreen);
     //        }
-    //
+
     //        if ((dir->extnol & 0x40) && (dir->extnol & 0x10)) {
     //            guiintf->printMsg(
     //                wxString::Format("    Error: Bit 4 and 6 can only be exclusively be set (extent=%d, label byte=0x%02x)\n",
     //                                 extent, (unsigned char)dir->extnol), CpmGuiInterface::msgColGreen);
-    //
+
     //            if (repair && ask("Time stamp on creation")) {
     //                dir->extnol &= ~0x40;
     //                ret |= MODIFIED;
@@ -2032,11 +2034,11 @@ begin
     //                ret |= BROKEN;
     //            }
     //        }
-    //
+
     //        if ((dir->extnol & 0x80) && pwdCheck(extent, dir->pointers, dir->lrc)) {
     //            char msg[80];
     //            sprintf(msg, "Set password to %c%c%c%c%c%c%c%c", C0, C1, C2, C3, C4, C5, C6, C7);
-    //
+
     //            if (repair && ask(msg)) {
     //                dir->pointers[0] = PC0;
     //                dir->pointers[1] = PC1;
@@ -2059,7 +2061,7 @@ begin
     //        if (dirCheck(dir->name, 8, 0, drive.type) == -1) {
     //            guiintf->printMsg(wxString::Format("    Error: Bad name (extent=%d, name=\"%s\")\n",
     //                                               extent, prfile(&drive, extent)), CpmGuiInterface::msgColGreen);
-    //
+
     //            if (repair && ask("Clear password entry")) {
     //                *status = (char)0xE5;
     //                ret |= MODIFIED;
@@ -2069,11 +2071,11 @@ begin
     //                ret |= BROKEN;
     //            }
     //        }
-    //
+
     //        if (dirCheck(dir->ext, 3, 1, drive.type) == -1) {
     //            guiintf->printMsg(wxString::Format("    Error: Bad extension (extent=%d, name=\"%s\")\n",
     //                                               extent, prfile(&drive, extent)), CpmGuiInterface::msgColGreen);
-    //
+
     //            if (repair && ask("Clear password entry")) {
     //                *status = (char)0xE5;
     //                ret |= MODIFIED;
@@ -2083,13 +2085,13 @@ begin
     //                ret |= BROKEN;
     //            }
     //        }
-    //
-    //
+
+
     //        /* check password */
     //        if ((dir->extnol & (0x80 | 0x40 | 0x20)) && pwdCheck(extent, dir->pointers, dir->lrc)) {
     //            char msg[80];
     //            sprintf(msg, "Set password to %c%c%c%c%c%c%c%c", C0, C1, C2, C3, C4, C5, C6, C7);
-    //
+
     //            if (repair && ask(msg)) {
     //                dir->pointers[0] = PC0;
     //                dir->pointers[1] = PC1;
@@ -2111,7 +2113,7 @@ begin
     //        guiintf->printMsg(
     //            wxString::Format("    Error: Bad status (extent=%d, name=\"%s\", status=0x%02x)\n",
     //                             extent, prfile(&drive, extent), *status & 0xff), CpmGuiInterface::msgColGreen);
-    //
+
     //        if (repair && ask("Clear entry")) {
     //            *status = (char)0xE5;
     //            ret |= MODIFIED;
@@ -2119,37 +2121,37 @@ begin
     //        else {
     //            ret |= BROKEN;
     //        }
-    //
+
     //        continue;
     //    }
     //}
-    //
+
     ///* Phase 2: check extent connectivity */
     //guiintf->printMsg("  Phase 2: check extent connectivity\n", CpmGuiInterface::msgColGreen);
-    //
+
     ///* check multiple allocated blocks */
     //for (extent = 0; extent < drive.maxdir; ++extent) {
     //    if ((dir = drive.dir + extent)->status >= 0
     //            && dir->status <= (drive.type == CPMFS_P2DOS ? 31 : 15)) {
     //        int i, j, block, block2;
-    //
+
     //        for (i = 0; i < 16; ++i) {
     //            block = dir->pointers[i] & 0xff;
-    //
+
     //            if (drive.size > 256) {
     //                block += (dir->pointers[++i] & 0xff) << 8;
     //            }
-    //
+
     //            for (extent2 = 0; extent2 < drive.maxdir; ++extent2) {
     //                if ((dir2 = drive.dir + extent2)->status >= 0
     //                        && dir2->status <= (drive.type == CPMFS_P2DOS ? 31 : 15)) {
     //                    for (j = 0; j < 16; ++j) {
     //                        block2 = dir2->pointers[j] & 0xff;
-    //
+
     //                        if (drive.size > 256) {
     //                            block2 += (dir2->pointers[++j] & 0xff) << 8;
     //                        }
-    //
+
     //                        if (block != 0 && block2 != 0 && block == block2 && !(extent == extent2 && i == j)) {
     //                            guiintf->printMsg(
     //                                wxString::Format("    Error: Multiple allocated block (extent=%d,%d, name=\"%s\"", extent,
@@ -2164,7 +2166,7 @@ begin
     //        }
     //    }
     //}
-    //
+
     ///* check multiple extents */
     //for (extent = 0; extent < drive.maxdir; ++extent) {
     //    if ((dir = drive.dir + extent)->status >= 0
@@ -2176,12 +2178,12 @@ begin
     //                        && EXTENT(dir->extnol, dir->extnoh) == EXTENT(dir2->extnol, dir2->extnoh)
     //                        && dir->status == dir2->status) {
     //                    int i;
-    //
+
     //                    for (i = 0; i < 8 && (dir->name[i] & 0x7f) == (dir2->name[i] & 0x7f); ++i);
-    //
+
     //                    if (i == 8) {
     //                        for (i = 0; i < 3 && (dir->ext[i] & 0x7f) == (dir2->ext[i] & 0x7f); ++i);
-    //
+
     //                        if (i == 3) {
     //                            guiintf->printMsg(wxString::Format("    Error: Duplicate extent (extent=%d,%d)\n", extent,
     //                                                               extent2), CpmGuiInterface::msgColGreen);
@@ -2193,37 +2195,37 @@ begin
     //        }
     //    }
     //}
-    //
+
     //if (ret == 0) { /* print statistics */
     //    CpmFs::CpmStatFS_t statfsbuf;
     //    int fragmented = 0, borders = 0;
     //    cpmfs->statFs(&statfsbuf);
-    //
+
     //    for (extent = 0; extent < drive.maxdir; ++extent) {
     //        if ((dir = drive.dir + extent)->status >= 0
     //                && dir->status <= (drive.type == CPMFS_P2DOS ? 31 : 15)) {
     //            int i, block, previous = -1;
-    //
+
     //            for (i = 0; i < 16; ++i) {
     //                block = dir->pointers[i] & 0xff;
-    //
+
     //                if (drive.size > 256) {
     //                    block += (dir->pointers[++i] & 0xff) << 8;
     //                }
-    //
+
     //                if (previous != -1) {
     //                    if (block != 0 && block != (previous + 1)) {
     //                        ++fragmented;
     //                    }
-    //
+
     //                    ++borders;
     //                }
-    //
+
     //                previous = block;
     //            }
     //        }
     //    }
-    //
+
     //    fragmented = (borders ? (1000 * fragmented) / borders : 0);
     //    guiintf->printMsg(
     //        wxString::Format("  %s: %ld/%ld files (%d.%d%% non-contigous), %ld/%ld blocks\n", image,
@@ -2231,7 +2233,7 @@ begin
     //                         fragmented % 10, statfsbuf.f_blocks - statfsbuf.f_bfree, statfsbuf.f_blocks),
     //        CpmGuiInterface::msgColGreen);
     //}
-    //
+
     //guiintf->printMsg("====================================================================================================\n",
     //                  CpmGuiInterface::msgColGreen);
     //return ret;
@@ -3020,8 +3022,10 @@ end;
 //  -- convert time stamps to CP/M format
 // --------------------------------------------------------------------------------
 procedure TCpmFileSystem.UpdateTimeStamps(const AInode: TCpmInode; AExtent: integer);
+type
+    PPhysDirectoryEntry = ^TPhysDirectoryEntry;
 var
-    CpmDate: TPhysDirectoryEntry;
+    CpmDate: PPhysDirectoryEntry;
     Ca_Min, Ca_Hour, Ca_Days: integer;
     U_Min, U_Hour, U_Days: integer;
 begin
@@ -3038,49 +3042,48 @@ begin
     end;
 
     Unix2CpmTime(AInode.MTime, U_Days, U_Hour, U_Min);
-    CpmDate := FDirectory[AExtent or 3];
+    CpmDate := @FDirectory[AExtent or 3];
 
-    if (((FDrive.OsType and CPMFS_CPM3_DATES) <> 0) and (CpmDate.Status = $21)) then begin
+    if (((FDrive.OsType and CPMFS_CPM3_DATES) <> 0) and (CpmDate^.Status = $21)) then begin
         FDrive.DirtyDirectory := True;
 
         case (AExtent and 3) of
 
             0: begin  // first entry
-                CpmDate.Name[0] := Chr(Ca_Days and $FF);
-                CpmDate.Name[1] := Chr(Ca_Days shr 8);
-                CpmDate.Name[2] := Chr(Ca_Hour);
-                CpmDate.Name[3] := Chr(Ca_Min);
-                CpmDate.Name[4] := Chr(U_Days and $FF);
-                CpmDate.Name[5] := Chr(U_Days shr 8);
-                CpmDate.Name[6] := Chr(U_Hour);
-                CpmDate.Name[7] := Chr(U_Min);
+                CpmDate^.Name[0] := Chr(Ca_Days and $FF);
+                CpmDate^.Name[1] := Chr(Ca_Days shr 8);
+                CpmDate^.Name[2] := Chr(Ca_Hour);
+                CpmDate^.Name[3] := Chr(Ca_Min);
+                CpmDate^.Name[4] := Chr(U_Days and $FF);
+                CpmDate^.Name[5] := Chr(U_Days shr 8);
+                CpmDate^.Name[6] := Chr(U_Hour);
+                CpmDate^.Name[7] := Chr(U_Min);
             end;
 
             1: begin  // second entry
-                CpmDate.Ext[2] := Chr(Ca_Days and $FF);
-                CpmDate.Extnol := (Ca_Days shr 8);
-                CpmDate.Lrc := Ca_Hour;
-                CpmDate.Extnoh := Ca_Min;
-                CpmDate.Blkcnt := (U_Days and $FF);
-                CpmDate.Pointers[0] := (U_Days shr 8);
-                CpmDate.Pointers[1] := U_Hour;
-                CpmDate.Pointers[2] := U_Min;
+                CpmDate^.Ext[2] := Chr(Ca_Days and $FF);
+                CpmDate^.Extnol := (Ca_Days shr 8);
+                CpmDate^.Lrc := Ca_Hour;
+                CpmDate^.Extnoh := Ca_Min;
+                CpmDate^.Blkcnt := (U_Days and $FF);
+                CpmDate^.Pointers[0] := (U_Days shr 8);
+                CpmDate^.Pointers[1] := U_Hour;
+                CpmDate^.Pointers[2] := U_Min;
             end;
 
             2: begin  // third entry
-                CpmDate.Pointers[5] := (Ca_Days and $FF);
-                CpmDate.Pointers[6] := (Ca_Days shr 8);
-                CpmDate.Pointers[7] := Ca_Hour;
-                CpmDate.Pointers[8] := Ca_Min;
-                CpmDate.Pointers[9] := (U_Days and $FF);
-                CpmDate.Pointers[10] := (U_Days shr 8);
-                CpmDate.Pointers[11] := U_Hour;
-                CpmDate.Pointers[12] := U_Min;
+                CpmDate^.Pointers[5] := (Ca_Days and $FF);
+                CpmDate^.Pointers[6] := (Ca_Days shr 8);
+                CpmDate^.Pointers[7] := Ca_Hour;
+                CpmDate^.Pointers[8] := Ca_Min;
+                CpmDate^.Pointers[9] := (U_Days and $FF);
+                CpmDate^.Pointers[10] := (U_Days shr 8);
+                CpmDate^.Pointers[11] := U_Hour;
+                CpmDate^.Pointers[12] := U_Min;
             end;
 
         end;
 
-        FDirectory[AExtent or 3] := CpmDate;
     end;
 end;
 
@@ -3088,8 +3091,10 @@ end;
 //  -- set time in datestamper file
 // --------------------------------------------------------------------------------
 procedure TCpmFileSystem.UpdateDateStamper(const AInode: TCpmInode; AExtent: integer);
+type
+    PDateStamps = ^TDateStamps;
 var
-    Stamp: TDateStamps;
+    Stamp: PDateStamps;
 begin
 
     if not S_ISREG(AInode.Mode) then begin
@@ -3101,10 +3106,10 @@ begin
     end;
 
     // Get datestamp struct
-    Stamp := FDateStamps[AExtent];
-    Unix2DsTime(AInode.ATime, Stamp.Modify);
-    Unix2DsTime(AInode.CTime, Stamp.Create);
-    Unix2DsTime(AInode.ATime, Stamp.Access);
+    Stamp := @FDateStamps[AExtent];
+    Unix2DsTime(AInode.ATime, Stamp^.Modify);
+    Unix2DsTime(AInode.CTime, Stamp^.Create);
+    Unix2DsTime(AInode.ATime, Stamp^.Access);
     FDrive.DirtyDateStamp := True;
 end;
 
@@ -3112,8 +3117,10 @@ end;
 //  -- read CP/M time stamp
 // --------------------------------------------------------------------------------
 function TCpmFileSystem.ReadTimeStamps(var AInode: TCpmInode; ALowestExt: integer): integer;
+type
+    PPhysDirectoryEntry = ^TPhysDirectoryEntry;
 var
-    DirDate: TPhysDirectoryEntry;
+    DirDate: PPhysDirectoryEntry;
     U_Days, U_Hour, U_Min: integer;
     Ca_Days, Ca_Hour, Ca_Min: integer;
     ProtectMode: integer;
@@ -3126,40 +3133,40 @@ begin
     Ca_Min := 0;
     ProtectMode := 0;
 
-    DirDate := FDirectory[ALowestExt or 3];
+    DirDate := @FDirectory[ALowestExt or 3];
 
-    if (((FDrive.OsType and CPMFS_CPM3_DATES) <> 0) and (DirDate.Status = $21)) then begin
+    if (((FDrive.OsType and CPMFS_CPM3_DATES) <> 0) and (DirDate^.Status = $21)) then begin
 
         case (ALowestExt and 3) of
             // first entry of the four
             0: begin
-                Ca_Days := (Ord(DirDate.Name[0]) + (Ord(DirDate.Name[1]) shl 8));
-                Ca_Hour := Ord(DirDate.Name[2]);
-                Ca_Min := Ord(DirDate.Name[3]);
-                U_Days := (Ord(DirDate.Name[4]) + (Ord(DirDate.Name[5]) shl 8));
-                U_Hour := Ord(DirDate.Name[6]);
-                U_Min := Ord(DirDate.Name[7]);
-                ProtectMode := Ord(DirDate.Ext[0]);
+                Ca_Days := (Ord(DirDate^.Name[0]) + (Ord(DirDate^.Name[1]) shl 8));
+                Ca_Hour := Ord(DirDate^.Name[2]);
+                Ca_Min := Ord(DirDate^.Name[3]);
+                U_Days := (Ord(DirDate^.Name[4]) + (Ord(DirDate^.Name[5]) shl 8));
+                U_Hour := Ord(DirDate^.Name[6]);
+                U_Min := Ord(DirDate^.Name[7]);
+                ProtectMode := Ord(DirDate^.Ext[0]);
             end;
             // second entry
             1: begin
-                Ca_Days := (Ord(DirDate.Ext[2]) + (Ord(DirDate.Extnol) shl 8));
-                Ca_Hour := DirDate.Lrc;
-                Ca_Min := DirDate.Extnoh;
-                U_Days := (DirDate.Blkcnt + (DirDate.Pointers[0] shl 8));
-                U_Hour := DirDate.Pointers[1];
-                U_Min := DirDate.Pointers[2];
-                ProtectMode := DirDate.Pointers[3];
+                Ca_Days := (Ord(DirDate^.Ext[2]) + (Ord(DirDate^.Extnol) shl 8));
+                Ca_Hour := DirDate^.Lrc;
+                Ca_Min := DirDate^.Extnoh;
+                U_Days := (DirDate^.Blkcnt + (DirDate^.Pointers[0] shl 8));
+                U_Hour := DirDate^.Pointers[1];
+                U_Min := DirDate^.Pointers[2];
+                ProtectMode := DirDate^.Pointers[3];
             end;
             // third one
             2: begin
-                Ca_Days := (DirDate.Pointers[5] + (DirDate.Pointers[6] shl 8));
-                Ca_Hour := DirDate.Pointers[7];
-                Ca_Min := DirDate.Pointers[8];
-                U_Days := (DirDate.Pointers[9] + (DirDate.Pointers[10] shl 8));
-                U_Hour := DirDate.Pointers[11];
-                U_Min := DirDate.Pointers[12];
-                ProtectMode := DirDate.Pointers[13];
+                Ca_Days := (DirDate^.Pointers[5] + (DirDate^.Pointers[6] shl 8));
+                Ca_Hour := DirDate^.Pointers[7];
+                Ca_Min := DirDate^.Pointers[8];
+                U_Days := (DirDate^.Pointers[9] + (DirDate^.Pointers[10] shl 8));
+                U_Hour := DirDate^.Pointers[11];
+                U_Min := DirDate^.Pointers[12];
+                ProtectMode := DirDate^.Pointers[13];
             end;
         end;
 
@@ -3188,8 +3195,10 @@ end;
 //  -- read datestamper time stamp
 // --------------------------------------------------------------------------------
 procedure TCpmFileSystem.ReadDsStamps(var AInode: TCpmInode; ALowestExt: integer);
+type
+    PDateStamps = ^TDateStamps;
 var
-    Stamp: TDateStamps;
+    Stamp: PDateStamps;
 begin
 
     if not ((FDrive.OsType and CPMFS_DS_DATES) <> 0) then begin
@@ -3197,10 +3206,10 @@ begin
     end;
 
     // Get datestamp
-    Stamp := FDateStamps[ALowestExt];
-    AInode.MTime := Ds2UnixTime(Stamp.Modify);
-    AInode.CTime := Ds2UnixTime(Stamp.Create);
-    AInode.ATime := Ds2UnixTime(Stamp.Access);
+    Stamp := @FDateStamps[ALowestExt];
+    AInode.MTime := Ds2UnixTime(Stamp^.Modify);
+    AInode.CTime := Ds2UnixTime(Stamp^.Create);
+    AInode.ATime := Ds2UnixTime(Stamp^.Access);
 end;
 
 // --------------------------------------------------------------------------------
@@ -3736,9 +3745,11 @@ end;
 //  -- readdir
 // --------------------------------------------------------------------------------
 function TCpmFileSystem.ReadDir(var ADir: TCpmFile; var AEnt: TCpmDirent): boolean;
+type
+    PPhysDirectoryEntry = ^TPhysDirectoryEntry;
 var
     IndexI, First, MaxUser: integer;
-    Current: TPhysDirectoryEntry;
+    Current: PPhysDirectoryEntry;
     Buffer: array[0..13] of char;
     BufferIndex: integer;
     HasExt: boolean;
@@ -3799,7 +3810,7 @@ begin
         end
         else if ((ADir.Pos >= RESERVED_ENTRIES) and (ADir.Pos < (FDrive.MaxDir + RESERVED_ENTRIES))) then begin
             First := (ADir.Pos - RESERVED_ENTRIES);
-            Current := FDirectory[ADir.Pos - RESERVED_ENTRIES];
+            Current := @FDirectory[ADir.Pos - RESERVED_ENTRIES];
 
             if ((FDrive.OsType and CPMFS_HI_USER) <> 0) then begin
                 MaxUser := 31;
@@ -3808,16 +3819,16 @@ begin
                 MaxUser := 15;
             end;
 
-            if ((Current.Status >= 0) and (Current.Status <= MaxUser)) then begin
+            if ((Current^.Status >= 0) and (Current^.Status <= MaxUser)) then begin
 
                 // determine first extent for the current file
                 for IndexI := 0 to FDrive.MaxDir - 1 do begin
 
                     if (IndexI <> (ADir.Pos - RESERVED_ENTRIES)) then begin
 
-                        if (IsMatching(Current.Status, Current.Name, Current.Ext, FDirectory[IndexI].Status,
+                        if (IsMatching(Current^.Status, Current^.Name, Current^.Ext, FDirectory[IndexI].Status,
                             FDirectory[IndexI].Name, FDirectory[IndexI].Ext) and
-                            (EXTENT(Current.Extnol, Current.Extnoh) > EXTENT(FDirectory[IndexI].Extnol,
+                            (EXTENT(Current^.Extnol, Current^.Extnoh) > EXTENT(FDirectory[IndexI].Extnol,
                             FDirectory[IndexI].Extnoh))) then begin
                             First := IndexI;
                         end;
@@ -3829,18 +3840,18 @@ begin
                 if (First = (ADir.Pos - RESERVED_ENTRIES)) then begin
                     AEnt.Ino := (ADir.Pos - RESERVED_ENTRIES);
                     // convert file name to UNIX style
-                    Buffer[0] := Chr(Ord('0') + (Current.Status div 10));
-                    Buffer[1] := Chr(Ord('0') + (Current.Status mod 10));
+                    Buffer[0] := Chr(Ord('0') + (Current^.Status div 10));
+                    Buffer[1] := Chr(Ord('0') + (Current^.Status mod 10));
                     BufferIndex := 2;
                     IndexI := 0;
 
-                    while ((IndexI < 8) and ((Ord(Current.Name[IndexI]) and $7F) <> Ord(' '))) do begin
+                    while ((IndexI < 8) and ((Ord(Current^.Name[IndexI]) and $7F) <> Ord(' '))) do begin
 
                         if (FDrive.UpperCase) then begin
-                            Buffer[BufferIndex] := Chr(Ord(Current.Name[IndexI]) and $7F);
+                            Buffer[BufferIndex] := Chr(Ord(Current^.Name[IndexI]) and $7F);
                         end
                         else begin
-                            Buffer[BufferIndex] := LowerCase(Chr(Ord(Current.Name[IndexI]) and $7F));
+                            Buffer[BufferIndex] := LowerCase(Chr(Ord(Current^.Name[IndexI]) and $7F));
                         end;
 
                         Inc(BufferIndex);
@@ -3850,7 +3861,7 @@ begin
                     HasExt := False;
                     IndexI := 0;
 
-                    while ((IndexI < 3) and ((Ord(Current.Ext[IndexI]) and $7F) <> Ord(' '))) do begin
+                    while ((IndexI < 3) and ((Ord(Current^.Ext[IndexI]) and $7F) <> Ord(' '))) do begin
 
                         if not (HasExt) then begin
                             Buffer[BufferIndex] := '.';
@@ -3859,10 +3870,10 @@ begin
                         end;
 
                         if (FDrive.UpperCase) then begin
-                            Buffer[BufferIndex] := Chr(Ord(Current.Ext[IndexI]) and $7F);
+                            Buffer[BufferIndex] := Chr(Ord(Current^.Ext[IndexI]) and $7F);
                         end
                         else begin
-                            Buffer[BufferIndex] := LowerCase(Chr(Ord(Current.Ext[IndexI]) and $7F));
+                            Buffer[BufferIndex] := LowerCase(Chr(Ord(Current^.Ext[IndexI]) and $7F));
                         end;
 
                         Inc(BufferIndex);
@@ -3919,14 +3930,14 @@ begin
 
     //char c;
     //int i;
-    //
+
     //for (i = 0; i < 8; ++i) {
     //    if ((c = ((char)(pwd[7 - i] ^ decode))) < ' ' || (c & 0x80)) {
     //        wxString passwd;
-    //
+
     //        for (i = 0; i < 8; ++i) {
     //            c = pwd[7 - i] ^ decode;
-    //
+
     //            if (c < ' ' || (c & 0x80)) {
     //                passwd += "\\";
     //                passwd += ('0' + ((c >> 6) & 0x01));
@@ -3937,14 +3948,14 @@ begin
     //                passwd += (c);
     //            }
     //        }
-    //
+
     //        guiintf->printMsg(
     //            wxString::Format("    Non-printable character in password (extent=%d, password=%s)\n",
     //                             extent, passwd), CpmGuiInterface::msgColRed);
     //        return -1;
     //    }
     //}
-    //
+
     //return 0;
 end;
 
@@ -3958,21 +3969,21 @@ begin
 
     //size_t i;
     //int in_name = 1;
-    //
+
     //for (i = 0; i < len; ++i) {
     //    char c;
-    //
+
     //    c = str[i] & 0x7f;
-    //
+
     //    if (in_name) {
     //        if (islower(c)) {
     //            return (-1);
     //        }
-    //
+
     //        if (i == 0 && c == ' ' && !allow_empty) {
     //            return (-1);
     //        }
-    //
+
     //        if (c == ' ') {
     //            in_name = 0;
     //        }
@@ -3986,7 +3997,7 @@ begin
     //        }
     //    }
     //}
-    //
+
     //return (0);
 end;
 
@@ -4000,10 +4011,10 @@ begin
 
     //CpmFs::PhysDirectoryEntry_t *dir;
     //int block, size;
-    //
+
     //dir = sb->dir + extent;
     //size = EXTENT(dir->extnol, dir->extnoh) * sb->extentsize;
-    //
+
     //if (sb->size <= 256) for (block = 15; block >= 0; --block) {
     //        if (dir->pointers[block]) {
     //            break;
@@ -4014,10 +4025,10 @@ begin
     //            break;
     //        }
     //    }
-    //
+
     //if (dir->blkcnt) {
     //    size += ((dir->blkcnt & 0xff) - 1) * 128;
-    //
+
     //    if (sb->type & CPMFS_ISX) {
     //        size += (128 - dir->lrc);
     //    }
@@ -4025,7 +4036,7 @@ begin
     //        size += dir->lrc ? (dir->lrc & 0xff) : 128;
     //    }
     //}
-    //
+
     //return (size);
 end;
 
@@ -4043,10 +4054,10 @@ begin
     //int i;
     //char c;
     //dir = sb->dir + extent;
-    //
+
     //for (i = 0; i < 8; ++i) {
     //    c = dir->name[i];
-    //
+
     //    if ((c & 0x7f) < ' ') {
     //        *s++ = '\\';
     //        *s++ = ('0' + ((c >> 6) & 0x01));
@@ -4057,12 +4068,12 @@ begin
     //        *s++ = (c & 0x7f);
     //    }
     //}
-    //
+
     //*s++ = '.';
-    //
+
     //for (i = 0; i < 3; ++i) {
     //    c = dir->ext[i];
-    //
+
     //    if ((c & 0x7f) < ' ') {
     //        *s++ = '\\';
     //        *s++ = ('0' + ((c >> 6) & 0x01));
@@ -4073,7 +4084,7 @@ begin
     //        *s++ = (c & 0x7f);
     //    }
     //}
-    //
+
     //*s = '\0';
     //return name;
 end;
