@@ -168,7 +168,7 @@ type
         end;
 
         TIntArray = array of integer;
-        TDirArray = array of TPhysDirectoryEntry;
+        TDirArray = packed array of TPhysDirectoryEntry;
         TDsArray = array of TDateStamps;
 
     var
@@ -254,7 +254,7 @@ function TCpmFileSystem.InitDriveData(AUpperCase: boolean): boolean;
 var
     IndexI, IndexJ, IndexK, Value: integer;
     Blocks, Passwords: integer;
-    DirectoryBuffer: array of byte = nil;
+    PDirectory: pbyte;
 begin
     FDrive.UpperCase := AUpperCase;
 
@@ -320,7 +320,9 @@ begin
 
     // allocate directory buffer
     try
-        SetLength(DirectoryBuffer, ((((FDrive.MaxDir * 32) + FDrive.BlkSiz - 1) div FDrive.BlkSiz) * FDrive.BlkSiz));
+        SetLength(FDirectory, FDrive.MaxDir);
+        IndexI := Length(FDirectory);
+        PDirectory := @FDirectory[0];
     except
         on e: Exception do begin
             FFileSystemError := e.Message;
@@ -331,8 +333,8 @@ begin
 
     if not (FCpmDevice.IsOpen) then begin // create empty directory in core
 
-        for IndexI := Low(DirectoryBuffer) to High(DirectoryBuffer) do begin
-            DirectoryBuffer[IndexI] := $E5;
+        for IndexI := 0 to (FDrive.MaxDir * 32) do begin
+            (PDirectory +IndexI)^ := $E5;
         end;
 
     end
@@ -341,51 +343,11 @@ begin
 
         for IndexI := 0 to Blocks - 1 do begin
 
-            if not (ReadBlock(IndexI, @DirectoryBuffer[IndexI * FDrive.BlkSiz], 0, -1)) then begin
+            if not (ReadBlock(IndexI, (PDirectory + (IndexI * FDrive.BlkSiz)), 0, -1)) then begin
                 Result := False;
                 exit;
             end;
 
-        end;
-
-    end;
-
-    // copy Directory buffer to Directory Record-Array
-    try
-        SetLength(FDirectory, (Length(DirectoryBuffer) div SizeOf(TPhysDirectoryEntry)));
-    except
-        on e: Exception do begin
-            FFileSystemError := e.Message;
-            Result := False;
-            exit;
-        end;
-    end;
-
-    IndexI := Low(DirectoryBuffer);
-
-    while (IndexI <= High(DirectoryBuffer)) do begin
-
-        with (FDirectory[(IndexI div SizeOf(TPhysDirectoryEntry))]) do begin
-            Status := DirectoryBuffer[IndexI + 0];
-
-            for IndexJ := 0 to 7 do begin
-                Name[IndexJ] := char(DirectoryBuffer[IndexI + 1 + IndexJ]);
-            end;
-
-            for IndexJ := 0 to 2 do begin
-                Ext[IndexJ] := char(DirectoryBuffer[IndexI + 9 + IndexJ]);
-            end;
-
-            Extnol := DirectoryBuffer[IndexI + 12];
-            Lrc := DirectoryBuffer[IndexI + 13];
-            Extnoh := DirectoryBuffer[IndexI + 14];
-            Blkcnt := DirectoryBuffer[IndexI + 15];
-
-            for IndexJ := 0 to 15 do begin
-                Pointers[IndexJ] := DirectoryBuffer[IndexI + 16 + IndexJ];
-            end;
-
-            Inc(IndexI, SizeOf(TPhysDirectoryEntry));
         end;
 
     end;
@@ -2245,58 +2207,17 @@ end;
 // --------------------------------------------------------------------------------
 function TCpmFileSystem.Sync: boolean;
 var
-    IndexI, IndexJ, Blocks: integer;
-    DirectoryBuffer: array of byte = nil;
+    IndexI, Blocks: integer;
+    PDirectory: pbyte;
 begin
 
     if (FDrive.DirtyDirectory) then begin
-
-        // allocate directory buffer
-        try
-            SetLength(DirectoryBuffer, ((((FDrive.MaxDir * 32) + FDrive.BlkSiz - 1) div FDrive.BlkSiz) * FDrive.BlkSiz));
-        except
-            on e: Exception do begin
-                FFileSystemError := e.Message;
-                Result := False;
-                exit;
-            end;
-        end;
-
-        // copy directory entries into buffer
-        IndexI := Low(DirectoryBuffer);
-
-        while (IndexI <= High(DirectoryBuffer)) do begin
-
-            with (FDirectory[(IndexI div SizeOf(TPhysDirectoryEntry))]) do begin
-                DirectoryBuffer[IndexI + 0] := Status;
-
-                for IndexJ := 0 to 7 do begin
-                    DirectoryBuffer[IndexI + 1 + IndexJ] := Ord(Name[IndexJ]);
-                end;
-
-                for IndexJ := 0 to 2 do begin
-                    DirectoryBuffer[IndexI + 9 + IndexJ] := Ord(Ext[IndexJ]);
-                end;
-
-                DirectoryBuffer[IndexI + 12] := Extnol;
-                DirectoryBuffer[IndexI + 13] := Lrc;
-                DirectoryBuffer[IndexI + 14] := Extnoh;
-                DirectoryBuffer[IndexI + 15] := Blkcnt;
-
-                for IndexJ := 0 to 15 do begin
-                    DirectoryBuffer[IndexI + 16 + IndexJ] := Pointers[IndexJ];
-                end;
-
-                Inc(IndexI, SizeOf(TPhysDirectoryEntry));
-            end;
-
-        end;
-
+        PDirectory := @FDirectory[0];
         Blocks := (((FDrive.MaxDir * 32) + (FDrive.BlkSiz - 1)) div FDrive.BlkSiz);
 
-        for IndexI := 0 to Blocks - 1 do begin
+        for IndexI := 0 to (Blocks - 1) do begin
 
-            if not (WriteBlock(IndexI, @DirectoryBuffer[IndexI * FDrive.BlkSiz], 0, -1)) then begin
+            if not (WriteBlock(IndexI, (PDirectory + (IndexI * FDrive.BlkSiz)), 0, -1)) then begin
                 Result := False;
                 exit;
             end;
@@ -2904,7 +2825,7 @@ begin
 
         if (Counter >= AStart) then begin
 
-            if not (FCpmDevice.ReadSector(Track, FSkewTab[Sect], ABuffer[FDrive.SecLength * Counter])) then begin
+            if not (FCpmDevice.ReadSector(Track, FSkewTab[Sect], (ABuffer + (FDrive.SecLength * Counter))^)) then begin
                 FFileSystemError := FCpmDevice.GetErrorMsg;
                 Result := False;
                 exit;
@@ -2943,7 +2864,7 @@ begin
 
         if (Counter >= AStart) then begin
 
-            if not (FCpmDevice.WriteSector(Track, FSkewTab[Sect], ABuffer[FDrive.SecLength * Counter])) then begin
+            if not (FCpmDevice.WriteSector(Track, FSkewTab[Sect], (ABuffer + (FDrive.SecLength * Counter))^)) then begin
                 FFileSystemError := FCpmDevice.GetErrorMsg;
                 Result := False;
                 exit;
