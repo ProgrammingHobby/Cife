@@ -15,7 +15,6 @@ object AboutDialog: TAboutDialog
   OnClose = FormClose
   OnShow = FormShow
   Position = poMainFormCenter
-  LCLVersion = '3.0.0.3'
   object Panel1: TPanel
     Left = 24
     Height = 91
@@ -1035,7 +1034,7 @@ object AboutDialog: TAboutDialog
       Width = 436
       Align = alClient
       Alignment = taCenter
-      Caption = '   CP/M Images Functionality based on CP/M-Tools   '#10' Source Code Version 2.24 (Snapshot 2023-07-16) from Michael Haardt.'
+      Caption = '   CP/M Images Functionality based on CP/M-Tools   '#10' Source Code Version 2.24 (Snapshot 2023-08-14) from Michael Haardt.'
       Layout = tlCenter
       ParentColor = False
     end
