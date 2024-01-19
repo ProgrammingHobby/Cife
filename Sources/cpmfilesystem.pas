@@ -126,7 +126,7 @@ type
             Pointers: array[0..15] of byte;
         end;
 
-        TDsEntry = record
+        TDsEntry = packed record
             Year: byte;
             Month: byte;
             Day: byte;
@@ -134,7 +134,7 @@ type
             Minute: byte;
         end;
 
-        TDateStamps = record
+        TDateStamps = packed record
             Create: TDsEntry;
             Access: TDsEntry;
             Modify: TDsEntry;
@@ -169,7 +169,7 @@ type
 
         TIntArray = array of integer;
         TDirArray = packed array of TPhysDirectoryEntry;
-        TDsArray = array of TDateStamps;
+        TDsArray = packed array of TDateStamps;
 
     var
         FCpmDevice: TCpmDevice;
@@ -904,7 +904,6 @@ end;
 // --------------------------------------------------------------------------------
 //  -- create new empty binary Image-File
 // --------------------------------------------------------------------------------
-//int CpmFs::mkfs(char const *filename, char const *format, char const *label, char *bootTracks, int timeStamps, int uppercase) {
 function TCpmFileSystem.MakeFileSystem(const AImageName: string; const ABootTracks: array of byte;
     AFileSystemLabel: string; ATimeStampsUsed: boolean; AUseUpperCase: boolean): boolean;
 var
@@ -915,10 +914,10 @@ var
     DateTime: TDateTime;
     Minute, Hour, Days, Offset: integer;
     ImageSize, Records, CheckSum: longword;
-    DateStampsBuffer: array of byte = nil;
     Inode: TCpmInode;
     DateStampFile: TCpmFile;
     Times: TUTimeBuf;
+    PDateStamps: pbyte;
 const
     Signature = '!!!TIME';
 begin
@@ -1108,20 +1107,21 @@ begin
         Records := ((FDrive.MaxDir + 7) div 8);
 
         try
-            SetLength(DateStampsBuffer, (Records * 128 * SizeOf(TDateStamps)));
+            SetLength(FDateStamps, (Records * 128));
+            PDateStamps := @FDateStamps[0];
         except
             Sync;
             Result := False;
             exit;
         end;
 
-        FillByte(DateStampsBuffer[0], (Records * 128 * SizeOf(TDateStamps)), 0);
+        FillByte(PDateStamps^, (Records * 128 * SizeOf(TDateStamps)), 0);
         Offset := 15;
 
         for IndexI := 0 to (Records - 1) do begin
 
             for IndexJ := 0 to 6 do begin
-                DateStampsBuffer[Offset] := Ord(Signature[IndexJ + 1]);
+                (PDateStamps +Offset)^ := Ord(Signature[IndexJ + 1]);
                 Inc(Offset, 16);
             end;
 
@@ -1130,10 +1130,10 @@ begin
             CheckSum := 0;
 
             for IndexJ := 0 to 126 do begin
-                CheckSum := CheckSum + DateStampsBuffer[(IndexI * 128) + IndexJ];
+                CheckSum := CheckSum + (PDateStamps + (IndexI * 128) + IndexJ)^;
             end;
 
-            DateStampsBuffer[(IndexI * 128) + IndexJ + 1] := (CheckSum and $FF);
+            (PDateStamps +((IndexI * 128) + IndexJ + 1))^ := (CheckSum and $FF);
             Inc(IndexJ);
 
         end;
@@ -1145,7 +1145,7 @@ begin
             exit;
         end;
 
-        if ((not Open(Inode, DateStampFile, O_WRONLY)) or (Write(DateStampFile, @DateStampsBuffer[0], (Records * 128)) <>
+        if ((not Open(Inode, DateStampFile, O_WRONLY)) or (Write(DateStampFile, PDateStamps, (Records * 128)) <>
             (Records * 128)) or (not Close(DateStampFile))) then begin
             FFileSystemError := Format('Unable to write DateStamper file.  (%s)', [FFileSystemError]);
             Result := False;
@@ -1157,45 +1157,6 @@ begin
         Times.AcTime := Now;
         times.ModTime := Now;
         UpdateTime(Inode, Times);
-
-        // allocate datestamps record
-        try
-            SetLength(FDateStamps, High(DateStampsBuffer));
-        except
-            on e: Exception do begin
-                FFileSystemError := e.Message;
-                Result := False;
-                exit;
-            end;
-        end;
-
-        // copy buffer into datestamps record
-        IndexI := Low(DateStampsBuffer);
-
-        while (IndexI <= High(DateStampsBuffer)) do begin
-
-            with (FDateStamps[(IndexI div SizeOf(TDateStamps))]) do begin
-                Create.Year := DateStampsBuffer[IndexI + 0];
-                Create.Month := DateStampsBuffer[IndexI + 1];
-                Create.Day := DateStampsBuffer[IndexI + 2];
-                Create.Hour := DateStampsBuffer[IndexI + 3];
-                Create.Minute := DateStampsBuffer[IndexI + 4];
-                Access.Year := DateStampsBuffer[IndexI + 5];
-                Access.Month := DateStampsBuffer[IndexI + 6];
-                Access.Day := DateStampsBuffer[IndexI + 7];
-                Access.Hour := DateStampsBuffer[IndexI + 8];
-                Access.Minute := DateStampsBuffer[IndexI + 9];
-                Modify.Year := DateStampsBuffer[IndexI + 10];
-                Modify.Month := DateStampsBuffer[IndexI + 11];
-                Modify.Day := DateStampsBuffer[IndexI + 12];
-                Modify.Hour := DateStampsBuffer[IndexI + 13];
-                Modify.Minute := DateStampsBuffer[IndexI + 14];
-                CheckSum := DateStampsBuffer[IndexI + 15];
-                Inc(IndexI, SizeOf(TDateStamps));
-            end;
-
-        end;
-
         FDrive.DirtyDateStamp := True;
         Sync;
 
@@ -3140,7 +3101,7 @@ function TCpmFileSystem.CheckDateStamps: boolean;
 var
     DSOffset, DSBlocks, DSRecords: integer;
     IndexI, IndexJ, CheckSum, Offset: integer;
-    DateStampsBuffer: array of byte = nil;
+    PDateStamps: pbyte;
 begin
 
     if (not IsMatching(0, '!!!TIME&', 'DAT', FDirectory[0].Status, FDirectory[0].Name, FDirectory[0].Ext)) then begin
@@ -3153,9 +3114,9 @@ begin
     DSRecords := ((FDrive.MaxDir + 7) div 8);
     DSBlocks := (((DSRecords * 128) + (FDrive.BlkSiz - 1)) div FDrive.BlkSiz);
 
-    // allocate datestamps buffer
     try
-        SetLength(DateStampsBuffer, (FDrive.MaxDir * DSRecords));
+        SetLength(FDateStamps, ((FDrive.MaxDir * DSRecords) div SizeOf(TDateStamps)));
+        PDateStamps := @FDateStamps[0];
     except
         on e: Exception do begin
             FFileSystemError := e.Message;
@@ -3166,10 +3127,9 @@ begin
 
     Offset := 0;
 
-    // Read ds file in its entirety
-    for IndexI := DSOffset to (DSOffset + DSBlocks) - 1 do begin
+    for IndexI := DSOffset to ((DSOffset + DSBlocks) - 1) do begin
 
-        if (not ReadBlock(IndexI, @DateStampsBuffer[Offset], 0, -1)) then begin
+        if (not ReadBlock(IndexI, (PDateStamps + Offset), 0, -1)) then begin
             Result := False;
             exit;
         end;
@@ -3178,55 +3138,16 @@ begin
 
     end;
 
-    // allocate datestamps record
-    try
-        SetLength(FDateStamps, FDrive.MaxDir);
-    except
-        on e: Exception do begin
-            FFileSystemError := e.Message;
-            Result := False;
-            exit;
-        end;
-    end;
-
-    // copy buffer into datestamps record
-    IndexI := Low(DateStampsBuffer);
-
-    while (IndexI <= High(DateStampsBuffer)) do begin
-
-        with (FDateStamps[(IndexI div SizeOf(TDateStamps))]) do begin
-            Create.Year := DateStampsBuffer[IndexI + 0];
-            Create.Month := DateStampsBuffer[IndexI + 1];
-            Create.Day := DateStampsBuffer[IndexI + 2];
-            Create.Hour := DateStampsBuffer[IndexI + 3];
-            Create.Minute := DateStampsBuffer[IndexI + 4];
-            Access.Year := DateStampsBuffer[IndexI + 5];
-            Access.Month := DateStampsBuffer[IndexI + 6];
-            Access.Day := DateStampsBuffer[IndexI + 7];
-            Access.Hour := DateStampsBuffer[IndexI + 8];
-            Access.Minute := DateStampsBuffer[IndexI + 9];
-            Modify.Year := DateStampsBuffer[IndexI + 10];
-            Modify.Month := DateStampsBuffer[IndexI + 11];
-            Modify.Day := DateStampsBuffer[IndexI + 12];
-            Modify.Hour := DateStampsBuffer[IndexI + 13];
-            Modify.Minute := DateStampsBuffer[IndexI + 14];
-            CheckSum := DateStampsBuffer[IndexI + 15];
-            Inc(IndexI, SizeOf(TDateStamps));
-        end;
-
-    end;
-
-    // Verify checksums
     Offset := 0;
 
-    for IndexI := 0 to DSRecords - 1 do begin
+    for IndexI := 0 to (DSRecords - 1) do begin
         CheckSum := 0;
 
         for IndexJ := 0 to 126 do begin
-            CheckSum := CheckSum + DateStampsBuffer[IndexJ + Offset];
+            CheckSum := CheckSum + (PDateStamps + IndexJ + Offset)^;
         end;
 
-        if (DateStampsBuffer[IndexJ + Offset + 1] <> (CheckSum and $FF)) then begin
+        if ((PDateStamps + IndexJ + Offset + 1)^ <> (CheckSum and $FF)) then begin
             SetLength(FDateStamps, 0);
             FDateStamps := nil;
             Result := False;
@@ -3564,62 +3485,25 @@ function TCpmFileSystem.SyncDateStamps: boolean;
 var
     DSOffset, DSBlocks, DSRecords: integer;
     IndexI, IndexJ, CheckSum, Offset: integer;
-    DateStampsBuffer: array of byte = nil;
+    PDateStamps: pbyte;
 begin
 
     if (FDrive.DirtyDateStamp) then begin
 
         DSRecords := ((FDrive.MaxDir + 7) div 8);
-
-        // allocate DateStamps buffer
-        try
-            SetLength(DateStampsBuffer, (FDrive.MaxDir * DSRecords));
-        except
-            on e: Exception do begin
-                FFileSystemError := e.Message;
-                Result := False;
-                exit;
-            end;
-        end;
-
-        // copy DateStamps into buffer
-        IndexI := Low(DateStampsBuffer);
-
-        while (IndexI <= High(DateStampsBuffer)) do begin
-
-            with (FDateStamps[(IndexI div SizeOf(TDateStamps))]) do begin
-                DateStampsBuffer[IndexI + 0] := Create.Year;
-                DateStampsBuffer[IndexI + 1] := Create.Month;
-                DateStampsBuffer[IndexI + 2] := Create.Day;
-                DateStampsBuffer[IndexI + 3] := Create.Hour;
-                DateStampsBuffer[IndexI + 4] := Create.Minute;
-                DateStampsBuffer[IndexI + 5] := Access.Year;
-                DateStampsBuffer[IndexI + 6] := Access.Month;
-                DateStampsBuffer[IndexI + 7] := Access.Day;
-                DateStampsBuffer[IndexI + 8] := Access.Hour;
-                DateStampsBuffer[IndexI + 9] := Access.Minute;
-                DateStampsBuffer[IndexI + 10] := Modify.Year;
-                DateStampsBuffer[IndexI + 11] := Modify.Month;
-                DateStampsBuffer[IndexI + 12] := Modify.Day;
-                DateStampsBuffer[IndexI + 13] := Modify.Hour;
-                DateStampsBuffer[IndexI + 14] := Modify.Minute;
-                DateStampsBuffer[IndexI + 15] := CheckSum;
-                Inc(IndexI, SizeOf(TDateStamps));
-            end;
-
-        end;
+        PDateStamps := @FDateStamps[0];
 
         // Re-calculate checksums
         Offset := 0;
 
-        for IndexI := 0 to DSRecords - 1 do begin
+        for IndexI := 0 to (DSRecords - 1) do begin
             CheckSum := 0;
 
             for IndexJ := 0 to 126 do begin
-                CheckSum := CheckSum + DateStampsBuffer[IndexJ + Offset];
+                CheckSum := CheckSum + (PDateStamps + IndexJ + Offset)^;
             end;
 
-            DateStampsBuffer[IndexJ + Offset + 1] := (CheckSum and $FF);
+            (PDateStamps +IndexJ + Offset + 1)^ := (CheckSum and $FF);
             Inc(Offset, 128);
 
         end;
@@ -3628,9 +3512,9 @@ begin
         DSBlocks := (((DSRecords * 128) + (FDrive.BlkSiz - 1)) div FDrive.BlkSiz);
         Offset := 0;
 
-        for IndexI := DSOffset to (DSOffset + DSBlocks) - 1 do begin
+        for IndexI := DSOffset to ((DSOffset + DSBlocks) - 1) do begin
 
-            if not (WriteBlock(IndexI, @DateStampsBuffer[Offset], 0, -1)) then begin
+            if not (WriteBlock(IndexI, (PDateStamps + Offset), 0, -1)) then begin
                 Result := False;
                 exit;
             end;
