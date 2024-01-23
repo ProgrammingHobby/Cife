@@ -10,6 +10,7 @@ object FileDialog: TFileDialog
   OnCreate = FormCreate
   OnShow = FormShow
   Position = poMainFormCenter
+  LCLVersion = '3.0.0.3'
   object ButtonPanel1: TButtonPanel
     Left = 8
     Height = 34
@@ -234,8 +235,8 @@ object FileDialog: TFileDialog
     AutoSize = True
     BorderSpacing.Around = 8
     BevelOuter = bvNone
-    ClientHeight = 13
-    ClientWidth = 346
+    ClientHeight = 17
+    ClientWidth = 350
     TabOrder = 2
     OnPaint = PanelPaint
     object labelDialogNotice: TLabel

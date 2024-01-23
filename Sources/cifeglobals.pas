@@ -88,6 +88,9 @@ var
     LabelUsed, BootTrackUsed: boolean;
     ImageTypeName, OsType: string;
 begin
+    ADiskDefsList.Items.Clear;
+    ADiskDefsList.Items.BeginUpdate;
+
     try
         Diskdefs := TStringList.Create;
         DiskDefs.LoadFromFile(APath);
@@ -130,6 +133,8 @@ begin
     finally
         FreeAndNil(Diskdefs);
     end;
+
+    ADiskDefsList.Items.EndUpdate;
 end;
 
 // --------------------------------------------------------------------------------

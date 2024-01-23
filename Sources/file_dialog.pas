@@ -233,10 +233,13 @@ begin
 
     end;
 
+    comboboxImageType.Items.BeginUpdate;
+
     for IndexI := 0 to comboboxImageType.Items.Count - 1 do begin
         comboboxImageType.Items.Objects[IndexI].Free;
     end;
 
+    comboboxImageType.Items.EndUpdate;
     CloseAction := caFree;
 end;
 
