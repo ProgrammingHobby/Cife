@@ -90,7 +90,7 @@ uses Controls, StdCtrls, RenameFile_Dialog, StrUtils, Graphics, XMLSettings, Dia
 procedure TImagePage.DoShow;
 begin
     inherited DoShow;
-    FCpmTools.ShowDirectory;
+    RefreshDirectory;
 
     if Assigned(FFileSystemInfoCallBack) then begin
         FFileSystemInfoCallBack(FCpmTools.GetFileSystemInfo);
