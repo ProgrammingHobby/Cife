@@ -156,7 +156,7 @@ var
     Buf: TCpmStatFS;
     StatBuf: TCpmStat;
     Gargc, Row: integer;
-    IndexI, Attrib, User: integer;
+    IndexI, Attrib, User, MaxUser: integer;
     FilesCount, TotalBytes, TotalRecs: integer;
     Gargv: TStringList;
     Attribute: string[16];
@@ -166,6 +166,13 @@ begin
     FCpmFileSystem.Glob('*', Gargc, Gargv);
     { #todo : Range-Check Fehler bei falsch angegebenem Image-Typ abfangen }
 
+    if (FCpmFileSystem.GetFileSystemInfo.System = 'P2DOS') then begin
+        MaxUser := 31;
+    end
+    else begin
+        MaxUser := 15;
+    end;
+
     if (Gargc > 0) then begin
         FilesCount := 0;
         TotalBytes := 0;
@@ -173,7 +180,7 @@ begin
         QSort(Gargv, 0, Gargv.Count - 1);
         FCpmFileSystem.StatFs(Buf);
 
-        for User := 0 to 31 do begin
+        for User := 0 to MaxUser do begin
 
             for IndexI := 0 to Gargc - 1 do begin
 
@@ -581,8 +588,8 @@ begin
         end
         else begin
 
-            if MessageDlg(Format('can not find %s' + LineEnding + '(%s)',
-                [AFileName, FCpmFileSystem.GetErrorMsg]), mtError, [mbOK], 0) = mrOk then begin
+            if MessageDlg(Format('can not find %s' + LineEnding + '(%s)', [AFileName,
+                FCpmFileSystem.GetErrorMsg]), mtError, [mbOK], 0) = mrOk then begin
                 Exit;
             end;
 
