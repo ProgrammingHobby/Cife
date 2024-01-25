@@ -7,10 +7,9 @@
       <Unit>
         <Filename Value="cife.lpr"/>
         <IsPartOfProject Value="True"/>
-        <EditorIndex Value="1"/>
+        <EditorIndex Value="-1"/>
         <CursorPos X="11" Y="20"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/main_window.pas"/>
@@ -20,7 +19,7 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Main_Window"/>
         <TopLine Value="143"/>
-        <CursorPos X="15" Y="172"/>
+        <CursorPos X="4" Y="172"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
@@ -32,12 +31,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="File_Dialog"/>
-        <EditorIndex Value="3"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="174"/>
         <CursorPos X="169" Y="183"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/renamefile_dialog.pas"/>
@@ -68,12 +65,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Settings_Dialog"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="135"/>
         <CursorPos X="9" Y="178"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/about_dialog.pas"/>
@@ -90,9 +85,9 @@
         <Filename Value="Sources/imagepage.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="ImagePage"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="2"/>
         <TopLine Value="132"/>
-        <CursorPos X="10" Y="152"/>
+        <CursorPos X="5" Y="152"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit>
@@ -125,9 +120,9 @@
         <Filename Value="Sources/cifeglobals.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="CifeGlobals"/>
-        <EditorIndex Value="9"/>
+        <EditorIndex Value="6"/>
         <TopLine Value="24"/>
-        <CursorPos X="100" Y="84"/>
+        <CursorPos X="4" Y="84"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit>
@@ -135,7 +130,7 @@
         <Filename Value="Sources/cpmdevice.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="CpmDevice"/>
-        <EditorIndex Value="2"/>
+        <EditorIndex Value="1"/>
         <TopLine Value="52"/>
         <CursorPos Y="88"/>
         <UsageCount Value="200"/>
@@ -145,9 +140,9 @@
         <Filename Value="Sources/cpmfilesystem.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="CpmFileSystem"/>
-        <EditorIndex Value="7"/>
-        <TopLine Value="2684"/>
-        <CursorPos X="5" Y="2713"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="3405"/>
+        <CursorPos X="101" Y="3455"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit>
@@ -155,9 +150,10 @@
         <Filename Value="Sources/cpmtools.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="CpmTools"/>
-        <EditorIndex Value="6"/>
-        <TopLine Value="427"/>
-        <CursorPos X="5" Y="482"/>
+        <IsVisibleTab Value="True"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="131"/>
+        <CursorPos X="33" Y="183"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit>
@@ -165,9 +161,8 @@
         <Filename Value="Sources/cpmdefs.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="CpmDefs"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="8"/>
-        <TopLine Value="68"/>
+        <EditorIndex Value="5"/>
+        <TopLine Value="76"/>
         <CursorPos X="84" Y="147"/>
         <UsageCount Value="197"/>
         <Loaded Value="True"/>
@@ -346,14 +341,6 @@
       </Position>
       <Position>
         <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="1287" TopLine="1244"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="1285" TopLine="1244"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
         <Caret Line="971" Column="23" TopLine="943"/>
       </Position>
       <Position>
@@ -383,6 +370,14 @@
       <Position>
         <Filename Value="Sources/cpmfilesystem.pas"/>
         <Caret Line="3114" Column="81" TopLine="3078"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/cpmfilesystem.pas"/>
+        <Caret Line="2713" Column="5" TopLine="2684"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/cpmtools.pas"/>
+        <Caret Line="482" Column="5" TopLine="384"/>
       </Position>
     </JumpHistory>
     <RunParams>
