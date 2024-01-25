@@ -3416,8 +3416,8 @@ begin
     ///* the current offset from UTC is most sensible, but not perfect. */
     DateTime := EncodeDate(1978, 1, 1);
     DateTime := IncDay(DateTime, ADays - 1);
-    DateTime := IncHour(DateTime, BCDToInt(AHour));
-    Result := IncMinute(DateTime, BCDToInt(AMin));
+    DateTime := IncHour(DateTime, BCD2BIN(AHour));
+    Result := IncMinute(DateTime, BCD2BIN(AMin));
 end;
 
 // --------------------------------------------------------------------------------
@@ -3446,14 +3446,14 @@ begin
         exit;
     end;
 
-    Year := BCDToInt(AEntry.Year);
+    Year := BCD2BIN(AEntry.Year);
 
     if (Year < 70) then begin
         Inc(Year, 2000);
     end;
 
-    Result := EncodeDateTime(Year, BCDToInt(AEntry.Month), BCDToInt(AEntry.Day), BCDToInt(AEntry.Hour),
-        BCDToInt(AEntry.Minute), 0, 0);
+    Result := EncodeDateTime(Year, BCD2BIN(AEntry.Month), BCD2BIN(AEntry.Day), BCD2BIN(AEntry.Hour),
+        BCD2BIN(AEntry.Minute), 0, 0);
 end;
 
 // --------------------------------------------------------------------------------
