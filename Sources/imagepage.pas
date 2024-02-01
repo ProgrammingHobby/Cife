@@ -235,7 +235,7 @@ var
     UpperCase: boolean;
 begin
     { #todo : evtl. selektierte Items nach dem Refresh wieder herstellen. }
-    FDirectoryList.Clear;
+    //FDirectoryList.Clear;
 
     with TXMLSettings.Create(SettingsFile) do begin
         try
@@ -368,6 +368,7 @@ end;
 // --------------------------------------------------------------------------------
 destructor TImagePage.Destroy;
 begin
+    { #todo : Auch Directory Statistics löschen. }
     ClearFileSystemInfo;
     FreeAndNil(FCpmTools);
     inherited Destroy;
@@ -485,6 +486,7 @@ begin
         DirColumn.Alignment := taCenter;
         DirColumn := Columns.Add;
         DirColumn.Caption := 'Created';
+        { #todo : Abfrage ob 'Created' oder 'Last Access' im Dateisystem verwendet wird und auch nur diese Spalte erzeugen. }
         DirColumn.Alignment := taCenter;
         DirColumn := Columns.Add;
         DirColumn.Caption := 'Last Access';
@@ -527,6 +529,10 @@ var
     Item: TListItem;
     IndexI: integer;
 begin
+    if ((AColumn = 0) and (ARow <= 1)) then begin
+        FDirectoryList.Clear;
+    end;
+
     if (FDirectoryList.Items.Count < ARow) then begin
         Item := FDirectoryList.Items.Add;
         Item.Caption := AData;
