@@ -117,6 +117,14 @@ msgctxt "tcharacteristicsdialog.sheetpermissions.caption"
 msgid "Permissions"
 msgstr ""
 
+#: tcheckimagedialog.buttoncheckimage.caption
+msgid "Start Image-Check"
+msgstr ""
+
+#: tcheckimagedialog.checkrepairfilesystemerrors.caption
+msgid "Repair Filesystem Errors"
+msgstr ""
+
 #: tfiledialog.buttonopenboottrackfile.caption
 msgctxt "tfiledialog.buttonopenboottrackfile.caption"
 msgid "Browse"

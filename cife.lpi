@@ -22,7 +22,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="7"/>
-      <BuildNr Value="1455"/>
+      <BuildNr Value="1567"/>
       <StringTable FileDescription="CP/M Image-File Explorer" InternalName="CIFE" OriginalFilename="CIFE"/>
     </VersionInfo>
     <BuildModes>
@@ -492,6 +492,14 @@
         <Filename Value="Sources/quicksort.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="QuickSort"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Sources/checkimage_dialog.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="CheckImageDialog"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="CheckImage_Dialog"/>
       </Unit>
     </Units>
   </ProjectOptions>
