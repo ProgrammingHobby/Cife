@@ -8,6 +8,7 @@ object CheckImageDialog: TCheckImageDialog
   ClientWidth = 328
   OnClose = FormClose
   OnShow = FormShow
+  LCLVersion = '3.0.0.3'
   object Panel1: TPanel
     Left = 0
     Height = 98
@@ -16,8 +17,8 @@ object CheckImageDialog: TCheckImageDialog
     Align = alClient
     AutoSize = True
     BevelOuter = bvNone
-    ClientHeight = 94
-    ClientWidth = 324
+    ClientHeight = 98
+    ClientWidth = 328
     ParentBackground = False
     ParentColor = False
     TabOrder = 0
@@ -29,8 +30,8 @@ object CheckImageDialog: TCheckImageDialog
       Align = alBottom
       AutoSize = True
       BevelOuter = bvNone
-      ClientHeight = 33
-      ClientWidth = 320
+      ClientHeight = 37
+      ClientWidth = 324
       ParentBackground = False
       ParentColor = False
       TabOrder = 0

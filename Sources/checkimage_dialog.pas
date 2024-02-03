@@ -102,11 +102,11 @@ begin
     ScrollWidth := GetSystemMetrics(SM_CXVSCROLL);
 
     {$ifdef Windows}
-    memoCheckMessages.Constraints.MinWidth := (40 * (CharWidth + 2)) + ScrollWidth;
-    memoCheckMessages.Constraints.MinHeight := (16 * CharHeight) + 7;
+    memoCheckMessages.Constraints.MinWidth := (81 * (CharWidth)) + ScrollWidth;
+    memoCheckMessages.Constraints.MinHeight := (24 * CharHeight) + 7;
     {$else}
-    memoCheckMessages.Constraints.MinWidth := (40 * (CharWidth + 2)) + ScrollWidth;
-    memoCheckMessages.Constraints.MinHeight := (16 * CharHeight) - 4;
+    memoCheckMessages.Constraints.MinWidth := (80 * (CharWidth)) + ScrollWidth;
+    memoCheckMessages.Constraints.MinHeight := (24 * CharHeight) - 4;
     {$endif}
     memoCheckMessages.Clear;
 

@@ -288,6 +288,8 @@ begin
                         FPrintDirectoryEntry(5, Row, FormatDateTime('DD-MMM-YYYY HH:MM', StatBuf.MTime));
                     end;
 
+                    { #todo : Abfragen ob 'Created' oder 'last Access' im Dateisystem verwendet wird }
+
                     //  created
 
                     if (StatBuf.CTime <> 0) then begin
@@ -498,22 +500,22 @@ procedure TCpmTools.CheckImage(ADoRepair: boolean; AMessage: TCheckMessageCallBa
 var
     CheckResult: integer;
 begin
-    CheckResult := FCpmFileSystem.FsCheck(ADoRepair, AMessage);
+    CheckResult := FCpmFileSystem.CheckFileSystem(ADoRepair, AMessage);
 
     if ((CheckResult and FS_MODIFIED) <> 0) then begin
 
         if not FCpmFileSystem.Sync then begin
-            AMessage(Format('write error on ''%s''  (%s)', [ExtractFileName(FCpmFileSystem.GetFileSystemInfo.FileName),
-                FCpmFileSystem.GetErrorMsg]));
+            AMessage(Format('write error on ''%s''  (%s)', [ExtractFileName(FFileName), FCpmFileSystem.GetErrorMsg]));
             CheckResult := (CheckResult or FS_BROKEN);
         end;
 
-        AMessage(Format('file system on ''%s'' modified', [ExtractFileName(FCpmFileSystem.GetFileSystemInfo.FileName)]));
+        AMessage(Format('file system on ''%s'' modified', [ExtractFileName(FFileName)]));
 
         if ((CheckResult and FS_BROKEN) <> 0) then begin
             AMessage('please check again');
         end;
 
+        ShowDirectory;
     end;
 
 end;
@@ -588,8 +590,8 @@ begin
         end
         else begin
 
-            if MessageDlg(Format('can not find %s' + LineEnding + '(%s)', [AFileName,
-                FCpmFileSystem.GetErrorMsg]), mtError, [mbOK], 0) = mrOk then begin
+            if MessageDlg(Format('can not find %s' + LineEnding + '(%s)',
+                [AFileName, FCpmFileSystem.GetErrorMsg]), mtError, [mbOK], 0) = mrOk then begin
                 Exit;
             end;
 
