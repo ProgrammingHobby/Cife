@@ -79,24 +79,24 @@ const
     O_WRONLY = 01;
     O_RDWR = 02;
 
-    C0 = 'G';
-    C1 = 'E';
-    C2 = 'H';
-    C3 = 'E';
-    C4 = 'I';
-    C5 = 'M';
-    C6 = ' ';
-    C7 = ' ';
+    T0 = 'S';
+    T1 = 'E';
+    T2 = 'C';
+    T3 = 'R';
+    T4 = 'E';
+    T5 = 'T';
+    T6 = ' ';
+    T7 = ' ';
 
-    //PB = ((PChar)(C0+C1+C2+C3+C4+C5+C6+C7));
-    //PC0 =((char)(C7^PB));
-    //PC1 =((char)(C6^PB));
-    //PC2 =((char)(C5^PB));
-    //PC3 =((char)(C4^PB));
-    //PC4 =((char)(C3^PB));
-    //PC5 =((char)(C2^PB));
-    //PC6 =((char)(C1^PB));
-    //PC7 =((char)(C0^PB));
+    PB = ((Ord(T0) + Ord(T1) + Ord(T2) + Ord(T3) + Ord(T4) + Ord(T5) + Ord(T6) + Ord(T7)) and $FF);
+    P0 = (Ord(T7) xor PB);
+    P1 = (Ord(T6) xor PB);
+    P2 = (Ord(T5) xor PB);
+    P3 = (Ord(T4) xor PB);
+    P4 = (Ord(T3) xor PB);
+    P5 = (Ord(T2) xor PB);
+    P6 = (Ord(T1) xor PB);
+    P7 = (Ord(T0) xor PB);
 
 function BCD2BIN(AValue: integer): integer;
 function BIN2BCD(AValue: integer): integer;
