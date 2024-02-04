@@ -44,6 +44,8 @@ type
         TotalBytes: integer;
         TotalRecords: integer;
         Total1KBlocks: integer;
+        TotalFreeBytes: integer;
+        TotalDiskBytes: integer;
         FilesFound: integer;
         MaxDirEntries: integer;
         UsedDirEntries: integer;
