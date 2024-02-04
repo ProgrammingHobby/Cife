@@ -1876,7 +1876,6 @@ begin
 
         end
 
-        { #todo : hier weiter }
         // check time stamps ?
         else if (((FDrive.OsType = CPMFS_P2DOS) or (FDrive.OsType = CPMFS_DR3)) and (Status^ = 33)) then begin
             Extent2 := (Extent1 and not 3);
@@ -2290,8 +2289,8 @@ begin
         end;
 
         AMessage(Format('  %d/%d files (%d.%d%% non-contigous), %d/%d blocks',
-            [(StatFsBuf.F_Files - StatFsBuf.F_FFree), StatFsBuf.F_Files, (Fragmented div 10), (Fragmented mod 10),
-            (StatFsBuf.F_Blocks - StatFsBuf.F_BFree), StatFsBuf.F_Blocks]));
+            [(StatFsBuf.F_Files - StatFsBuf.F_FFree), StatFsBuf.F_Files, (Fragmented div 10),
+            (Fragmented mod 10), (StatFsBuf.F_Blocks - StatFsBuf.F_BFree), StatFsBuf.F_Blocks]));
     end;
 
     if ((Ret and FS_MODIFIED) <> 0) then begin
