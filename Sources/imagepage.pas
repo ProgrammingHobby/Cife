@@ -487,7 +487,6 @@ begin
         DirColumn.Alignment := taCenter;
         DirColumn := Columns.Add;
         DirColumn.Caption := 'Created';
-        { #todo : Abfrage ob 'Created' oder 'Last Access' im Dateisystem verwendet wird und auch nur diese Spalte erzeugen. }
         DirColumn.Alignment := taCenter;
         DirColumn := Columns.Add;
         DirColumn.Caption := 'Last Access';

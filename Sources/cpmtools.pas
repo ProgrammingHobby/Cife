@@ -286,8 +286,6 @@ begin
                         FPrintDirectoryEntry(5, Row, FormatDateTime('DD-MMM-YYYY HH:MM', StatBuf.MTime));
                     end;
 
-                    { #todo : Abfragen ob 'Created' oder 'last Access' im Dateisystem verwendet wird }
-
                     //  created
                     if (StatBuf.CTime <> 0) then begin
                         FPrintDirectoryEntry(6, Row, FormatDateTime('DD-MMM-YYYY HH:MM', StatBuf.CTime));
