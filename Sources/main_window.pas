@@ -609,14 +609,14 @@ end;
 // --------------------------------------------------------------------------------
 procedure TMainWindow.ShowDirectoryStatistic(AStatistic: TDirStatistic);
 begin
-    labelTotalBytes.Caption := IntToStr(AStatistic.TotalBytes) + 'K';
-    labelTotal1kBlocks.Caption := IntToStr(AStatistic.Total1KBlocks);
-    labelTotalRecords.Caption := IntToStr(AStatistic.TotalRecords);
-    labelFilesFound.Caption := IntToStr(AStatistic.FilesFound);
-    labelMaxDirEntries.Caption := IntToStr(AStatistic.MaxDirEntries);
-    labelUsedDirEntries.Caption := IntToStr(AStatistic.UsedDirEntries);
-    labelTotalFreeBytes.Caption := IntToStr(AStatistic.TotalFreeBytes) + 'K';
-    labelTotalDiskBytes.Caption := IntToStr(AStatistic.TotalDiskBytes) + 'K';
+    labelTotalBytes.Caption := AStatistic.TotalBytes;
+    labelTotal1kBlocks.Caption := AStatistic.Total1KBlocks;
+    labelTotalRecords.Caption := AStatistic.TotalRecords;
+    labelFilesFound.Caption := AStatistic.FilesFound;
+    labelMaxDirEntries.Caption := AStatistic.MaxDirEntries;
+    labelUsedDirEntries.Caption := AStatistic.UsedDirEntries;
+    labelTotalFreeBytes.Caption := AStatistic.TotalFreeBytes;
+    labelTotalDiskBytes.Caption := AStatistic.TotalDiskBytes;
 end;
 
 // --------------------------------------------------------------------------------

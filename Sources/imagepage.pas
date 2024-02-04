@@ -75,6 +75,7 @@ type
     private   // Methoden
         procedure CreateDirectoryListView;
         procedure ClearFileSystemInfo;
+        procedure ClearDirectoryStatistics;
         procedure PrintDirectoryEntry(AColumn: integer; ARow: integer; AData: string);
 
     end;
@@ -368,8 +369,8 @@ end;
 // --------------------------------------------------------------------------------
 destructor TImagePage.Destroy;
 begin
-    { #todo : Auch Directory Statistics löschen. }
     ClearFileSystemInfo;
+    ClearDirectoryStatistics;
     FreeAndNil(FCpmTools);
     inherited Destroy;
 end;
@@ -520,6 +521,28 @@ begin
 
     if Assigned(FFileSystemInfoCallBack) then begin
         FFileSystemInfoCallBack(Info);
+    end;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TImagePage.ClearDirectoryStatistics;
+var
+    Statistics: TDirStatistic;
+begin
+
+    with Statistics do begin
+        TotalBytes := EmptyStr;
+        TotalRecords := EmptyStr;
+        Total1KBlocks := EmptyStr;
+        TotalFreeBytes := EmptyStr;
+        TotalDiskBytes := EmptyStr;
+        FilesFound := EmptyStr;
+        MaxDirEntries := EmptyStr;
+        UsedDirEntries := EmptyStr;
+    end;
+
+    if Assigned(FDirStatisticCallBack) then begin
+        FDirStatisticCallBack(Statistics);
     end;
 end;
 

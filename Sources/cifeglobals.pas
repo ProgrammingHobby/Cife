@@ -41,14 +41,14 @@ type
     end;
 
     TDirStatistic = record
-        TotalBytes: integer;
-        TotalRecords: integer;
-        Total1KBlocks: integer;
-        TotalFreeBytes: integer;
-        TotalDiskBytes: integer;
-        FilesFound: integer;
-        MaxDirEntries: integer;
-        UsedDirEntries: integer;
+        TotalBytes: string;
+        TotalRecords: string;
+        Total1KBlocks: string;
+        TotalFreeBytes: string;
+        TotalDiskBytes: string;
+        FilesFound: string;
+        MaxDirEntries: string;
+        UsedDirEntries: string;
     end;
 
     TFileInfo = record
