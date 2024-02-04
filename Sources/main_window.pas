@@ -62,6 +62,10 @@ type
         Label15: TLabel;
         Label16: TLabel;
         Label17: TLabel;
+        Label18: TLabel;
+        Label19: TLabel;
+        labelTotalFreeBytes: TLabel;
+        labelTotalDiskBytes: TLabel;
         labelType: TLabel;
         labelUsedDirEntries: TLabel;
         labelMaxDirEntries: TLabel;
@@ -98,6 +102,7 @@ type
         Panel4: TPanel;
         Panel5: TPanel;
         Panel6: TPanel;
+        Panel7: TPanel;
         popupItemRefresh: TMenuItem;
         Separator10: TMenuItem;
         Separator8: TMenuItem;
@@ -460,6 +465,9 @@ begin
     labelMaxDirEntries.Constraints.MinWidth := LabelWidth;
     labelUsedDirEntries.Constraints.MinWidth := LabelWidth;
     Panel5.AutoSize := False;
+    labelTotalFreeBytes.Constraints.MinWidth := LabelWidth;
+    labelTotalDiskBytes.Constraints.MinWidth := LabelWidth;
+    Panel7.AutoSize := False;
 
     LabelWidth := labelTracks.Canvas.GetTextWidth('#######');
     labelTracks.Constraints.MinWidth := LabelWidth;
@@ -607,6 +615,8 @@ begin
     labelFilesFound.Caption := IntToStr(AStatistic.FilesFound);
     labelMaxDirEntries.Caption := IntToStr(AStatistic.MaxDirEntries);
     labelUsedDirEntries.Caption := IntToStr(AStatistic.UsedDirEntries);
+    labelTotalFreeBytes.Caption := IntToStr(AStatistic.TotalFreeBytes) + 'K';
+    labelTotalDiskBytes.Caption := IntToStr(AStatistic.TotalDiskBytes) + 'K';
 end;
 
 // --------------------------------------------------------------------------------

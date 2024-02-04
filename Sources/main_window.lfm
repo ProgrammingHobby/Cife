@@ -9,7 +9,6 @@ object MainWindow: TMainWindow
   Menu = MainMenu
   OnClose = FormClose
   OnShow = FormShow
-  LCLVersion = '3.0.0.3'
   object StatusBar1: TStatusBar
     Left = 4
     Height = 21
@@ -148,7 +147,7 @@ object MainWindow: TMainWindow
         ChildSizing.EnlargeHorizontal = crsScaleChilds
         ChildSizing.EnlargeVertical = crsHomogenousChildResize
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
-        ChildSizing.ControlsPerLine = 3
+        ChildSizing.ControlsPerLine = 4
         ClientHeight = 67
         ClientWidth = 567
         TabOrder = 1
@@ -222,7 +221,7 @@ object MainWindow: TMainWindow
           end
         end
         object Panel4: TPanel
-          Left = 197
+          Left = 148
           Height = 59
           Top = 4
           Width = 104
@@ -290,7 +289,7 @@ object MainWindow: TMainWindow
           end
         end
         object Panel5: TPanel
-          Left = 375
+          Left = 279
           Height = 59
           Top = 4
           Width = 120
@@ -358,6 +357,76 @@ object MainWindow: TMainWindow
             ParentFont = False
           end
         end
+        object Panel7: TPanel
+          Left = 427
+          Height = 59
+          Top = 4
+          Width = 120
+          AutoSize = True
+          BorderSpacing.Right = 8
+          BorderSpacing.Bottom = 4
+          BorderSpacing.CellAlignHorizontal = ccaLeftTop
+          BevelOuter = bvNone
+          ChildSizing.HorizontalSpacing = 8
+          ChildSizing.EnlargeHorizontal = crsScaleChilds
+          ChildSizing.EnlargeVertical = crsHomogenousChildResize
+          ChildSizing.Layout = cclLeftToRightThenTopToBottom
+          ChildSizing.ControlsPerLine = 2
+          ClientHeight = 59
+          ClientWidth = 120
+          TabOrder = 3
+          object Label18: TLabel
+            Left = 0
+            Height = 26
+            Top = 0
+            Width = 111
+            BorderSpacing.Bottom = 4
+            BorderSpacing.CellAlignHorizontal = ccaLeftTop
+            Caption = 'Total Free Bytes :'
+            Font.Height = -13
+            Font.Style = [fsBold]
+            Layout = tlCenter
+            ParentColor = False
+            ParentFont = False
+          end
+          object labelTotalFreeBytes: TLabel
+            Left = 119
+            Height = 26
+            Top = 0
+            Width = 1
+            BorderSpacing.Bottom = 4
+            BorderSpacing.CellAlignHorizontal = ccaLeftTop
+            Font.Height = -13
+            Layout = tlCenter
+            ParentColor = False
+            ParentFont = False
+          end
+          object Label19: TLabel
+            Left = 0
+            Height = 25
+            Top = 30
+            Width = 107
+            BorderSpacing.CellAlignHorizontal = ccaLeftTop
+            Caption = 'Total Disk Bytes:'
+            Font.Height = -13
+            Font.Style = [fsBold]
+            Layout = tlCenter
+            ParentColor = False
+            ParentFont = False
+          end
+          object labelTotalDiskBytes: TLabel
+            Left = 119
+            Height = 25
+            Top = 30
+            Width = 1
+            BorderSpacing.Bottom = 4
+            BorderSpacing.CellAlignHorizontal = ccaLeftTop
+            Font.Height = -13
+            Layout = tlCenter
+            ParentColor = False
+            ParentFont = False
+          end
+        end
       end
     end
     object groupDriveData: TGroupBox
@@ -377,7 +446,7 @@ object MainWindow: TMainWindow
       ChildSizing.EnlargeVertical = crsHomogenousChildResize
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
       ChildSizing.ControlsPerLine = 2
-      ClientHeight = 143
+      ClientHeight = 144
       ClientWidth = 98
       Font.Height = -13
       Font.Name = 'Sans'

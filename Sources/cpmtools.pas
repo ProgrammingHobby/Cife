@@ -192,8 +192,8 @@ begin
                     //  user: name
                     FPrintDirectoryEntry(0, Row, Format('%2d: %s', [User, MidStr(Gargv[IndexI], 3, Length(Gargv[IndexI]))]));
                     //  bytes
-                    FPrintDirectoryEntry(1, Row, Format('%5.1dK',
-                        [((StatBuf.Size + Buf.F_BSize - 1) div Buf.F_BSize * (Buf.F_BSize div 1024))]));
+                    FPrintDirectoryEntry(1, Row, Format('%5.1dK', [
+                        ((StatBuf.Size + Buf.F_BSize - 1) div Buf.F_BSize * (Buf.F_BSize div 1024))]));
                     //  records
                     FPrintDirectoryEntry(2, Row, Format('%6.1d', [((StatBuf.Size + 127) div 128)]));
                     //  attributes
@@ -306,10 +306,11 @@ begin
 
         end;
 
-        { #todo : Statistiken noch um TotalFreeBytes erweitern }
         FDirStatistic.TotalBytes := ((Buf.F_BUsed * buf.F_BSize) div 1024);
         FDirStatistic.TotalRecords := TotalRecs;
         FDirStatistic.FilesFound := FilesCount;
+        FDirStatistic.TotalFreeBytes := (((Buf.F_BSize * Buf.F_Blocks) div 1024) - ((Buf.F_BUsed * buf.F_BSize) div 1024));
+        FDirStatistic.TotalDiskBytes := ((Buf.F_BSize * Buf.F_Blocks) div 1024);
         FDirStatistic.Total1KBlocks := TotalKBytes;
         FDirStatistic.UsedDirEntries := (Buf.F_Files - Buf.F_FFree);
         FDirStatistic.MaxDirEntries := Buf.F_Files;
@@ -586,8 +587,8 @@ begin
         end
         else begin
 
-            if MessageDlg(Format('can not find %s' + LineEnding + '(%s)', [AFileName,
-                FCpmFileSystem.GetErrorMsg]), mtError, [mbOK], 0) = mrOk then begin
+            if MessageDlg(Format('can not find %s' + LineEnding + '(%s)',
+                [AFileName, FCpmFileSystem.GetErrorMsg]), mtError, [mbOK], 0) = mrOk then begin
                 Exit;
             end;
 
