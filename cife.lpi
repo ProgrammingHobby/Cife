@@ -22,7 +22,7 @@
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
       <MinorVersionNr Value="7"/>
-      <BuildNr Value="1603"/>
+      <BuildNr Value="1604"/>
       <StringTable FileDescription="CP/M Image-File Explorer" InternalName="CIFE" OriginalFilename="CIFE"/>
     </VersionInfo>
     <BuildModes>
@@ -220,12 +220,6 @@
               </Win32>
             </Options>
           </Linking>
-          <Other>
-            <ExecuteAfter>
-              <Command Value="/usr/bin/wine $(TargetCmdLine)"/>
-              <CompileReasons Compile="False" Build="False"/>
-            </ExecuteAfter>
-          </Other>
         </CompilerOptions>
       </Item>
       <Item Name="MSW-Release_32bit">
@@ -263,12 +257,6 @@
               </Win32>
             </Options>
           </Linking>
-          <Other>
-            <ExecuteAfter>
-              <Command Value="/usr/bin/wine $(TargetCmdLine)"/>
-              <CompileReasons Compile="False" Build="False"/>
-            </ExecuteAfter>
-          </Other>
         </CompilerOptions>
       </Item>
       <Item Name="MSW-Debug_64bit">
@@ -316,12 +304,6 @@
               </Win32>
             </Options>
           </Linking>
-          <Other>
-            <ExecuteAfter>
-              <Command Value="/usr/bin/wine64 $(TargetCmdLine)"/>
-              <CompileReasons Compile="False" Build="False"/>
-            </ExecuteAfter>
-          </Other>
         </CompilerOptions>
       </Item>
       <Item Name="MSW-Release_64bit">
@@ -359,12 +341,6 @@
               </Win32>
             </Options>
           </Linking>
-          <Other>
-            <ExecuteAfter>
-              <Command Value="/usr/bin/wine64 $(TargetCmdLine)"/>
-              <CompileReasons Compile="False" Build="False"/>
-            </ExecuteAfter>
-          </Other>
         </CompilerOptions>
       </Item>
       <SharedMatrixOptions Count="5">

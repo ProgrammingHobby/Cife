@@ -2,7 +2,7 @@
 <CONFIG>
   <ProjectSession>
     <Version Value="12"/>
-    <BuildModes Active="Default"/>
+    <BuildModes Active="GTK-Release_64bit"/>
     <Units>
       <Unit>
         <Filename Value="cife.lpr"/>
@@ -88,7 +88,7 @@
         <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
         <TopLine Value="457"/>
-        <CursorPos X="40" Y="489"/>
+        <CursorPos X="38" Y="462"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit>
@@ -153,7 +153,7 @@
         <UnitName Value="CpmTools"/>
         <EditorIndex Value="3"/>
         <TopLine Value="278"/>
-        <CursorPos X="21" Y="288"/>
+        <CursorPos Y="288"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit>

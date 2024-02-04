@@ -1,4 +1,6 @@
 # CIFE (CP/M Image-File Explorer)
+![Cife](Cife.jpg)
+![Cife_File-Characteristics](Cife_File-Characteristics.jpg)
 
 The CP/M Image-File Explorer is used to create and edit binary disk images such as those used by CP/M emulators.
 
