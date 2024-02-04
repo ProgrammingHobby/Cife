@@ -17,8 +17,6 @@
  *}
 program cife;
 
-{ #todo : Unit 'CifeConfig' für sämtliche Konfigurationsdaten, Unit eigene Variable erstellen damit die Unit nur einmal created werden muß.  }
-
 {$mode objfpc}{$H+}
 
 uses

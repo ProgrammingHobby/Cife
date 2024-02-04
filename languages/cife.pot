@@ -287,6 +287,14 @@ msgctxt "tmainwindow.label17.caption"
 msgid "Used Dir Entries :"
 msgstr ""
 
+#: tmainwindow.label18.caption
+msgid "Total Free Bytes :"
+msgstr ""
+
+#: tmainwindow.label19.caption
+msgid "Total Disk Bytes:"
+msgstr ""
+
 #: tmainwindow.label2.caption
 msgid "Sectors :"
 msgstr ""
