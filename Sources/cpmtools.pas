@@ -70,7 +70,6 @@ type
     private   // Methoden
         function GetUserNumber(const AFileName: string): integer;
         function ConvertFilename(const AFileName: string): string;
-        function SizeToKb(ASize: longint; ABlocksize: longint): longint;
 
     end;
 
@@ -157,14 +156,13 @@ var
     StatBuf: TCpmStat;
     Gargc, Row: integer;
     IndexI, Attrib, User, MaxUser: integer;
-    FilesCount, TotalBytes, TotalRecs: integer;
+    FilesCount, TotalKBytes, TotalRecs: integer;
     Gargv: TStringList;
     Attribute: string[16];
 begin
     Row := 1;
     Gargv := TStringList.Create;
     FCpmFileSystem.Glob('*', Gargc, Gargv);
-    { #todo : Range-Check Fehler bei falsch angegebenem Image-Typ abfangen }
 
     if (FCpmFileSystem.GetFileSystemInfo.System = 'P2DOS') then begin
         MaxUser := 31;
@@ -175,7 +173,7 @@ begin
 
     if (Gargc > 0) then begin
         FilesCount := 0;
-        TotalBytes := 0;
+        TotalKBytes := 0;
         TotalRecs := 0;
         QSort(Gargv, 0, Gargv.Count - 1);
         FCpmFileSystem.StatFs(Buf);
@@ -185,18 +183,19 @@ begin
             for IndexI := 0 to Gargc - 1 do begin
 
                 if ((Gargv[IndexI].ToCharArray[0] = Chr(Ord('0') + (User div 10))) and
-                    (Gargv[IndexI].ToCharArray[1] = Chr(Ord('0') + (User mod 10)))) then begin
-                    FCpmFileSystem.Name2Inode(PChar(Gargv[IndexI]), DirFile);
+                    (Gargv[IndexI].ToCharArray[1] = Chr(Ord('0') + (User mod 10)))) and
+                    (FCpmFileSystem.Name2Inode(PChar(Gargv[IndexI]), DirFile)) then begin
                     FCpmFileSystem.Stat(DirFile, StatBuf);
                     FCpmFileSystem.AttrGet(DirFile, Attrib);
-                    Inc(TotalBytes, StatBuf.Size);
-                    Inc(TotalRecs, ((StatBuf.Size + 127) div 128));
+                    TotalKBytes := TotalKBytes + ((StatBuf.Size + 1023) div 1024);
+                    TotalRecs := TotalRecs + ((StatBuf.Size + 127) div 128);
                     //  user: name
                     FPrintDirectoryEntry(0, Row, Format('%2d: %s', [User, MidStr(Gargv[IndexI], 3, Length(Gargv[IndexI]))]));
                     //  bytes
-                    FPrintDirectoryEntry(1, Row, Format('%5.1dK', [SizeToKb(StatBuf.Size, Buf.F_BSize)]));
+                    FPrintDirectoryEntry(1, Row, Format('%5.1dK',
+                        [((StatBuf.Size + Buf.F_BSize - 1) div Buf.F_BSize * (Buf.F_BSize div 1024))]));
                     //  records
-                    FPrintDirectoryEntry(2, Row, Format('%6.1d', [StatBuf.Size div 128]));
+                    FPrintDirectoryEntry(2, Row, Format('%6.1d', [((StatBuf.Size + 127) div 128)]));
                     //  attributes
                     Attribute := '';
 
@@ -283,7 +282,6 @@ begin
                     FPrintDirectoryEntry(4, Row, Attribute);
 
                     //  updated
-
                     if (StatBuf.MTime <> 0) then begin
                         FPrintDirectoryEntry(5, Row, FormatDateTime('DD-MMM-YYYY HH:MM', StatBuf.MTime));
                     end;
@@ -291,13 +289,11 @@ begin
                     { #todo : Abfragen ob 'Created' oder 'last Access' im Dateisystem verwendet wird }
 
                     //  created
-
                     if (StatBuf.CTime <> 0) then begin
                         FPrintDirectoryEntry(6, Row, FormatDateTime('DD-MMM-YYYY HH:MM', StatBuf.CTime));
                     end;
 
                     //  last access
-
                     if (StatBuf.ATime <> 0) then begin
                         FPrintDirectoryEntry(7, Row, FormatDateTime('DD-MMM-YYYY HH:MM', StatBuf.ATime));
                     end;
@@ -310,11 +306,11 @@ begin
 
         end;
 
-        { #todo : Statistiken (Records und 1kblocks) korrigieren, evtl. noch um TotalFreeBytes erweitern }
-        FDirStatistic.TotalBytes := ((TotalBytes + 1023) div 1024);
+        { #todo : Statistiken noch um TotalFreeBytes erweitern }
+        FDirStatistic.TotalBytes := ((Buf.F_BUsed * buf.F_BSize) div 1024);
         FDirStatistic.TotalRecords := TotalRecs;
         FDirStatistic.FilesFound := FilesCount;
-        FDirStatistic.Total1KBlocks := ((Buf.F_BUsed * Buf.F_BSize) div 1024);
+        FDirStatistic.Total1KBlocks := TotalKBytes;
         FDirStatistic.UsedDirEntries := (Buf.F_Files - Buf.F_FFree);
         FDirStatistic.MaxDirEntries := Buf.F_Files;
     end;
@@ -558,7 +554,7 @@ begin
             Index := Pos(':', AFileName);
             FileInfo.UserNumber := StrToInt(LeftStr(AFileName, Index - 1));
             FileInfo.Name := RightStr(AFileName, (Length(AFileName) - Index));
-            FileInfo.UsedBytes := StatBuf.Size;
+            FileInfo.UsedBytes := StatBuf.Size; { #note : Dateigröße nicht präzise }
             FileInfo.UsedRecords := ((StatBuf.Size + 127) div 128);
             FileInfo.Attributes := Attrib;
             FileInfo.ATime := StatBuf.ATime;
@@ -590,8 +586,8 @@ begin
         end
         else begin
 
-            if MessageDlg(Format('can not find %s' + LineEnding + '(%s)',
-                [AFileName, FCpmFileSystem.GetErrorMsg]), mtError, [mbOK], 0) = mrOk then begin
+            if MessageDlg(Format('can not find %s' + LineEnding + '(%s)', [AFileName,
+                FCpmFileSystem.GetErrorMsg]), mtError, [mbOK], 0) = mrOk then begin
                 Exit;
             end;
 
@@ -642,17 +638,6 @@ end;
 function TCpmTools.ConvertFilename(const AFileName: string): string;
 begin
     Result := Format('%.2d%s', [GetUserNumber(AFileName), RightStr(AFileName, Length(AFileName) - Pos(':', AFileName))]);
-end;
-
-// --------------------------------------------------------------------------------
-function TCpmTools.SizeToKb(ASize: longint; ABlocksize: longint): longint;
-var
-    Blocks, BlockedSize: longint;
-begin
-    // In DR CP/M, the minimal block size is 1024, but in CP/M-65 it may be lower.
-    Blocks := ((ASize + ABlocksize - 1) div ABlocksize);
-    BlockedSize := (Blocks * ABlocksize);
-    Result := ((BlockedSize + 1023) div 1024);
 end;
 
 // --------------------------------------------------------------------------------
