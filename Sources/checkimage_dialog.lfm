@@ -8,38 +8,38 @@ object CheckImageDialog: TCheckImageDialog
   ClientWidth = 328
   OnClose = FormClose
   OnShow = FormShow
-  LCLVersion = '3.0.0.3'
+  Position = poOwnerFormCenter
   object Panel1: TPanel
     Left = 0
-    Height = 98
+    Height = 106
     Top = 0
     Width = 328
     Align = alClient
     AutoSize = True
     BevelOuter = bvNone
-    ClientHeight = 98
+    ClientHeight = 106
     ClientWidth = 328
     ParentBackground = False
     ParentColor = False
     TabOrder = 0
     object Panel2: TPanel
       Left = 0
-      Height = 37
-      Top = 57
-      Width = 324
+      Height = 25
+      Top = 81
+      Width = 328
       Align = alBottom
       AutoSize = True
       BevelOuter = bvNone
-      ClientHeight = 37
-      ClientWidth = 324
+      ClientHeight = 25
+      ClientWidth = 328
       ParentBackground = False
       ParentColor = False
       TabOrder = 0
       object checkRepairFilesystemErrors: TCheckBox
-        Left = 149
-        Height = 33
+        Left = 144
+        Height = 25
         Top = 0
-        Width = 167
+        Width = 180
         Align = alClient
         BorderSpacing.Left = 16
         BorderSpacing.Right = 4
@@ -48,9 +48,9 @@ object CheckImageDialog: TCheckImageDialog
       end
       object buttonCheckImage: TButton
         Left = 4
-        Height = 33
+        Height = 25
         Top = 0
-        Width = 129
+        Width = 124
         Align = alLeft
         AutoSize = True
         BorderSpacing.Left = 4
@@ -62,9 +62,9 @@ object CheckImageDialog: TCheckImageDialog
     end
     object memoCheckMessages: TMemo
       Left = 4
-      Height = 45
+      Height = 69
       Top = 4
-      Width = 316
+      Width = 320
       Align = alClient
       BorderSpacing.Bottom = 4
       BorderSpacing.Around = 4
@@ -76,8 +76,8 @@ object CheckImageDialog: TCheckImageDialog
   end
   object ButtonPanel1: TButtonPanel
     Left = 6
-    Height = 34
-    Top = 104
+    Height = 26
+    Top = 112
     Width = 316
     OKButton.Name = 'OKButton'
     OKButton.DefaultCaption = True
