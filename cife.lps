@@ -2,7 +2,7 @@
 <CONFIG>
   <ProjectSession>
     <Version Value="12"/>
-    <BuildModes Active="GTK-Release_64bit"/>
+    <BuildModes Active="Default"/>
     <Units>
       <Unit>
         <Filename Value="cife.lpr"/>
@@ -87,9 +87,10 @@
         <Filename Value="Sources/imagepage.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="ImagePage"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="2"/>
-        <TopLine Value="457"/>
-        <CursorPos X="38" Y="462"/>
+        <TopLine Value="500"/>
+        <CursorPos Y="559"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit>
@@ -143,7 +144,7 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="CpmFileSystem"/>
         <EditorIndex Value="4"/>
-        <TopLine Value="2311"/>
+        <TopLine Value="2452"/>
         <CursorPos X="10" Y="2345"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
@@ -153,8 +154,8 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="CpmTools"/>
         <EditorIndex Value="3"/>
-        <TopLine Value="278"/>
-        <CursorPos Y="288"/>
+        <TopLine Value="148"/>
+        <CursorPos X="83" Y="153"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit>
@@ -174,7 +175,7 @@
         <UnitName Value="QuickSort"/>
         <EditorIndex Value="-1"/>
         <CursorPos Y="127"/>
-        <UsageCount Value="142"/>
+        <UsageCount Value="143"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/checkimage_dialog.pas"/>
@@ -183,11 +184,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="CheckImage_Dialog"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="5"/>
         <TopLine Value="62"/>
         <CursorPos X="50" Y="105"/>
-        <UsageCount Value="35"/>
+        <UsageCount Value="36"/>
         <Loaded Value="True"/>
         <LoadedDesigner Value="True"/>
       </Unit>
@@ -276,60 +276,12 @@
       <Unit>
         <Filename Value="../../../fpcupdeluxe/lazarus-3.0.0/lazarus/lcl/include/listitem.inc"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="167"/>
-        <CursorPos Y="197"/>
+        <TopLine Value="573"/>
+        <CursorPos Y="603"/>
         <UsageCount Value="10"/>
       </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="Sources/cpmtools.pas"/>
-        <Caret Line="560" Column="88" TopLine="518"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="153" Column="131" TopLine="153"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/main_window.pas"/>
-        <Caret Line="232" Column="11" TopLine="199"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/main_window.pas"/>
-        <Caret Line="237" Column="11" TopLine="204"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/main_window.pas"/>
-        <Caret Line="236" Column="11" TopLine="203"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/main_window.pas"/>
-        <Caret Line="235" Column="11" TopLine="202"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/main_window.pas"/>
-        <Caret Line="234" Column="11" TopLine="201"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/main_window.pas"/>
-        <Caret Line="233" Column="11" TopLine="200"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/main_window.pas"/>
-        <Caret Line="232" Column="11" TopLine="199"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/main_window.pas"/>
-        <Caret Line="237" Column="11" TopLine="204"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/main_window.pas"/>
-        <Caret Line="236" Column="11" TopLine="203"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/main_window.pas"/>
-        <Caret Line="468" Column="27" TopLine="437"/>
-      </Position>
       <Position>
         <Filename Value="Sources/cpmtools.pas"/>
         <Caret Line="165" Column="44" TopLine="154"/>
@@ -401,6 +353,54 @@
       <Position>
         <Filename Value="Sources/imagepage.pas"/>
         <Caret Line="355" Column="165" TopLine="352"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagepage.pas"/>
+        <Caret Line="479" Column="41" TopLine="457"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagepage.pas"/>
+        <Caret Line="413" Column="19" TopLine="72"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagepage.pas"/>
+        <Caret Line="495" Column="44" TopLine="460"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagepage.pas"/>
+        <Caret Line="351" Column="38" TopLine="327"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagepage.pas"/>
+        <Caret Line="536" Column="174" TopLine="508"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagepage.pas"/>
+        <Caret Line="567" Column="63" TopLine="509"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/cpmtools.pas"/>
+        <Caret Line="180" Column="42" TopLine="148"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagepage.pas"/>
+        <Caret Line="559" TopLine="516"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagepage.pas"/>
+        <Caret Line="560" Column="50" TopLine="516"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagepage.pas"/>
+        <Caret Line="536" Column="173" TopLine="516"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagepage.pas"/>
+        <Caret Line="560" TopLine="516"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/imagepage.pas"/>
+        <Caret Line="561" TopLine="516"/>
       </Position>
     </JumpHistory>
     <RunParams>
