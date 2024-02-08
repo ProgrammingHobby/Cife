@@ -177,6 +177,7 @@ begin
         TotalRecs := 0;
         QSort(Gargv, 0, Gargv.Count - 1);
         FCpmFileSystem.StatFs(Buf);
+        FPrintDirectoryEntry(-1, -1, 'Begin');
 
         for User := 0 to MaxUser do begin
 
@@ -304,6 +305,7 @@ begin
 
         end;
 
+        FPrintDirectoryEntry(-1, -1, 'End');
         FDirStatistic.TotalBytes := IntToStr(((Buf.F_BUsed * buf.F_BSize) div 1024)) + 'K';
         FDirStatistic.TotalRecords := IntToStr(TotalRecs);
         FDirStatistic.FilesFound := IntToStr(FilesCount);

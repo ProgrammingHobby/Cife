@@ -348,6 +348,7 @@ var
     DiskdefsPath: string;
 begin
     inherited Create(ATheOwner);
+    OnResize := @DirectoryListResize;
     CreateDirectoryListView;
 
     with TXMLSettings.Create(SettingsFile) do begin
@@ -379,38 +380,36 @@ end;
 procedure TImagePage.DirectoryListResize(ASender: TObject);
 var
     NewWidth, ColWidths, ActListViewWidth: integer;
-    dlv: TListView;
 begin
     NewWidth := 0;
     ColWidths := 0;
-    dlv := TListView(ASender);
-    dlv.BeginUpdate;
-    ActListViewWidth := dlv.ClientWidth;
+    FDirectoryList.BeginUpdate;
+    ActListViewWidth := FDirectoryList.ClientWidth;
     NewWidth := Round(ActListViewWidth * 0.151);
     ColWidths := ColWidths + NewWidth;
-    dlv.Columns[0].Width := NewWidth;
+    FDirectoryList.Columns[0].Width := NewWidth;
     NewWidth := Round(ActListViewWidth * 0.076);
     ColWidths := ColWidths + NewWidth;
-    dlv.Columns[1].Width := NewWidth;
+    FDirectoryList.Columns[1].Width := NewWidth;
     NewWidth := Round(ActListViewWidth * 0.076);
     ColWidths := ColWidths + NewWidth;
-    dlv.Columns[2].Width := NewWidth;
+    FDirectoryList.Columns[2].Width := NewWidth;
     NewWidth := Round(ActListViewWidth * 0.107);
     ColWidths := ColWidths + NewWidth;
-    dlv.Columns[3].Width := NewWidth;
+    FDirectoryList.Columns[3].Width := NewWidth;
     NewWidth := Round(ActListViewWidth * 0.107);
     ColWidths := ColWidths + NewWidth;
-    dlv.Columns[4].Width := NewWidth;
+    FDirectoryList.Columns[4].Width := NewWidth;
     NewWidth := Round(ActListViewWidth * 0.16);
     ColWidths := ColWidths + NewWidth;
-    dlv.Columns[5].Width := NewWidth;
+    FDirectoryList.Columns[5].Width := NewWidth;
     NewWidth := Round(ActListViewWidth * 0.16);
     ColWidths := ColWidths + NewWidth;
-    dlv.Columns[6].Width := NewWidth;
+    FDirectoryList.Columns[6].Width := NewWidth;
     NewWidth := Round(ActListViewWidth * 0.16);
     ColWidths := ColWidths + NewWidth;
-    dlv.Columns[7].Width := (NewWidth + (ActListViewWidth - Colwidths));
-    dlv.EndUpdate;
+    FDirectoryList.Columns[7].Width := (NewWidth + (ActListViewWidth - Colwidths));
+    FDirectoryList.EndUpdate;
 end;
 
 // --------------------------------------------------------------------------------
@@ -492,7 +491,6 @@ begin
         DirColumn.Caption := 'Last Access';
         DirColumn.Alignment := taCenter;
         EndUpdate;
-        OnResize := @DirectoryListResize;
         OnSelectItem := @DirectorySelectItem;
     end;
 
@@ -551,8 +549,16 @@ var
     Item: TListItem;
     IndexI: integer;
 begin
-    if ((AColumn = 0) and (ARow <= 1)) then begin
+    if ((AColumn = -1) and (ARow = -1) and (AData = 'Begin')) then begin
         FDirectoryList.Clear;
+        FDirectoryList.BeginUpdate;
+        Exit;
+    end;
+
+    if ((AColumn = -1) and (ARow = -1) and (AData = 'End')) then begin
+        FDirectoryList.EndUpdate;
+        FDirectoryList.Items[0].MakeVisible(False);
+        Exit;
     end;
 
     if (FDirectoryList.Items.Count < ARow) then begin
