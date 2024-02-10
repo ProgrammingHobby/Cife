@@ -557,7 +557,9 @@ begin
 
     if ((AColumn = -1) and (ARow = -1) and (AData = 'End')) then begin
         FDirectoryList.EndUpdate;
-        FDirectoryList.Items[0].MakeVisible(False);
+        if (FDirectoryList.Items.Count > 0) then begin
+            FDirectoryList.Items[0].MakeVisible(False);
+        end;
         Exit;
     end;
 
