@@ -33,6 +33,7 @@ type
         ButtonPanel1: TButtonPanel;
         Image1: TImage;
         Label1: TLabel;
+        labelCifeHyperlink: TLabel;
         labelIconHyperlink: TLabel;
         labelDeveloper: TLabel;
         labelHyperlink: TLabel;
@@ -50,7 +51,7 @@ type
         Panel8: TPanel;
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
         procedure FormShow(Sender: TObject);
-        procedure labelHyperlinkDblClick(Sender: TObject);
+        procedure labelHyperlinkClick(Sender: TObject);
         procedure labelHyperlinkMouseEnter(Sender: TObject);
         procedure labelHyperlinkMouseLeave(Sender: TObject);
     private
@@ -89,7 +90,7 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-procedure TAboutDialog.labelHyperlinkDblClick(Sender: TObject);
+procedure TAboutDialog.labelHyperlinkClick(Sender: TObject);
 begin
     OpenURL((Sender as TLabel).Caption);
 end;
