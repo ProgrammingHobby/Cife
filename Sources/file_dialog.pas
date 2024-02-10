@@ -256,7 +256,7 @@ begin
                 Dialog := TOpenDialog.Create(self);
                 Dialog.Title := 'Select CP/M Disk Image File';
                 Dialog.Filter :=
-                    'Image Files (*.img,*.fdd,*.hdd, *.dsk)|*.img;*.IMG;*.fdd;*.FDD;*.hdd;*.HDD;*.dsk;*.DSK|all Files (*.*)|*';
+                    'Image Files (*.img,*.fdd,*.hdd,*.dsk,*.bin,*.raw)|*.img;*.IMG;*.fdd;*.FDD;*.hdd;*.HDD;*.dsk;*.DSK;*.bin;*.BIN;*.raw;*.RAW|all Files (*.*)|*';
 
                 if (FDefaultPath.IsEmpty) then begin
 
