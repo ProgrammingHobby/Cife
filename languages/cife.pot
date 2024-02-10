@@ -9,6 +9,10 @@ msgstr ""
 msgid "Icons by :  "
 msgstr ""
 
+#: taboutdialog.labelcifehyperlink.caption
+msgid "https://github.com/ProgrammingHobby/Cife"
+msgstr ""
+
 #: taboutdialog.labeldeveloper.caption
 msgid "Uwe Merker    2023"
 msgstr ""
