@@ -409,7 +409,7 @@ begin
                 (PageControl.ActivePage as TImagePage).RefreshDirectory;
             end;
 
-            if (OldDiskdefsFile <> GetValue('DiskdefsFile', '')) and (FileExists(GetValue('DiskdefsFile', ''))) then begin
+            if (FileExists(GetValue('DiskdefsFile', ''))) then begin
                 actionNew.Enabled := True;
                 actionOpen.Enabled := True;
                 menuitemRecentFiles.Enabled := True;
