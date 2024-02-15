@@ -98,27 +98,22 @@ begin
     FFileType := AFileType;
 
     if not (FCpmDevice.Open(AFileName, dmOpenReadWrite)) then begin
-        if MessageDlg(Format('cannot open %s' + LineEnding + '(%s)', [ExtractFileName(AFileName), FCpmDevice.GetErrorMsg()])
-            , mtError, [mbOK], 0) = mrOk then begin
-            Result := False;
-            Exit;
-        end;
+        MessageDlg(Format('cannot open %s' + LineEnding + '(%s)', [ExtractFileName(AFileName), FCpmDevice.GetErrorMsg()]),
+            mtError, [mbOK], 0);
+        Result := False;
+        Exit;
     end;
 
     if not (FCpmFileSystem.ReadDiskdefData(AFileType, FDiskdefsPath)) then begin
-        if MessageDlg(Format('cannot read superblock' + LineEnding + '(%s)', [FCpmFileSystem.GetErrorMsg()])
-            , mtError, [mbOK], 0) = mrOk then begin
-            Result := False;
-            Exit;
-        end;
+        MessageDlg(Format('cannot read superblock' + LineEnding + '(%s)', [FCpmFileSystem.GetErrorMsg()]), mtError, [mbOK], 0);
+        Result := False;
+        Exit;
     end;
 
     if not (FCpmFileSystem.InitDriveData(AUpperCase)) then begin
-        if MessageDlg(Format('cannot init filesystem' + LineEnding + '(%s)', [FCpmFileSystem.GetErrorMsg()])
-            , mtError, [mbOK], 0) = mrOk then begin
-            Result := False;
-            Exit;
-        end;
+        MessageDlg(Format('cannot init filesystem' + LineEnding + '(%s)', [FCpmFileSystem.GetErrorMsg()]), mtError, [mbOK], 0);
+        Result := False;
+        Exit;
     end;
 
     Result := True;
@@ -129,20 +124,16 @@ function TCpmTools.CloseImage: boolean;
 begin
 
     if not (FCpmFileSystem.Unmount) then begin
-        if MessageDlg('error write back filesystem directory', mtError, [mbOK], 0) = mrOk then begin
-            Result := False;
-            Exit;
-        end;
+        MessageDlg(Format('error write back directory' + LineEnding + '%s', [FCpmFileSystem.GetErrorMsg]), mtError, [mbOK], 0);
+        Result := False;
+        Exit;
     end;
 
     if not (FCpmDevice.Close) then begin
-
-        if MessageDlg(Format('cannot close image %s' + LineEnding + '(%s)',
-            [ExtractFileName(FFileName), FCpmFileSystem.GetErrorMsg()]), mtError, [mbOK], 0) = mrOk then begin
-            Result := False;
-            Exit;
-        end;
-
+        MessageDlg(Format('cannot close image %s' + LineEnding + '(%s)', [ExtractFileName(FFileName),
+            FCpmFileSystem.GetErrorMsg()]), mtError, [mbOK], 0);
+        Result := False;
+        Exit;
     end;
 
     Result := True;
@@ -334,14 +325,46 @@ var
     Gargc: integer;
     Gargv: TStringList;
 begin
+    Result := True;
+
     try
         Gargv := TStringList.Create;
         FCpmFileSystem.Glob(PChar(AOldName), Gargc, Gargv);
 
         if not ((Gargc > 0) and (FCpmFileSystem.Rename(PChar(Gargv[0]), PChar(ConvertFilename(ANewName))))) then begin
+            MessageDlg(Format('can not rename %s in %s' + LineEnding + '(%s)', [AOldName, ANewName, FCpmFileSystem.GetErrorMsg]),
+                mtError, [mbOK], 0);
+            Result := False;
+            Exit;
+        end;
 
-            if MessageDlg(Format('can not rename %s in %s' + LineEnding + '(%s)',
-                [AOldName, ANewName, FCpmFileSystem.GetErrorMsg]), mtError, [mbOK], 0) = mrOk then begin
+    finally
+        FreeAndNil(Gargv);
+    end;
+
+    if not FCpmFileSystem.Sync then begin
+        MessageDlg(Format('error write back directory' + LineEnding + '%s', [FCpmFileSystem.GetErrorMsg]), mtError, [mbOK], 0);
+        Result := False;
+    end;
+
+end;
+
+// --------------------------------------------------------------------------------
+function TCpmTools.DeleteFile(AFileNames: TStringList): boolean;
+var
+    Gargc, IndexI: integer;
+    Gargv: TStringList;
+begin
+    Result := True;
+
+    try
+        Gargv := TStringList.Create;
+        for IndexI := 0 to AFileNames.Count - 1 do begin
+            FCpmFileSystem.Glob(PChar(AFileNames[IndexI]), Gargc, Gargv);
+
+            if not ((Gargc > 0) and (FCpmFileSystem.Delete(PChar(Gargv[IndexI])))) then begin
+                MessageDlg(Format('can not erase %s' + LineEnding + '(%s)', [Gargv[0], FCpmFileSystem.GetErrorMsg]),
+                    mtError, [mbOK], 0);
                 Result := False;
                 Exit;
             end;
@@ -352,40 +375,11 @@ begin
         FreeAndNil(Gargv);
     end;
 
-    FCpmFileSystem.Sync;
-    Result := True;
-end;
-
-// --------------------------------------------------------------------------------
-function TCpmTools.DeleteFile(AFileNames: TStringList): boolean;
-var
-    Gargc, IndexI: integer;
-    Gargv: TStringList;
-begin
-    try
-        Gargv := TStringList.Create;
-        for IndexI := 0 to AFileNames.Count - 1 do begin
-
-            FCpmFileSystem.Glob(PChar(AFileNames[IndexI]), Gargc, Gargv);
-
-            if not ((Gargc > 0) and (FCpmFileSystem.Delete(PChar(Gargv[IndexI])))) then begin
-
-                if MessageDlg(Format('can not erase %s' + LineEnding + '(%s)',
-                    [Gargv[0], FCpmFileSystem.GetErrorMsg]), mtError, [mbOK], 0) = mrOk then begin
-                    Result := False;
-                    Exit;
-                end;
-
-            end;
-
-        end;
-
-    finally
-        FreeAndNil(Gargv);
+    if not FCpmFileSystem.Sync then begin
+        MessageDlg(Format('error write back directory' + LineEnding + '%s', [FCpmFileSystem.GetErrorMsg]), mtError, [mbOK], 0);
+        Result := False;
     end;
 
-    FCpmFileSystem.Sync;
-    Result := True;
 end;
 
 // --------------------------------------------------------------------------------
@@ -400,11 +394,9 @@ var
 begin
 
     if not (FCpmFileSystem.ReadDiskdefData(AImageType, FDiskdefsPath)) then begin
-        if MessageDlg(Format('cannot read superblock' + LineEnding + '(%s)', [FCpmFileSystem.GetErrorMsg()])
-            , mtError, [mbOK], 0) = mrOk then begin
-            Result := False;
-            Exit;
-        end;
+        MessageDlg(Format('cannot read superblock' + LineEnding + '(%s)', [FCpmFileSystem.GetErrorMsg()]), mtError, [mbOK], 0);
+        Result := False;
+        Exit;
     end;
 
     BootTrackSize := FCpmFileSystem.GetBootTrackSize;
@@ -413,12 +405,9 @@ begin
         SetLength(BootTracks, BootTrackSize);
     except
         on e: Exception do begin
-
-            if MessageDlg(Format('can not allocate boot track buffer' + LineEnding + '(%s)', [e.Message]), mtError, [mbOK], 0) =
-                mrOk then begin
-                Result := False;
-                Exit;
-            end;
+            MessageDlg(Format('can not allocate boot track buffer' + LineEnding + '(%s)', [e.Message]), mtError, [mbOK], 0);
+            Result := False;
+            Exit;
         end;
     end;
 
@@ -433,25 +422,19 @@ begin
             Reset(BootFile, 1);
         except
             on e: Exception do begin
-
-                if MessageDlg(Format('can not open %s' + LineEnding + '(%s)', [ExtractFileName(ABootFile), e.Message]),
-                    mtError, [mbOK], 0) = mrOk then begin
-                    Result := False;
-                    Exit;
-                end;
-
+                MessageDlg(Format('can not open %s' + LineEnding + '(%s)', [ExtractFileName(ABootFile), e.Message]),
+                    mtError, [mbOK], 0);
+                Result := False;
+                Exit;
             end;
         end;
 
         BootFileSize := FileSize(BootFile);
 
         if (BootFileSize > BootTrackSize) then begin
-
-            if MessageDlg('boottrack file is bigger than boottracks size.', mtError, [mbOK], 0) = mrOk then begin
-                Result := False;
-                Exit;
-            end;
-
+            MessageDlg('boottrack file is bigger than boottracks size.', mtError, [mbOK], 0);
+            Result := False;
+            Exit;
         end;
 
         try
@@ -459,34 +442,26 @@ begin
             BlockRead(BootFile, BootTracks[0], BootFileSize, ReadSize);
         except
             on e: Exception do begin
-                if MessageDlg(Format('error Reading Boottrack-File' + LineEnding + '(%s)', [e.Message]), mtError, [mbOK], 0) =
-                    mrOk then begin
-                    Result := False;
-                    Exit;
-                end;
+                MessageDlg(Format('error Reading Boottrack-File' + LineEnding + '(%s)', [e.Message]), mtError, [mbOK], 0);
+                Result := False;
+                Exit;
             end;
         end;
 
         if (ReadSize < BootFileSize) then begin
-
-            if MessageDlg('Boottrack-File is bigger than Boottrack space', mtError, [mbOK], 0) = mrOk then begin
-                Result := False;
-                Exit;
-            end;
-
+            MessageDlg('Boottrack-File is bigger than Boottrack space', mtError, [mbOK], 0);
+            Result := False;
+            Exit;
         end;
 
     end;
 
     if not (FCpmFileSystem.ReadDiskdefData(AImageType, FDiskdefsPath) and
         FCpmFileSystem.MakeFileSystem(AImageFile, BootTracks, AFileSystemLabel, ATimeStampsUsed, AUseUpperCase)) then begin
-
-        if MessageDlg(Format('can not make new file system' + LineEnding + '(%s)', [FCpmFileSystem.GetErrorMsg]),
-            mtError, [mbOK], 0) = mrOk then begin
-            Result := False;
-            Exit;
-        end;
-
+        MessageDlg(Format('can not make new file system' + LineEnding + '(%s)', [FCpmFileSystem.GetErrorMsg]),
+            mtError, [mbOK], 0);
+        Result := False;
+        Exit;
     end;
 
     MessageDlg(Format('new Image-File ''%s'' successful created.', [ExtractFileName(AImageFile)]), mtInformation, [mbOK], 0);
@@ -587,15 +562,16 @@ begin
             FCpmFileSystem.AttrSet(DirFile, AAttributes);
         end
         else begin
-
-            if MessageDlg(Format('can not find %s' + LineEnding + '(%s)', [AFileName,
-                FCpmFileSystem.GetErrorMsg]), mtError, [mbOK], 0) = mrOk then begin
-                Exit;
-            end;
-
+            MessageDlg(Format('can not find %s' + LineEnding + '(%s)', [AFileName, FCpmFileSystem.GetErrorMsg]),
+                mtError, [mbOK], 0);
+            Exit;
         end;
 
-        FCpmFileSystem.Sync;
+        if not FCpmFileSystem.Sync then begin
+            MessageDlg(Format('error write back directory' + LineEnding + '%s', [FCpmFileSystem.GetErrorMsg]),
+                mtError, [mbOK], 0);
+        end;
+
     finally
         FreeAndNil(Gargv);
     end;
