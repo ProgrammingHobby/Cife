@@ -83,14 +83,17 @@ begin
         else FileMode := fmOpenRead;
     end;
     FDevice.Opened := False;
+
     try
         AssignFile(FDevice.Imagefile, AFilename);
         Reset(FDevice.Imagefile, 1);
         FDevice.Opened := True;
     except
+
         on e: Exception do begin
-            FDeviceError := e.Message;
+            FDeviceError := Format(LineEnding + '%s', [e.Message]);
         end;
+
     end;
     Result := FDevice.Opened;
 end;
@@ -112,9 +115,11 @@ begin
         CloseFile(FDevice.Imagefile);
         FDevice.Opened := False;
     except
+
         on e: Exception do begin
-            FDeviceError := e.Message;
+            FDeviceError := Format(LineEnding + '%s', [e.Message]);
         end;
+
     end;
     Result := not FDevice.Opened;
 end;
@@ -126,6 +131,7 @@ var
 begin
     Count := 0;
     FDeviceError := EmptyStr;
+
     try
         Reset(FDevice.Imagefile, 1);
         Seek(FDevice.Imagefile, (((ASector + (ATrack * FDevice.sectrk)) * FDevice.SecLength) + FDevice.Offset));
@@ -133,9 +139,12 @@ begin
         Result := True;
     except
         on e: Exception do begin
+
             if (Count <> FDevice.SecLength) then begin
-                FDeviceError := Format('Read Sector: %d bytes lost. Error: %s', [(FDevice.SecLength - Count), e.Message]);
+                FDeviceError := Format('Read Sector: %d bytes lost.', [(FDevice.SecLength - Count)]);
             end;
+
+            FDeviceError := FDeviceError + Format(LineEnding + '%s', [e.Message]);
             Result := False;
         end;
     end;
@@ -148,16 +157,21 @@ var
 begin
     Count := 0;
     FDeviceError := EmptyStr;
+
     try
         Reset(FDevice.Imagefile, 1);
         Seek(FDevice.Imagefile, (((ASector + (ATrack * FDevice.SecTrk)) * FDevice.SecLength) + FDevice.Offset));
         BlockWrite(FDevice.Imagefile, ABuffer, FDevice.SecLength, Count);
         Result := True;
     except
+
         on e: Exception do begin
+
             if (Count <> FDevice.SecLength) then begin
-                FDeviceError := Format('Write Sector: %d bytes lost. Error: %s', [(FDevice.SecLength - Count), e.Message]);
+                FDeviceError := Format('Write Sector: %d bytes lost.', [(FDevice.SecLength - Count)]);
             end;
+
+            FDeviceError := FDeviceError + Format(LineEnding + '%s', [e.Message]);
             Result := False;
         end;
     end;
