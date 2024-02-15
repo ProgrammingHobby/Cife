@@ -1226,7 +1226,7 @@ begin
     end;
 
     if (FindFileExtent(NewUser, NewName, NewExt, 0, -1) <> -1) then begin
-        FFileSystemError := 'file already exists';
+        FFileSystemError := 'file name already exists';
         Result := False;
         exit;
     end;
