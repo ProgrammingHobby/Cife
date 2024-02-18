@@ -154,6 +154,7 @@ type
         procedure actionFormatCurrentExecute(Sender: TObject);
         procedure actionNewExecute(Sender: TObject);
         procedure actionOpenExecute(Sender: TObject);
+        procedure actionPasteExecute(Sender: TObject);
         procedure actionQuitExecute(Sender: TObject);
         procedure actionRefreshExecute(Sender: TObject);
         procedure actionRenameExecute(Sender: TObject);
@@ -181,7 +182,13 @@ implementation
 
 {$R *.lfm}
 
-uses File_Dialog, Settings_Dialog, About_Dialog, XMLSettings;
+uses File_Dialog, Settings_Dialog, About_Dialog, XMLSettings, Clipbrd
+    {$ifdef WINDOWS}
+    , Windows
+    {$else}
+    , URIParser, BaseUnix
+    {$endif}
+    ;
 
     { TMainWindow }
 
@@ -337,6 +344,93 @@ begin
 
     finally
         FreeAndNil(Dialog);
+    end;
+
+end;
+
+// --------------------------------------------------------------------------------
+procedure TMainWindow.actionPasteExecute(Sender: TObject);
+var
+    Page: TImagePage;
+    {$ifdef WINDOWS}
+    ClipboardFileList: HDROP;
+    FileBuffer: PChar;
+    BufferSize: integer;
+    {$else}
+    ClipboardFileList: TStringArray;
+    FileBuffer: string;
+    {$endif}
+    IndexI: integer;
+    FilesToPaste: TStringArray;
+
+    {$ifdef UNIX}
+    function IsRegular(const AStrPath: string): boolean;
+    var
+        info: stat;
+    begin
+        fplstat(AStrPath, @info);
+        Result := (fpS_ISREG(info.st_mode));
+    end;
+    {$endif}
+
+begin
+
+    {$ifdef WINDOWS}
+    if (Clipboard.HasFormat(CF_HDROP) and OpenClipboard(0)) then begin
+
+        try
+            ClipboardFileList := GetClipboardData(CF_HDROP);
+
+            if ClipboardFileList <> 0 then begin
+
+                for IndexI := 0 to (DragQueryFile(ClipboardFileList, $FFFFFFFF, nil, 0) - 1) do begin
+                    BufferSize := DragQueryFile(ClipboardFileList, IndexI, nil, 0);
+                    FileBuffer := StrAlloc(BufferSize + 1);
+
+                    try
+
+                        if (DragQueryFile(ClipboardFileList, IndexI, FileBuffer, BufferSize + 1) > 0) then begin
+                            SetLength(FilesToPaste, IndexI + 1);
+                            FilesToPaste[IndexI] := FileBuffer;
+                        end;
+
+                    finally
+                        StrDispose(FileBuffer);
+                    end;
+
+                end;
+
+            end;
+
+        finally
+            CloseClipboard;
+        end;
+
+    end;
+    {$else}
+    if Clipboard.HasFormat(CF_Text) then begin
+        ClipboardFileList := Clipboard.AsText.Trim.Split(Chr($0A));
+
+        for IndexI := 0 to (Length(ClipboardFileList) - 1) do begin
+            FileBuffer := ParseURI(ClipboardFileList[IndexI]).Path + ParseURI(ClipboardFileList[IndexI]).Document;
+
+            if (IsRegular(FileBuffer)) then begin
+                SetLength(FilesToPaste, IndexI + 1);
+                FilesToPaste[IndexI] := FileBuffer;
+            end;
+
+        end;
+
+    end;
+    {$endif}
+
+    if (Length(FilesToPaste) > 0) then begin
+        Page := PageControl.ActivePage as TImagePage;
+
+        if (Assigned(Page)) then begin
+            Page.PasteFiles(FilesToPaste);
+        end;
+
     end;
 
 end;
@@ -653,6 +747,7 @@ begin
         end;
 
     end;
+
 end;
 
 // --------------------------------------------------------------------------------
