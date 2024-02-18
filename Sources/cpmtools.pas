@@ -50,6 +50,8 @@ type
         function GetDirectoryStatistic: TDirStatistic;
         function GetFileInfo(AFileName: string): TFileInfo;
         procedure SetNewAttributes(AFileName: string; AAttributes: cpm_attr_t);
+        procedure WriteFileToImage(AFileName:string; AUserNumber:integer; AIsTextFile:boolean; APreserveTimeStamps:boolean);
+
     public  // Konstruktor/Destruktor
         constructor Create; overload;
         destructor Destroy; override;
@@ -70,6 +72,8 @@ type
     private   // Methoden
         function GetUserNumber(const AFileName: string): integer;
         function ConvertFilename(const AFileName: string): string;
+        //int unix2cpm(const char *unixfilename, const char *cpmfilename, bool text, bool preserve);
+        function Unix2Cpm(const AUnixFileName:string; const ACpmFileName:string; AIsTextFile:boolean; APreserveTimeStamps:boolean):boolean;
 
     end;
 
@@ -603,6 +607,19 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
+//void CpmTools::writeFileToImage(wxString filename, int userNumber, bool isTextFile, bool preserveTimeStamps) {
+procedure TCpmTools.WriteFileToImage(AFileName: string; AUserNumber: integer; AIsTextFile: boolean; APreserveTimeStamps: boolean);
+begin
+    //char **gargv;
+    //int gargc;
+    //cmd = "cpm.cp";
+    //wxString cpmfile = wxString::Format("%d:", userNumber) + filename.substr(filename.find_last_of("/\\") + 1);
+    //cpmfs->glob(cpmfile.c_str(), &gargc, &gargv);
+    //unix2cpm(filename, cpmfile, isTextFile, preserveTimeStamps);
+    //cpmfs->sync();
+end;
+
+// --------------------------------------------------------------------------------
 constructor TCpmTools.Create;
 begin
     inherited Create;
@@ -640,6 +657,93 @@ end;
 function TCpmTools.ConvertFilename(const AFileName: string): string;
 begin
     Result := Format('%.2d%s', [GetUserNumber(AFileName), RightStr(AFileName, Length(AFileName) - Pos(':', AFileName))]);
+end;
+
+// --------------------------------------------------------------------------------
+//int CpmTools::unix2cpm(const char *unixfilename, const char *cpmfilename, bool text, bool preserve) {
+function TCpmTools.Unix2Cpm(const AUnixFileName: string; const ACpmFileName: string; AIsTextFile: boolean; APreserveTimeStamps: boolean): boolean;
+begin
+    //int c, exitcode = 0;
+    //    FILE *ufp;
+    //    wxString unixfile = unixfilename;
+    //    unixfile = unixfile.substr(unixfile.find_last_of("/\\") + 1);
+    //
+    //    if ((ufp = fopen(unixfilename, "rb")) == (FILE *)0) {
+    //        guiintf->printMsg(wxString::Format("%s: can not open %s  (%s)\n", cmd, unixfile,
+    //                                           strerror(errno)));
+    //        exitcode = 1;
+    //    }
+    //    else {
+    //        CpmFs::CpmInode_t ino;
+    //        char cpmname[2 + 8 + 1 + 3 + 1];
+    //        char *translate;
+    //        struct stat st;
+    //        stat(unixfilename, &st);
+    //        snprintf(cpmname, sizeof(cpmname), "%02d%s", getUserNumber(cpmfilename),
+    //                 strchr(cpmfilename, ':') + 1);
+    //        translate = cpmname;
+    //
+    //        while ((translate = strchr(translate, ','))) {
+    //            *translate = '/';
+    //        }
+    //
+    //        if (cpmfs->create(&cpmfs->getDirectoryRoot(), cpmname, &ino, 0666) == -1) {
+    //            guiintf->printMsg(wxString::Format("%s: can not create %s  (%s)\n", cmd, cpmfilename,
+    //                                               cpmfs->getErrorMsg()));
+    //            exitcode = 1;
+    //        }
+    //        else {
+    //            CpmFs::CpmFile_t file;
+    //            int ohno = 0;
+    //            char buf[4096 + 1];
+    //            cpmfs->open(&ino, &file, O_WRONLY);
+    //
+    //            do {
+    //                ssize_t j;
+    //
+    //                for (j = 0; j < ((ssize_t)sizeof(buf) / 2) && (c = getc(ufp)) != EOF; ++j) {
+    //                    if (text && c == '\n') {
+    //                        buf[j++] = '\r';
+    //                    }
+    //
+    //                    buf[j] = c;
+    //                }
+    //
+    //                if (text && c == EOF) {
+    //                    buf[j++] = '\032';
+    //                }
+    //
+    //                if (cpmfs->write(&file, buf, j) != j) {
+    //                    guiintf->printMsg(wxString::Format("%s: can not write %s  (%s)\n", cmd, cpmfilename,
+    //                                                       cpmfs->getErrorMsg()));
+    //                    ohno = 1;
+    //                    exitcode = 1;
+    //                    break;
+    //                }
+    //            } while (c != EOF);
+    //
+    //            if (cpmfs->close(&file) == EOF && !ohno) {
+    //                guiintf->printMsg(wxString::Format("%s: can not close %s  (%s)\n", cmd, cpmfilename,
+    //                                                   cpmfs->getErrorMsg()));
+    //                exitcode = 1;
+    //            }
+    //
+    //            if (preserve && !ohno) {
+    //                struct utimbuf times;
+    //                times.actime = st.st_atime;
+    //                times.modtime = st.st_mtime;
+    //                cpmfs->utime(&ino, &times);
+    //            }
+    //        }
+    //
+    //        if (fclose(ufp) == EOF) {
+    //            guiintf->printMsg(wxString::Format("%s: can not close %s  (%s)\n", cmd, cpmfilename,
+    //                                               strerror(errno)));
+    //            exitcode = 1;
+    //        }
+    //    }
+    //
+    //    return (exitcode);
 end;
 
 // --------------------------------------------------------------------------------
