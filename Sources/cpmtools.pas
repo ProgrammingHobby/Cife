@@ -50,8 +50,7 @@ type
         function GetDirectoryStatistic: TDirStatistic;
         function GetFileInfo(AFileName: string): TFileInfo;
         procedure SetNewAttributes(AFileName: string; AAttributes: cpm_attr_t);
-        procedure WriteFileToImage(AFileName:string; AUserNumber:integer; AIsTextFile:boolean; APreserveTimeStamps:boolean);
-
+        procedure WriteFileToImage(AFileName: string; AUserNumber: integer; AIsTextFile: boolean; APreserveTimeStamps: boolean);
     public  // Konstruktor/Destruktor
         constructor Create; overload;
         destructor Destroy; override;
@@ -72,8 +71,6 @@ type
     private   // Methoden
         function GetUserNumber(const AFileName: string): integer;
         function ConvertFilename(const AFileName: string): string;
-        //int unix2cpm(const char *unixfilename, const char *cpmfilename, bool text, bool preserve);
-        function Unix2Cpm(const AUnixFileName:string; const ACpmFileName:string; AIsTextFile:boolean; APreserveTimeStamps:boolean):boolean;
 
     end;
 
@@ -81,7 +78,13 @@ implementation
 
 { TCpmTools }
 
-uses Dialogs, Controls, StrUtils, QuickSort, Character;
+uses Dialogs, Controls, StrUtils, QuickSort, Character
+    {$ifdef UNIX}
+    , BaseUnix
+    {$else}
+    , Windows
+    {$endif}
+    ;
 
 // --------------------------------------------------------------------------------
 procedure TCpmTools.SetPrintDirectoryEntryCallBack(APrintDirectoryEntryCB: TPrintDirectoryEntryCB);
@@ -314,7 +317,7 @@ begin
         FDirStatistic.TotalRecords := IntToStr(TotalRecs);
         FDirStatistic.FilesFound := IntToStr(FilesCount);
         FDirStatistic.TotalFreeBytes := IntToStr((((Buf.F_BSize * Buf.F_Blocks) div 1024) -
-            ((Buf.F_BUsed * buf.F_BSize) div 1024))) + 'K';
+            ((Buf.F_BUsed * Buf.F_BSize) div 1024))) + 'K';
         FDirStatistic.TotalDiskBytes := IntToStr(((Buf.F_BSize * Buf.F_Blocks) div 1024)) + 'K';
         FDirStatistic.Total1KBlocks := IntToStr(TotalKBytes);
         FDirStatistic.UsedDirEntries := IntToStr((Buf.F_Files - Buf.F_FFree));
@@ -607,16 +610,119 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-//void CpmTools::writeFileToImage(wxString filename, int userNumber, bool isTextFile, bool preserveTimeStamps) {
-procedure TCpmTools.WriteFileToImage(AFileName: string; AUserNumber: integer; AIsTextFile: boolean; APreserveTimeStamps: boolean);
+procedure TCpmTools.WriteFileToImage(AFileName: string; AUserNumber: integer; AIsTextFile: boolean;
+    APreserveTimeStamps: boolean);
+var
+    UnixFile: file of byte;
+    CpmFile: TCpmFile;
+    CpmName: string[15];
+    Inode: TCpmInode;
+    Buffer: array[0..4096] of byte;
+    WriteError: boolean;
+    IndexJ: longword;
+    DataByte: byte;
+    Times: TUTimeBuf;
+    {$ifdef UNIX}
+    StatBuf: stat;
+    {$else}
+    FileAttr: TWIN32FILEATTRIBUTEDATA;
+    SystemTime, LocalTime: TSystemTime;
+    {$endif}
 begin
-    //char **gargv;
-    //int gargc;
-    //cmd = "cpm.cp";
-    //wxString cpmfile = wxString::Format("%d:", userNumber) + filename.substr(filename.find_last_of("/\\") + 1);
-    //cpmfs->glob(cpmfile.c_str(), &gargc, &gargv);
-    //unix2cpm(filename, cpmfile, isTextFile, preserveTimeStamps);
-    //cpmfs->sync();
+
+    try
+        AssignFile(UnixFile, AFileName);
+        Reset(UnixFile, 1);
+    except
+
+        on e: Exception do begin
+            MessageDlg(Format('can not open %s' + LineEnding + '%s', [ExtractFileName(AFileName), e.Message]),
+                mtError, [mbOK], 0);
+            exit;
+        end;
+
+    end;
+
+    CpmName := Format('%.2d%s', [AUserNumber, ExtractFileName(AFileName)]);
+
+    if not (FCpmFileSystem.Create(FCpmFileSystem.GetDirectoryRoot, CpmName, FileSize(UnixFile), Inode, &666)) then begin
+        MessageDlg(Format('can not create %s' + LineEnding + '%s', [ExtractFileName(AFileName), FCpmFileSystem.GetErrorMsg]),
+            mtError, [mbOK], 0);
+    end
+    else begin
+        WriteError := False;
+        FCpmFileSystem.Open(Inode, CpmFile, O_WRONLY);
+
+        repeat
+            IndexJ := 0;
+
+            while ((IndexJ < (Length(Buffer) div 2)) and not EOF(UnixFile)) do begin
+                Read(UnixFile, DataByte);
+
+                if (AIsTextFile and (DataByte = $0A)) then begin
+                    Buffer[IndexJ] := $0D;
+                    Inc(IndexJ);
+                end;
+
+                Buffer[IndexJ] := DataByte;
+                Inc(IndexJ);
+            end;
+
+            if (AIsTextFile and EOF(UnixFile)) then begin
+                Buffer[IndexJ] := &032;
+                Inc(IndexJ);
+            end;
+
+            if (FCpmFileSystem.Write(CpmFile, @Buffer[0], IndexJ) <> IndexJ) then begin
+                MessageDlg(Format('can not write %s' + LineEnding + '%s',
+                    [Format('%.d:%s', [AUserNumber, ExtractFileName(AFileName)]), FCpmFileSystem.GetErrorMsg]),
+                    mtError, [mbOK], 0);
+                WriteError := True;
+                Break;
+            end;
+
+        until (EOF(UnixFile));
+
+        if (not FCpmFileSystem.Close(CpmFile) and not WriteError) then begin
+            MessageDlg(Format('can not close %s' + LineEnding + '%s',
+                [Format('%.d:%s', [AUserNumber, ExtractFileName(AFileName)]), FCpmFileSystem.GetErrorMsg]), mtError, [mbOK], 0);
+        end;
+
+        if (APreserveTimeStamps and not WriteError) then begin
+            {$ifdef UNIX}
+            FpStat(AFileName, StatBuf);
+            Times.AcTime := FileDateToDateTime(StatBuf.st_atime);
+            Times.ModTime := FileDateToDateTime(StatBuf.st_mtime);
+            {$else}
+            GetFileAttributesEx(PChar(AFileName), GetFileExInfoStandard, @FileAttr);
+            FileTimeToSystemTime(FileAttr.ftLastAccessTime, SystemTime);
+            SystemTimeToTzSpecificLocalTime(nil, SystemTime, LocalTime);
+            Times.AcTime := SystemTimeToDateTime(LocalTime);
+            FileTimeToSystemTime(FileAttr.ftLastWriteTime, SystemTime);
+            SystemTimeToTzSpecificLocalTime(nil, SystemTime, LocalTime);
+            Times.ModTime := SystemTimeToDateTime(LocalTime);
+            ;
+            {$endif}
+            FCpmFileSystem.UpdateTime(Inode, Times);
+        end;
+
+    end;
+
+    try
+        CloseFile(UnixFile);
+    except
+
+        on e: Exception do begin
+            MessageDlg(Format('can not close %s' + LineEnding + '%s', [ExtractFileName(AFileName), e.Message]),
+                mtError, [mbOK], 0);
+        end;
+
+    end;
+
+    if not FCpmFileSystem.Sync then begin
+        MessageDlg(Format('paste error write back directory' + LineEnding + '%s', [FCpmFileSystem.GetErrorMsg]),
+            mtError, [mbOK], 0);
+    end;
 end;
 
 // --------------------------------------------------------------------------------
@@ -657,93 +763,6 @@ end;
 function TCpmTools.ConvertFilename(const AFileName: string): string;
 begin
     Result := Format('%.2d%s', [GetUserNumber(AFileName), RightStr(AFileName, Length(AFileName) - Pos(':', AFileName))]);
-end;
-
-// --------------------------------------------------------------------------------
-//int CpmTools::unix2cpm(const char *unixfilename, const char *cpmfilename, bool text, bool preserve) {
-function TCpmTools.Unix2Cpm(const AUnixFileName: string; const ACpmFileName: string; AIsTextFile: boolean; APreserveTimeStamps: boolean): boolean;
-begin
-    //int c, exitcode = 0;
-    //    FILE *ufp;
-    //    wxString unixfile = unixfilename;
-    //    unixfile = unixfile.substr(unixfile.find_last_of("/\\") + 1);
-    //
-    //    if ((ufp = fopen(unixfilename, "rb")) == (FILE *)0) {
-    //        guiintf->printMsg(wxString::Format("%s: can not open %s  (%s)\n", cmd, unixfile,
-    //                                           strerror(errno)));
-    //        exitcode = 1;
-    //    }
-    //    else {
-    //        CpmFs::CpmInode_t ino;
-    //        char cpmname[2 + 8 + 1 + 3 + 1];
-    //        char *translate;
-    //        struct stat st;
-    //        stat(unixfilename, &st);
-    //        snprintf(cpmname, sizeof(cpmname), "%02d%s", getUserNumber(cpmfilename),
-    //                 strchr(cpmfilename, ':') + 1);
-    //        translate = cpmname;
-    //
-    //        while ((translate = strchr(translate, ','))) {
-    //            *translate = '/';
-    //        }
-    //
-    //        if (cpmfs->create(&cpmfs->getDirectoryRoot(), cpmname, &ino, 0666) == -1) {
-    //            guiintf->printMsg(wxString::Format("%s: can not create %s  (%s)\n", cmd, cpmfilename,
-    //                                               cpmfs->getErrorMsg()));
-    //            exitcode = 1;
-    //        }
-    //        else {
-    //            CpmFs::CpmFile_t file;
-    //            int ohno = 0;
-    //            char buf[4096 + 1];
-    //            cpmfs->open(&ino, &file, O_WRONLY);
-    //
-    //            do {
-    //                ssize_t j;
-    //
-    //                for (j = 0; j < ((ssize_t)sizeof(buf) / 2) && (c = getc(ufp)) != EOF; ++j) {
-    //                    if (text && c == '\n') {
-    //                        buf[j++] = '\r';
-    //                    }
-    //
-    //                    buf[j] = c;
-    //                }
-    //
-    //                if (text && c == EOF) {
-    //                    buf[j++] = '\032';
-    //                }
-    //
-    //                if (cpmfs->write(&file, buf, j) != j) {
-    //                    guiintf->printMsg(wxString::Format("%s: can not write %s  (%s)\n", cmd, cpmfilename,
-    //                                                       cpmfs->getErrorMsg()));
-    //                    ohno = 1;
-    //                    exitcode = 1;
-    //                    break;
-    //                }
-    //            } while (c != EOF);
-    //
-    //            if (cpmfs->close(&file) == EOF && !ohno) {
-    //                guiintf->printMsg(wxString::Format("%s: can not close %s  (%s)\n", cmd, cpmfilename,
-    //                                                   cpmfs->getErrorMsg()));
-    //                exitcode = 1;
-    //            }
-    //
-    //            if (preserve && !ohno) {
-    //                struct utimbuf times;
-    //                times.actime = st.st_atime;
-    //                times.modtime = st.st_mtime;
-    //                cpmfs->utime(&ino, &times);
-    //            }
-    //        }
-    //
-    //        if (fclose(ufp) == EOF) {
-    //            guiintf->printMsg(wxString::Format("%s: can not close %s  (%s)\n", cmd, cpmfilename,
-    //                                               strerror(errno)));
-    //            exitcode = 1;
-    //        }
-    //    }
-    //
-    //    return (exitcode);
 end;
 
 // --------------------------------------------------------------------------------
