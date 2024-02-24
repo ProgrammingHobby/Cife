@@ -300,8 +300,8 @@ begin
         FDirStatistic.TotalBytes := IntToStr(((Buf.F_BUsed * buf.F_BSize) div 1024)) + 'K';
         FDirStatistic.TotalRecords := IntToStr(TotalRecs);
         FDirStatistic.FilesFound := IntToStr(FilesCount);
-        FDirStatistic.TotalFreeBytes := IntToStr((((Buf.F_BSize * Buf.F_Blocks) div 1024) -
-            ((Buf.F_BUsed * buf.F_BSize) div 1024))) + 'K';
+        FDirStatistic.TotalFreeBytes := IntToStr(((Buf.F_BSize * Buf.F_Blocks) div 1024) -
+            ((Buf.F_BUsed * Buf.F_BSize) div 1024) - ((Buf.F_Files * 32) div 1024)) + 'K';
         FDirStatistic.TotalDiskBytes := IntToStr(((Buf.F_BSize * Buf.F_Blocks) div 1024)) + 'K';
         FDirStatistic.Total1KBlocks := IntToStr(TotalKBytes);
         FDirStatistic.UsedDirEntries := IntToStr((Buf.F_Files - Buf.F_FFree));
