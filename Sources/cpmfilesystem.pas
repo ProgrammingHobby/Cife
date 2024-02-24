@@ -917,7 +917,11 @@ var
 const
     Signature = '!!!TIME';
 begin
-    { #todo : Reformat funktioniert unter Windows nicht }
+    // check for already opened image
+    if FCpmDevice.IsOpen then begin
+        FCpmDevice.Close;
+    end;
+
     // check for empty label
     if (AFileSystemLabel.IsEmpty) then begin
         AFileSystemLabel := 'UNLABELED';
