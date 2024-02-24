@@ -237,6 +237,8 @@ var
     UpperCase: boolean;
 begin
     { #todo : evtl. selektierte Items nach dem Refresh wieder herstellen. }
+    { #todo : bei Selektion mit rechter Maustaste gleich das Popupmenü öffnen }
+    { #todo : Menü 'Paste' wird z.B. nach 'Delete' nicht aktiviert. }
 
     with TXMLSettings.Create(SettingsFile) do begin
         try
@@ -356,9 +358,11 @@ begin
     with TXMLSettings.Create(SettingsFile) do begin
 
         try
+            OpenKey('Settings');
             PreserveTimeStamps := GetValue('KeepTimestamps', True);
             UserNumber := GetValue('DefaultUserNumber', 0);
             TextfileEndings := GetValue('TextFileEndings', 'txt pip pas');
+            CloseKey;
         finally
             Free;
         end;
@@ -374,6 +378,8 @@ begin
         end;
 
     end;
+
+    RefreshDirectory;
 
 end;
 
