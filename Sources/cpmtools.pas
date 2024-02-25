@@ -701,7 +701,6 @@ begin
             FileTimeToSystemTime(FileAttr.ftLastWriteTime, SystemTime);
             SystemTimeToTzSpecificLocalTime(nil, SystemTime, LocalTime);
             Times.ModTime := SystemTimeToDateTime(LocalTime);
-            ;
             {$endif}
             FCpmFileSystem.UpdateTime(Inode, Times);
         end;
