@@ -466,14 +466,12 @@ procedure TMainWindow.actionSettingsExecute(Sender: TObject);
 var
     Dialog: TSettingsDialog;
     OldUseUpperCase: boolean;
-    OldDiskdefsFile: string;
 begin
     with TXMLSettings.Create(SettingsFile) do begin
 
         try
             OpenKey('Settings');
             OldUseUpperCase := GetValue('UseUppercaseCharacters', False);
-            OldDiskdefsFile := GetValue('DiskdefsFile', '');
             CloseKey;
         finally
             Free;
