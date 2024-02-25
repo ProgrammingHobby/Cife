@@ -3,13 +3,14 @@ object MainWindow: TMainWindow
   Height = 390
   Top = 250
   Width = 687
-  AllowDropFiles = True
   Caption = 'CP/M Image-File Explorer'
   ClientHeight = 390
   ClientWidth = 687
   Menu = MainMenu
   OnClose = FormClose
+  OnDropFiles = FormDropFiles
   OnShow = FormShow
+  LCLVersion = '3.0.0.3'
   object StatusBar1: TStatusBar
     Left = 4
     Height = 21
@@ -447,7 +448,7 @@ object MainWindow: TMainWindow
       ChildSizing.EnlargeVertical = crsHomogenousChildResize
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
       ChildSizing.ControlsPerLine = 2
-      ClientHeight = 144
+      ClientHeight = 143
       ClientWidth = 98
       Font.Height = -13
       Font.Name = 'Sans'

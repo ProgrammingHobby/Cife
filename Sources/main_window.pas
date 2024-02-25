@@ -160,6 +160,7 @@ type
         procedure actionRenameExecute(Sender: TObject);
         procedure actionSettingsExecute(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+        procedure FormDropFiles(Sender: TObject; const FileNames: array of string);
         procedure FormShow(Sender: TObject);
         procedure PageControlCloseTabClicked(Sender: TObject);
     private
@@ -171,6 +172,9 @@ type
         procedure ShowDirectoryStatistic(AStatistic: TDirStatistic);
         procedure MenuActionsControl(AMenuAction: TEnableAction);
         function IsTabExisting(AImageFile, AImageType: string): boolean;
+        {$ifdef UNIX}
+        function IsRegular(const AStrPath: string): boolean;
+        {$endif}
     public
 
     end;
@@ -182,7 +186,7 @@ implementation
 
 {$R *.lfm}
 
-uses File_Dialog, Settings_Dialog, About_Dialog, XMLSettings, Clipbrd
+uses File_Dialog, Settings_Dialog, About_Dialog, XMLSettings, Clipbrd, Types
     {$ifdef WINDOWS}
     , Windows
     {$else}
@@ -271,6 +275,7 @@ begin
 
     if (PageControl.PageCount <= 0) then begin
         actionClose.Enabled := False;
+        AllowDropFiles := False;
     end;
 
 end;
@@ -362,17 +367,6 @@ var
     {$endif}
     IndexI: integer;
     FilesToPaste: TStringArray;
-
-    {$ifdef UNIX}
-    function IsRegular(const AStrPath: string): boolean;
-    var
-        info: stat;
-    begin
-        fplstat(AStrPath, @info);
-        Result := (fpS_ISREG(info.st_mode));
-    end;
-    {$endif}
-
 begin
 
     {$ifdef WINDOWS}
@@ -544,6 +538,49 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
+procedure TMainWindow.FormDropFiles(Sender: TObject; const FileNames: array of string);
+var
+    MousePoint: TPoint;
+    Page: TImagePage;
+    IndexI: integer;
+    FilesToPaste: TStringArray;
+    FileBuffer: string;
+begin
+    Page := PageControl.ActivePage as TImagePage;
+
+    if (Assigned(Page)) then begin
+        MousePoint := Page.ScreenToControl(Mouse.CursorPos);
+
+        if Page.ClientRect.Contains(MousePoint) then begin
+
+            {$ifdef WINDOWS}
+            for IndexI := Low(FileNames) to High(FileNames) do begin
+                FileBuffer := FileNames[IndexI];
+
+                if not DirectoryExists(FileBuffer) then begin
+                    SetLength(FilesToPaste, IndexI + 1);
+                    FilesToPaste[IndexI] := FileBuffer;
+                end;
+
+            end;
+            {$else}
+            for IndexI := Low(FileNames) to High(FileNames) do begin
+                FileBuffer := FileNames[IndexI];
+
+                if (IsRegular(FileBuffer)) then begin
+                    SetLength(FilesToPaste, IndexI + 1);
+                    FilesToPaste[IndexI] := FileBuffer;
+                end;
+
+            end;
+            {$endif}
+            Page.PasteFiles(FilesToPaste);
+        end;
+
+    end;
+end;
+
+// --------------------------------------------------------------------------------
 procedure TMainWindow.FormShow(Sender: TObject);
 var
     LabelWidth: integer;
@@ -655,6 +692,7 @@ begin
         if (PageControl.PageCount > 0) then begin
             actionClose.Enabled := True;
             actionClearHistory.Enabled := True;
+            AllowDropFiles := True;
         end;
 
         FImageFileHistory.AddItem(AImageFile, AImageType);
@@ -749,6 +787,17 @@ begin
     end;
 
 end;
+
+{$ifdef UNIX}
+// --------------------------------------------------------------------------------
+function TMainWindow.IsRegular(const AStrPath: string): boolean;
+var
+    info: stat;
+begin
+    fplstat(AStrPath, @info);
+    Result := (fpS_ISREG(info.st_mode));
+end;
+{$endif}
 
 // --------------------------------------------------------------------------------
 end.
