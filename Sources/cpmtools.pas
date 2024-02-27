@@ -617,7 +617,8 @@ var
     CpmFile: TCpmFile;
     CpmName: string[15];
     Inode: TCpmInode;
-    Buffer: array[0..4096] of byte;
+    Buffer: array of byte = nil;
+    UnixFileSize: longword;
     WriteError: boolean;
     IndexJ: longword;
     DataByte: byte;
@@ -633,6 +634,7 @@ begin
     try
         AssignFile(UnixFile, AFileName);
         Reset(UnixFile, 1);
+        UnixFileSize := FileSize(UnixFile);
     except
 
         on e: Exception do begin
@@ -645,7 +647,7 @@ begin
 
     CpmName := Format('%.2d%s', [AUserNumber, ExtractFileName(AFileName)]);
 
-    if not (FCpmFileSystem.Create(FCpmFileSystem.GetDirectoryRoot, CpmName, FileSize(UnixFile), Inode, &666)) then begin
+    if not (FCpmFileSystem.Create(FCpmFileSystem.GetDirectoryRoot, CpmName, UnixFileSize, Inode, &666)) then begin
         MessageDlg(Format('can not create %s' + LineEnding + '%s', [ExtractFileName(AFileName), FCpmFileSystem.GetErrorMsg]),
             mtError, [mbOK], 0);
     end
@@ -653,35 +655,62 @@ begin
         WriteError := False;
         FCpmFileSystem.Open(Inode, CpmFile, O_WRONLY);
 
-        repeat
-            IndexJ := 0;
+        if (AIsTextFile) then begin
+            SetLength(Buffer, 4096);
+            repeat
+                IndexJ := 0;
 
-            while ((IndexJ < (Length(Buffer) div 2)) and not EOF(UnixFile)) do begin
-                Read(UnixFile, DataByte);
+                while ((IndexJ < (Length(Buffer) div 2)) and not EOF(UnixFile)) do begin
+                    Read(UnixFile, DataByte);
 
-                if (AIsTextFile and (DataByte = $0A)) then begin
-                    Buffer[IndexJ] := $0D;
+                    if (DataByte = $0A) then begin
+                        Buffer[IndexJ] := $0D;
+                        Inc(IndexJ);
+                    end;
+
+                    Buffer[IndexJ] := DataByte;
                     Inc(IndexJ);
                 end;
 
-                Buffer[IndexJ] := DataByte;
-                Inc(IndexJ);
-            end;
+                if (EOF(UnixFile)) then begin
+                    Buffer[IndexJ] := &032;
+                    Inc(IndexJ);
+                end;
 
-            if (AIsTextFile and EOF(UnixFile)) then begin
-                Buffer[IndexJ] := &032;
-                Inc(IndexJ);
-            end;
+                if (FCpmFileSystem.Write(CpmFile, @Buffer[0], IndexJ) <> IndexJ) then begin
+                    MessageDlg(Format('can not write %s' + LineEnding + '%s',
+                        [Format('%.d:%s', [AUserNumber, ExtractFileName(AFileName)]), FCpmFileSystem.GetErrorMsg]),
+                        mtError, [mbOK], 0);
+                    WriteError := True;
+                    Break;
+                end;
 
-            if (FCpmFileSystem.Write(CpmFile, @Buffer[0], IndexJ) <> IndexJ) then begin
-                MessageDlg(Format('can not write %s' + LineEnding + '%s',
-                    [Format('%.d:%s', [AUserNumber, ExtractFileName(AFileName)]), FCpmFileSystem.GetErrorMsg]),
-                    mtError, [mbOK], 0);
-                WriteError := True;
-                Break;
-            end;
+            until (EOF(UnixFile));
 
-        until (EOF(UnixFile));
+        end
+        else begin
+
+            try
+                SetLength(Buffer, UnixFileSize);
+                BlockRead(UnixFile, Buffer[0], UnixFileSize);
+
+                if (FCpmFileSystem.Write(CpmFile, @Buffer[0], UnixFileSize) <> UnixFileSize) then begin
+                    MessageDlg(Format('can not write %s' + LineEnding + '%s',
+                        [Format('%.d:%s', [AUserNumber, ExtractFileName(AFileName)]), FCpmFileSystem.GetErrorMsg]),
+                        mtError, [mbOK], 0);
+                    WriteError := True;
+                end;
+
+            except
+
+                on e: Exception do begin
+                    MessageDlg(Format('can not read %s from dsik' + LineEnding + '%s', [ExtractFileName(AFileName), e.Message]),
+                        mtError, [mbOK], 0);
+                    exit;
+                end;
+
+            end;
+        end;
 
         if (not FCpmFileSystem.Close(CpmFile) and not WriteError) then begin
             MessageDlg(Format('can not close %s' + LineEnding + '%s',
