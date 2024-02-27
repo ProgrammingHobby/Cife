@@ -154,11 +154,13 @@ type
         procedure actionFormatCurrentExecute(Sender: TObject);
         procedure actionNewExecute(Sender: TObject);
         procedure actionOpenExecute(Sender: TObject);
+        procedure actionPasteExecute(Sender: TObject);
         procedure actionQuitExecute(Sender: TObject);
         procedure actionRefreshExecute(Sender: TObject);
         procedure actionRenameExecute(Sender: TObject);
         procedure actionSettingsExecute(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
+        procedure FormDropFiles(Sender: TObject; const FileNames: array of string);
         procedure FormShow(Sender: TObject);
         procedure PageControlCloseTabClicked(Sender: TObject);
     private
@@ -170,6 +172,9 @@ type
         procedure ShowDirectoryStatistic(AStatistic: TDirStatistic);
         procedure MenuActionsControl(AMenuAction: TEnableAction);
         function IsTabExisting(AImageFile, AImageType: string): boolean;
+        {$ifdef UNIX}
+        function IsRegular(const AStrPath: string): boolean;
+        {$endif}
     public
 
     end;
@@ -181,7 +186,13 @@ implementation
 
 {$R *.lfm}
 
-uses File_Dialog, Settings_Dialog, About_Dialog, XMLSettings;
+uses File_Dialog, Settings_Dialog, About_Dialog, XMLSettings, Clipbrd, Types
+    {$ifdef WINDOWS}
+    , Windows
+    {$else}
+    , URIParser, BaseUnix
+    {$endif}
+    ;
 
     { TMainWindow }
 
@@ -264,6 +275,7 @@ begin
 
     if (PageControl.PageCount <= 0) then begin
         actionClose.Enabled := False;
+        AllowDropFiles := False;
     end;
 
 end;
@@ -342,6 +354,82 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
+procedure TMainWindow.actionPasteExecute(Sender: TObject);
+var
+    Page: TImagePage;
+    {$ifdef WINDOWS}
+    ClipboardFileList: HDROP;
+    FileBuffer: PChar;
+    BufferSize: integer;
+    {$else}
+    ClipboardFileList: TStringArray;
+    FileBuffer: string;
+    {$endif}
+    IndexI: integer;
+    FilesToPaste: TStringArray;
+begin
+
+    {$ifdef WINDOWS}
+    if (Clipboard.HasFormat(CF_HDROP) and OpenClipboard(0)) then begin
+
+        try
+            ClipboardFileList := GetClipboardData(CF_HDROP);
+
+            if ClipboardFileList <> 0 then begin
+
+                for IndexI := 0 to (DragQueryFile(ClipboardFileList, $FFFFFFFF, nil, 0) - 1) do begin
+                    BufferSize := DragQueryFile(ClipboardFileList, IndexI, nil, 0);
+                    FileBuffer := StrAlloc(BufferSize + 1);
+
+                    try
+
+                        if (DragQueryFile(ClipboardFileList, IndexI, FileBuffer, BufferSize + 1) > 0) then begin
+                            SetLength(FilesToPaste, IndexI + 1);
+                            FilesToPaste[IndexI] := FileBuffer;
+                        end;
+
+                    finally
+                        StrDispose(FileBuffer);
+                    end;
+
+                end;
+
+            end;
+
+        finally
+            CloseClipboard;
+        end;
+
+    end;
+    {$else}
+    if Clipboard.HasFormat(CF_Text) then begin
+        ClipboardFileList := Clipboard.AsText.Trim.Split(Chr($0A));
+
+        for IndexI := 0 to (Length(ClipboardFileList) - 1) do begin
+            FileBuffer := ParseURI(ClipboardFileList[IndexI]).Path + ParseURI(ClipboardFileList[IndexI]).Document;
+
+            if (IsRegular(FileBuffer)) then begin
+                SetLength(FilesToPaste, IndexI + 1);
+                FilesToPaste[IndexI] := FileBuffer;
+            end;
+
+        end;
+
+    end;
+    {$endif}
+
+    if (Length(FilesToPaste) > 0) then begin
+        Page := PageControl.ActivePage as TImagePage;
+
+        if (Assigned(Page)) then begin
+            Page.PasteFiles(FilesToPaste);
+        end;
+
+    end;
+
+end;
+
+// --------------------------------------------------------------------------------
 procedure TMainWindow.actionQuitExecute(Sender: TObject);
 begin
     Close;
@@ -378,14 +466,12 @@ procedure TMainWindow.actionSettingsExecute(Sender: TObject);
 var
     Dialog: TSettingsDialog;
     OldUseUpperCase: boolean;
-    OldDiskdefsFile: string;
 begin
     with TXMLSettings.Create(SettingsFile) do begin
 
         try
             OpenKey('Settings');
             OldUseUpperCase := GetValue('UseUppercaseCharacters', False);
-            OldDiskdefsFile := GetValue('DiskdefsFile', '');
             CloseKey;
         finally
             Free;
@@ -447,6 +533,49 @@ begin
     end;
 
     CloseAction := caFree;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TMainWindow.FormDropFiles(Sender: TObject; const FileNames: array of string);
+var
+    MousePoint: TPoint;
+    Page: TImagePage;
+    IndexI: integer;
+    FilesToPaste: TStringArray;
+    FileBuffer: string;
+begin
+    Page := PageControl.ActivePage as TImagePage;
+
+    if (Assigned(Page)) then begin
+        MousePoint := Page.ScreenToControl(Mouse.CursorPos);
+
+        if Page.ClientRect.Contains(MousePoint) then begin
+
+            {$ifdef WINDOWS}
+            for IndexI := Low(FileNames) to High(FileNames) do begin
+                FileBuffer := FileNames[IndexI];
+
+                if not DirectoryExists(FileBuffer) then begin
+                    SetLength(FilesToPaste, IndexI + 1);
+                    FilesToPaste[IndexI] := FileBuffer;
+                end;
+
+            end;
+            {$else}
+            for IndexI := Low(FileNames) to High(FileNames) do begin
+                FileBuffer := FileNames[IndexI];
+
+                if (IsRegular(FileBuffer)) then begin
+                    SetLength(FilesToPaste, IndexI + 1);
+                    FilesToPaste[IndexI] := FileBuffer;
+                end;
+
+            end;
+            {$endif}
+            Page.PasteFiles(FilesToPaste);
+        end;
+
+    end;
 end;
 
 // --------------------------------------------------------------------------------
@@ -561,6 +690,7 @@ begin
         if (PageControl.PageCount > 0) then begin
             actionClose.Enabled := True;
             actionClearHistory.Enabled := True;
+            AllowDropFiles := True;
         end;
 
         FImageFileHistory.AddItem(AImageFile, AImageType);
@@ -576,11 +706,44 @@ procedure TMainWindow.HistoryMenuItemClick(Sender: TObject);
 var
     HistoryMenuItem: TMenuItem;
     HistoryEntry: THistoryEntry;
+    TestBox: TComboBox;
+    IndexI: integer;
 begin
 
     if (Sender is TMenuItem) then begin
         HistoryMenuItem := TMenuItem(Sender);
         HistoryEntry := FImageFileHistory.GetHistoryEntry(HistoryMenuItem.Tag);
+        try
+            TestBox := TComboBox.Create(nil);
+            with TXMLSettings.Create(SettingsFile) do begin
+
+                try
+                    OpenKey('Settings');
+                    GetDiskDefsList(GetValue('DiskdefsFile', ''), TestBox);
+                    CloseKey;
+                finally
+                    Free;
+                end;
+
+            end;
+
+            if (TestBox.Items.IndexOf(HistoryEntry.FileType) = -1) then begin
+                if (MessageDlg('Not a valid Image-Type !' + LineEnding + 'Do you want to delete the History Entry ?',
+                    mtConfirmation, [mbYes, mbNo], 0) = mrYes) then begin
+                    FImageFileHistory.DeleteItem(HistoryMenuItem.Tag);
+                end;
+                exit;
+            end;
+        finally
+            TestBox.Items.BeginUpdate;
+
+            for IndexI := 0 to TestBox.Items.Count - 1 do begin
+                TestBox.Items.Objects[IndexI].Free;
+            end;
+
+            TestBox.Items.EndUpdate;
+            FreeAndNil(TestBox);
+        end;
 
         if not IsTabExisting(HistoryEntry.FileName, HistoryEntry.FileType) then begin
             AddImagePage(HistoryEntry.FileName, HistoryEntry.FileType, False);
@@ -653,7 +816,19 @@ begin
         end;
 
     end;
+
 end;
+
+{$ifdef UNIX}
+// --------------------------------------------------------------------------------
+function TMainWindow.IsRegular(const AStrPath: string): boolean;
+var
+    info: stat;
+begin
+    fplstat(AStrPath, @info);
+    Result := (fpS_ISREG(info.st_mode));
+end;
+{$endif}
 
 // --------------------------------------------------------------------------------
 end.

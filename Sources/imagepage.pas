@@ -54,6 +54,7 @@ type
         procedure DeleteFile;
         procedure ShowFileCharacteristics;
         procedure CheckImage;
+        procedure PasteFiles(const AFiles: TStringArray);
     public  // Konstruktor/Destruktor
         constructor Create(ATheOwner: TComponent); override;
         destructor Destroy; override;
@@ -236,7 +237,8 @@ var
     UpperCase: boolean;
 begin
     { #todo : evtl. selektierte Items nach dem Refresh wieder herstellen. }
-    //FDirectoryList.Clear;
+    { #todo : bei Selektion mit rechter Maustaste gleich das Popupmenü öffnen }
+    { #todo : Menü 'Paste' wird z.B. nach 'Delete' nicht aktiviert. }
 
     with TXMLSettings.Create(SettingsFile) do begin
         try
@@ -339,6 +341,45 @@ begin
     finally
         FreeAndNil(Dialog);
     end;
+
+end;
+
+// --------------------------------------------------------------------------------
+procedure TImagePage.PasteFiles(const AFiles: TStringArray);
+var
+    IndexI: integer;
+    FileToPaste: string;
+    UserNumber: integer;
+    PreserveTimeStamps: boolean;
+    TextfileEndings: string;
+    IsTextFile: boolean;
+begin
+
+    with TXMLSettings.Create(SettingsFile) do begin
+
+        try
+            OpenKey('Settings');
+            PreserveTimeStamps := GetValue('KeepTimestamps', True);
+            UserNumber := GetValue('DefaultUserNumber', 0);
+            TextfileEndings := GetValue('TextFileEndings', 'txt pip pas');
+            CloseKey;
+        finally
+            Free;
+        end;
+
+    end;
+
+    for IndexI := 0 to (Length(AFiles) - 1) do begin
+        FileToPaste := AFiles[IndexI];
+        IsTextFile := TextFileEndings.Contains(RightStr(FileToPaste, (Length(FileToPaste) - Pos('.', FileToPaste))));
+
+        if (FileExists(FileToPaste)) then begin
+            FCpmTools.WriteFileToImage(FileToPaste, UserNumber, IsTextFile, PreserveTimeStamps);
+        end;
+
+    end;
+
+    RefreshDirectory;
 
 end;
 

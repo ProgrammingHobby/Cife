@@ -50,6 +50,7 @@ type
         function GetDirectoryStatistic: TDirStatistic;
         function GetFileInfo(AFileName: string): TFileInfo;
         procedure SetNewAttributes(AFileName: string; AAttributes: cpm_attr_t);
+        procedure WriteFileToImage(AFileName: string; AUserNumber: integer; AIsTextFile: boolean; APreserveTimeStamps: boolean);
     public  // Konstruktor/Destruktor
         constructor Create; overload;
         destructor Destroy; override;
@@ -77,7 +78,13 @@ implementation
 
 { TCpmTools }
 
-uses Dialogs, Controls, StrUtils, QuickSort, Character;
+uses Dialogs, Controls, StrUtils, QuickSort, Character
+    {$ifdef UNIX}
+    , BaseUnix
+    {$else}
+    , Windows
+    {$endif}
+    ;
 
 // --------------------------------------------------------------------------------
 procedure TCpmTools.SetPrintDirectoryEntryCallBack(APrintDirectoryEntryCB: TPrintDirectoryEntryCB);
@@ -300,8 +307,13 @@ begin
         FDirStatistic.TotalBytes := IntToStr(((Buf.F_BUsed * buf.F_BSize) div 1024)) + 'K';
         FDirStatistic.TotalRecords := IntToStr(TotalRecs);
         FDirStatistic.FilesFound := IntToStr(FilesCount);
+<<<<<<< HEAD
         FDirStatistic.TotalFreeBytes := IntToStr(((Buf.F_BSize * Buf.F_Blocks) div 1024) -
             ((Buf.F_BUsed * Buf.F_BSize) div 1024) - ((Buf.F_Files * 32) div 1024)) + 'K';
+=======
+        FDirStatistic.TotalFreeBytes := IntToStr((((Buf.F_BSize * Buf.F_Blocks) div 1024) -
+            ((Buf.F_BUsed * Buf.F_BSize) div 1024))) + 'K';
+>>>>>>> c66439a5174ced06a66a14a1311c324030f5243c
         FDirStatistic.TotalDiskBytes := IntToStr(((Buf.F_BSize * Buf.F_Blocks) div 1024)) + 'K';
         FDirStatistic.Total1KBlocks := IntToStr(TotalKBytes);
         FDirStatistic.UsedDirEntries := IntToStr((Buf.F_Files - Buf.F_FFree));
@@ -576,6 +588,150 @@ begin
         FreeAndNil(Gargv);
     end;
 
+end;
+
+// --------------------------------------------------------------------------------
+procedure TCpmTools.WriteFileToImage(AFileName: string; AUserNumber: integer; AIsTextFile: boolean;
+    APreserveTimeStamps: boolean);
+var
+    UnixFile: file of byte;
+    CpmFile: TCpmFile;
+    CpmName: string[15];
+    Inode: TCpmInode;
+    Buffer: array of byte = nil;
+    UnixFileSize: longword;
+    WriteError: boolean;
+    IndexJ: longword;
+    DataByte: byte;
+    Times: TUTimeBuf;
+    {$ifdef UNIX}
+    StatBuf: stat;
+    {$else}
+    FileAttr: TWIN32FILEATTRIBUTEDATA;
+    SystemTime, LocalTime: TSystemTime;
+    {$endif}
+begin
+
+    try
+        AssignFile(UnixFile, AFileName);
+        Reset(UnixFile, 1);
+        UnixFileSize := FileSize(UnixFile);
+    except
+
+        on e: Exception do begin
+            MessageDlg(Format('can not open %s' + LineEnding + '%s', [ExtractFileName(AFileName), e.Message]),
+                mtError, [mbOK], 0);
+            exit;
+        end;
+
+    end;
+
+    CpmName := Format('%.2d%s', [AUserNumber, ExtractFileName(AFileName)]);
+
+    if not (FCpmFileSystem.Create(FCpmFileSystem.GetDirectoryRoot, CpmName, UnixFileSize, Inode, &666)) then begin
+        MessageDlg(Format('can not create %s' + LineEnding + '%s', [ExtractFileName(AFileName), FCpmFileSystem.GetErrorMsg]),
+            mtError, [mbOK], 0);
+    end
+    else begin
+        WriteError := False;
+        FCpmFileSystem.Open(Inode, CpmFile, O_WRONLY);
+
+        if (AIsTextFile) then begin
+            SetLength(Buffer, 4096);
+            repeat
+                IndexJ := 0;
+
+                while ((IndexJ < (Length(Buffer) div 2)) and not EOF(UnixFile)) do begin
+                    Read(UnixFile, DataByte);
+
+                    if (DataByte = $0A) then begin
+                        Buffer[IndexJ] := $0D;
+                        Inc(IndexJ);
+                    end;
+
+                    Buffer[IndexJ] := DataByte;
+                    Inc(IndexJ);
+                end;
+
+                if (EOF(UnixFile)) then begin
+                    Buffer[IndexJ] := &032;
+                    Inc(IndexJ);
+                end;
+
+                if (FCpmFileSystem.Write(CpmFile, @Buffer[0], IndexJ) <> IndexJ) then begin
+                    MessageDlg(Format('can not write %s' + LineEnding + '%s',
+                        [Format('%.d:%s', [AUserNumber, ExtractFileName(AFileName)]), FCpmFileSystem.GetErrorMsg]),
+                        mtError, [mbOK], 0);
+                    WriteError := True;
+                    Break;
+                end;
+
+            until (EOF(UnixFile));
+
+        end
+        else begin
+
+            try
+                SetLength(Buffer, UnixFileSize);
+                BlockRead(UnixFile, Buffer[0], UnixFileSize);
+
+                if (FCpmFileSystem.Write(CpmFile, @Buffer[0], UnixFileSize) <> UnixFileSize) then begin
+                    MessageDlg(Format('can not write %s' + LineEnding + '%s',
+                        [Format('%.d:%s', [AUserNumber, ExtractFileName(AFileName)]), FCpmFileSystem.GetErrorMsg]),
+                        mtError, [mbOK], 0);
+                    WriteError := True;
+                end;
+
+            except
+
+                on e: Exception do begin
+                    MessageDlg(Format('can not read %s from dsik' + LineEnding + '%s', [ExtractFileName(AFileName), e.Message]),
+                        mtError, [mbOK], 0);
+                    exit;
+                end;
+
+            end;
+        end;
+
+        if (not FCpmFileSystem.Close(CpmFile) and not WriteError) then begin
+            MessageDlg(Format('can not close %s' + LineEnding + '%s',
+                [Format('%.d:%s', [AUserNumber, ExtractFileName(AFileName)]), FCpmFileSystem.GetErrorMsg]), mtError, [mbOK], 0);
+        end;
+
+        if (APreserveTimeStamps and not WriteError) then begin
+            {$ifdef UNIX}
+            FpStat(AFileName, StatBuf);
+            Times.AcTime := FileDateToDateTime(StatBuf.st_atime);
+            Times.ModTime := FileDateToDateTime(StatBuf.st_mtime);
+            {$else}
+            GetFileAttributesEx(PChar(AFileName), GetFileExInfoStandard, @FileAttr);
+            FileTimeToSystemTime(FileAttr.ftLastAccessTime, SystemTime);
+            SystemTimeToTzSpecificLocalTime(nil, SystemTime, LocalTime);
+            Times.AcTime := SystemTimeToDateTime(LocalTime);
+            FileTimeToSystemTime(FileAttr.ftLastWriteTime, SystemTime);
+            SystemTimeToTzSpecificLocalTime(nil, SystemTime, LocalTime);
+            Times.ModTime := SystemTimeToDateTime(LocalTime);
+            {$endif}
+            FCpmFileSystem.UpdateTime(Inode, Times);
+        end;
+
+    end;
+
+    try
+        CloseFile(UnixFile);
+    except
+
+        on e: Exception do begin
+            MessageDlg(Format('can not close %s' + LineEnding + '%s', [ExtractFileName(AFileName), e.Message]),
+                mtError, [mbOK], 0);
+        end;
+
+    end;
+
+    if not FCpmFileSystem.Sync then begin
+        MessageDlg(Format('paste error write back directory' + LineEnding + '%s', [FCpmFileSystem.GetErrorMsg]),
+            mtError, [mbOK], 0);
+    end;
 end;
 
 // --------------------------------------------------------------------------------
