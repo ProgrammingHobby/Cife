@@ -706,11 +706,44 @@ procedure TMainWindow.HistoryMenuItemClick(Sender: TObject);
 var
     HistoryMenuItem: TMenuItem;
     HistoryEntry: THistoryEntry;
+    TestBox: TComboBox;
+    IndexI: integer;
 begin
 
     if (Sender is TMenuItem) then begin
         HistoryMenuItem := TMenuItem(Sender);
         HistoryEntry := FImageFileHistory.GetHistoryEntry(HistoryMenuItem.Tag);
+        try
+            TestBox := TComboBox.Create(nil);
+            with TXMLSettings.Create(SettingsFile) do begin
+
+                try
+                    OpenKey('Settings');
+                    GetDiskDefsList(GetValue('DiskdefsFile', ''), TestBox);
+                    CloseKey;
+                finally
+                    Free;
+                end;
+
+            end;
+
+            if (TestBox.Items.IndexOf(HistoryEntry.FileType) = -1) then begin
+                if (MessageDlg('Not a valid Image-Type !' + LineEnding + 'Do you want to delete the History Entry ?',
+                    mtConfirmation, [mbYes, mbNo], 0) = mrYes) then begin
+                    FImageFileHistory.DeleteItem(HistoryMenuItem.Tag);
+                end;
+                exit;
+            end;
+        finally
+            TestBox.Items.BeginUpdate;
+
+            for IndexI := 0 to TestBox.Items.Count - 1 do begin
+                TestBox.Items.Objects[IndexI].Free;
+            end;
+
+            TestBox.Items.EndUpdate;
+            FreeAndNil(TestBox);
+        end;
 
         if not IsTabExisting(HistoryEntry.FileName, HistoryEntry.FileType) then begin
             AddImagePage(HistoryEntry.FileName, HistoryEntry.FileType, False);
