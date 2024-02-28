@@ -1325,7 +1325,7 @@ begin
         exit;
     end;
 
-    if (FindFileExtent(User, Name, Extension, 0, 1) <> -1) then begin
+    if (FindFileExtent(User, Name, Extension, 0, -1) <> -1) then begin
         Result := False;
         exit;
     end;
@@ -3023,7 +3023,7 @@ begin
     end
     else begin
         MaxUser := 15;
-    end;
+    end;               { #todo : Überprüfen, findet schon vorhandenes File nicht. }
 
     while (AStart < FDrive.MaxDir) do begin
 
