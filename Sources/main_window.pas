@@ -598,7 +598,7 @@ begin
     labelTotalDiskBytes.Constraints.MinWidth := LabelWidth;
     Panel7.AutoSize := False;
 
-    LabelWidth := labelTracks.Canvas.GetTextWidth('######');
+    LabelWidth := labelTracks.Canvas.GetTextWidth('#######');
     labelTracks.Constraints.MinWidth := LabelWidth;
     labelSectors.Constraints.MinWidth := LabelWidth;
     labelSectorBytes.Constraints.MinWidth := LabelWidth;
