@@ -154,7 +154,8 @@ var
     StatBuf: TCpmStat;
     Gargc, Row: integer;
     IndexI, Attrib, User, MaxUser: integer;
-    FilesCount, TotalKBytes, TotalRecs: integer;
+    FilesCount, TotalRecs: integer;
+    TotalBytes: uint64;
     Gargv: TStringList;
     Attribute: string[16];
 begin
@@ -171,7 +172,7 @@ begin
 
     if (Gargc > 0) then begin
         FilesCount := 0;
-        TotalKBytes := 0;
+        TotalBytes := 0;
         TotalRecs := 0;
         QSort(Gargv, 0, Gargv.Count - 1);
         FCpmFileSystem.StatFs(Buf);
@@ -186,13 +187,12 @@ begin
                     (FCpmFileSystem.Name2Inode(PChar(Gargv[IndexI]), DirFile)) then begin
                     FCpmFileSystem.Stat(DirFile, StatBuf);
                     FCpmFileSystem.AttrGet(DirFile, Attrib);
-                    TotalKBytes := TotalKBytes + ((StatBuf.Size + 1023) div 1024);
+                    TotalBytes := TotalBytes + StatBuf.Size;
                     TotalRecs := TotalRecs + ((StatBuf.Size + 127) div 128);
                     //  user: name
                     FPrintDirectoryEntry(0, Row, Format('%2d: %s', [User, MidStr(Gargv[IndexI], 3, Length(Gargv[IndexI]))]));
                     //  bytes
-                    FPrintDirectoryEntry(1, Row, Format('%5.1dK',
-                        [((StatBuf.Size + Buf.F_BSize - 1) div Buf.F_BSize * (Buf.F_BSize div 1024))]));
+                    FPrintDirectoryEntry(1, Row, Format('%5.1fK', [(StatBuf.Size / 1024)]));
                     //  records
                     FPrintDirectoryEntry(2, Row, Format('%6.1d', [((StatBuf.Size + 127) div 128)]));
                     //  attributes
@@ -304,18 +304,13 @@ begin
         end;
 
         FPrintDirectoryEntry(-1, -1, 'End');
-        FDirStatistic.TotalBytes := IntToStr(((Buf.F_BUsed * buf.F_BSize) div 1024)) + 'K';
+        FDirStatistic.TotalBytes := Format('%5.1fK', [TotalBytes / 1024]);
         FDirStatistic.TotalRecords := IntToStr(TotalRecs);
         FDirStatistic.FilesFound := IntToStr(FilesCount);
-<<<<<<< HEAD
-        FDirStatistic.TotalFreeBytes := IntToStr(((Buf.F_BSize * Buf.F_Blocks) div 1024) -
-            ((Buf.F_BUsed * Buf.F_BSize) div 1024) - ((Buf.F_Files * 32) div 1024)) + 'K';
-=======
-        FDirStatistic.TotalFreeBytes := IntToStr((((Buf.F_BSize * Buf.F_Blocks) div 1024) -
-            ((Buf.F_BUsed * Buf.F_BSize) div 1024))) + 'K';
->>>>>>> c66439a5174ced06a66a14a1311c324030f5243c
+        FDirStatistic.TotalFreeBytes := Format(
+            '%5.1fK', [(((Buf.F_BSize * Buf.F_Blocks) - (Buf.F_Files * 32) - TotalBytes) / 1024)]);
         FDirStatistic.TotalDiskBytes := IntToStr(((Buf.F_BSize * Buf.F_Blocks) div 1024)) + 'K';
-        FDirStatistic.Total1KBlocks := IntToStr(TotalKBytes);
+        FDirStatistic.Total1KBlocks := Format('%d', [Round(TotalBytes / 1024)]);
         FDirStatistic.UsedDirEntries := IntToStr((Buf.F_Files - Buf.F_FFree));
         FDirStatistic.MaxDirEntries := IntToStr(Buf.F_Files);
     end;
