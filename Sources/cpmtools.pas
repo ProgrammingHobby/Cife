@@ -538,7 +538,7 @@ begin
             Index := Pos(':', AFileName);
             FileInfo.UserNumber := StrToInt(LeftStr(AFileName, Index - 1));
             FileInfo.Name := RightStr(AFileName, (Length(AFileName) - Index));
-            FileInfo.UsedBytes := StatBuf.Size; { #note : Dateigröße nicht präzise }
+            FileInfo.UsedBytes := StatBuf.Size;
             FileInfo.UsedRecords := ((StatBuf.Size + 127) div 128);
             FileInfo.Attributes := Attrib;
             FileInfo.ATime := StatBuf.ATime;
