@@ -217,7 +217,7 @@ type
         function BcdCheck(AValue: integer; AMax: integer): boolean;
         function PwdCheck(APassword: array of byte; ADecode: byte; var APassWd: string): boolean;
         function DirCheck(AStr: array of char; ALen: size_t; AAllowEmpty: boolean; AType: integer): boolean;
-        function FileSize(AExtent: integer): integer;
+        function GetFileSize(AExtent: integer): integer;
         function PrintFile(AExtent: integer): string;
 
     end;
@@ -1884,7 +1884,7 @@ begin
                 end;
 
                 ShouldSize := (FDrive.MaxDir * 16);
-                HasSize := FileSize(Extent1);
+                HasSize := GetFileSize(Extent1);
 
                 if (HasSize <> ShouldSize) then begin
                     AMessage(Format('    Warning: DateStamper file is %d, should be %d (extent=%d, name=''%s'')',
@@ -3972,7 +3972,7 @@ end;
 // --------------------------------------------------------------------------------
 //  -- return file size
 // --------------------------------------------------------------------------------
-function TCpmFileSystem.FileSize(AExtent: integer): integer;
+function TCpmFileSystem.GetFileSize(AExtent: integer): integer;
 type
     PPhysDirectoryEntry = ^TPhysDirectoryEntry;
 var
