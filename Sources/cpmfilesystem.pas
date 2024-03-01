@@ -96,10 +96,12 @@ type
         procedure UpdateTime(AInode: TCpmInode; ATimes: TUTimeBuf);
         function CheckFileSystem(ADoRepair: boolean; AMessage: TCheckMessageCallBack): integer;
         function Sync: boolean;
+        function IsFileExisting(ACpmFileName: string): boolean;
         function GetErrorMsg: string;
         function GetFileSystemInfo: TFileSystemInfo;
         function GetBootTrackSize: integer;
         function GetDirectoryRoot: TCpmInode;
+        function GetFreeFileSpace: uint64;
     public  // Konstruktor/Destruktor
         constructor Create(ACpmDevice: TCpmDevice); overload;
         destructor Destroy; override;
@@ -217,7 +219,7 @@ type
         function BcdCheck(AValue: integer; AMax: integer): boolean;
         function PwdCheck(APassword: array of byte; ADecode: byte; var APassWd: string): boolean;
         function DirCheck(AStr: array of char; ALen: size_t; AAllowEmpty: boolean; AType: integer): boolean;
-        function GetFileSize(AExtent: integer): integer;
+        function FileSize(AExtent: integer): integer;
         function PrintFile(AExtent: integer): string;
 
     end;
@@ -1301,14 +1303,9 @@ var
     Extension: array[0..2] of char;
     Ext: integer;
     DirEntry: PPhysDirectoryEntry;
-    FileSystemStats: TCpmStatFS;
-    FreeBytes: integer;
 begin
-    StatFs(FileSystemStats);
-    FreeBytes := ((FileSystemStats.F_BSize * FileSystemStats.F_Blocks) - (FileSystemStats.F_BUsed *
-        FileSystemStats.F_BSize) - (FDrive.MaxDir * 32));
 
-    if (((AFileSize div FDrive.BlkSiz) + 1) > (FreeBytes div FDrive.BlkSiz)) then begin
+    if (((AFileSize div FDrive.BlkSiz) + 1) > (GetFreeFileSpace div FDrive.BlkSiz)) then begin
         FFileSystemError := 'no more space';
         Result := False;
         exit;
@@ -1884,7 +1881,7 @@ begin
                 end;
 
                 ShouldSize := (FDrive.MaxDir * 16);
-                HasSize := GetFileSize(Extent1);
+                HasSize := FileSize(Extent1);
 
                 if (HasSize <> ShouldSize) then begin
                     AMessage(Format('    Warning: DateStamper file is %d, should be %d (extent=%d, name=''%s'')',
@@ -2354,6 +2351,21 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
+//  -- check if file already exists
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.IsFileExisting(ACpmFileName: string): boolean;
+var
+    User: integer;
+    Name: array[0..7] of char;
+    Extension: array[0..2] of char;
+    Inode: TCpmInode;
+begin
+    SplitFilename(PChar(ACpmFileName), FDrive.OsType, Name, Extension, User);
+    Name2Inode(PChar(ACpmFileName), Inode);
+    Result := (FindFileExtent(User, Name, Extension, 0, -1) <> -1);
+end;
+
+// --------------------------------------------------------------------------------
 function TCpmFileSystem.GetErrorMsg: string;
 begin
     Result := FFileSystemError;
@@ -2408,6 +2420,15 @@ end;
 function TCpmFileSystem.GetDirectoryRoot: TCpmInode;
 begin
     Result := FRoot;
+end;
+
+function TCpmFileSystem.GetFreeFileSpace: uint64;
+var
+    FileSystemStats: TCpmStatFS;
+begin
+    StatFs(FileSystemStats);
+    Result := ((FileSystemStats.F_BSize * FileSystemStats.F_Blocks) - (FileSystemStats.F_BUsed *
+        FileSystemStats.F_BSize) - (FDrive.MaxDir * 32));
 end;
 
 // --------------------------------------------------------------------------------
@@ -3972,7 +3993,7 @@ end;
 // --------------------------------------------------------------------------------
 //  -- return file size
 // --------------------------------------------------------------------------------
-function TCpmFileSystem.GetFileSize(AExtent: integer): integer;
+function TCpmFileSystem.FileSize(AExtent: integer): integer;
 type
     PPhysDirectoryEntry = ^TPhysDirectoryEntry;
 var
