@@ -21,9 +21,8 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
-      <MinorVersionNr Value="7"/>
-      <RevisionNr Value="2"/>
-      <BuildNr Value="1620"/>
+      <MinorVersionNr Value="8"/>
+      <BuildNr Value="1633"/>
       <StringTable FileDescription="CP/M Image-File Explorer" InternalName="CIFE" OriginalFilename="CIFE"/>
     </VersionInfo>
     <BuildModes>
