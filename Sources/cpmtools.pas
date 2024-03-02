@@ -307,8 +307,8 @@ begin
         FDirStatistic.TotalBytes := Format('%5.1fK', [TotalBytes / 1024]);
         FDirStatistic.TotalRecords := IntToStr(TotalRecs);
         FDirStatistic.FilesFound := IntToStr(FilesCount);
-        FDirStatistic.TotalFreeBytes := Format(
-            '%5.1fK', [(((Buf.F_BSize * Buf.F_Blocks) - (Buf.F_Files * 32) - TotalBytes) / 1024)]);
+        FDirStatistic.TotalFreeBytes := Format('%5.1fK',
+            [(((Buf.F_BSize * Buf.F_Blocks) - (Buf.F_Files * 32) - TotalBytes) / 1024)]);
         FDirStatistic.TotalDiskBytes := IntToStr(((Buf.F_BSize * Buf.F_Blocks) div 1024)) + 'K';
         FDirStatistic.Total1KBlocks := Format('%d', [Round(TotalBytes / 1024)]);
         FDirStatistic.UsedDirEntries := IntToStr((Buf.F_Files - Buf.F_FFree));
@@ -623,93 +623,111 @@ begin
 
     CpmName := Format('%.2d%s', [AUserNumber, ExtractFileName(AFileName)]);
 
-    if not (FCpmFileSystem.Create(FCpmFileSystem.GetDirectoryRoot, CpmName, UnixFileSize, Inode, &666)) then begin
-        MessageDlg(Format('can not create %s' + LineEnding + '%s', [ExtractFileName(AFileName), FCpmFileSystem.GetErrorMsg]),
-            mtError, [mbOK], 0);
-    end
-    else begin
-        WriteError := False;
-        FCpmFileSystem.Open(Inode, CpmFile, O_WRONLY);
+    // check if file already exists
+    if (FCpmFileSystem.IsFileExisting(CpmName)) then  begin
+        if (MessageDlg(Format('file %s already exists.' + LineEnding + 'replace existing file?',
+            [ExtractFileName(AFileName)]), mtError, [mbYes, mbNo], 0) = mrYes) then begin
 
-        if (AIsTextFile) then begin
-            SetLength(Buffer, 4096);
-            repeat
-                IndexJ := 0;
-
-                while ((IndexJ < (Length(Buffer) div 2)) and not EOF(UnixFile)) do begin
-                    Read(UnixFile, DataByte);
-
-                    if (DataByte = $0A) then begin
-                        Buffer[IndexJ] := $0D;
-                        Inc(IndexJ);
-                    end;
-
-                    Buffer[IndexJ] := DataByte;
-                    Inc(IndexJ);
-                end;
-
-                if (EOF(UnixFile)) then begin
-                    Buffer[IndexJ] := &032;
-                    Inc(IndexJ);
-                end;
-
-                if (FCpmFileSystem.Write(CpmFile, @Buffer[0], IndexJ) <> IndexJ) then begin
-                    MessageDlg(Format('can not write %s' + LineEnding + '%s',
-                        [Format('%.d:%s', [AUserNumber, ExtractFileName(AFileName)]), FCpmFileSystem.GetErrorMsg]),
-                        mtError, [mbOK], 0);
-                    WriteError := True;
-                    Break;
-                end;
-
-            until (EOF(UnixFile));
+            if not (FCpmFileSystem.Delete(PChar(Format('%.2d%s', [AUserNumber, ExtractFileName(AFileName)])))) then begin
+                MessageDlg(Format('can not replace %s' + LineEnding + '%s',
+                    [ExtractFileName(AFileName), FCpmFileSystem.GetErrorMsg]),
+                    mtError, [mbOK], 0);
+                exit;
+            end;
 
         end
         else begin
+            exit;
+        end;
 
-            try
-                SetLength(Buffer, UnixFileSize);
-                BlockRead(UnixFile, Buffer[0], UnixFileSize);
+    end;
 
-                if (FCpmFileSystem.Write(CpmFile, @Buffer[0], UnixFileSize) <> UnixFileSize) then begin
-                    MessageDlg(Format('can not write %s' + LineEnding + '%s',
-                        [Format('%.d:%s', [AUserNumber, ExtractFileName(AFileName)]), FCpmFileSystem.GetErrorMsg]),
-                        mtError, [mbOK], 0);
-                    WriteError := True;
+    if not (FCpmFileSystem.Create(FCpmFileSystem.GetDirectoryRoot, CpmName, UnixFileSize, Inode, &666)) then begin
+        MessageDlg(Format('can not create %s' + LineEnding + '%s', [ExtractFileName(AFileName), FCpmFileSystem.GetErrorMsg]),
+            mtError, [mbOK], 0);
+        exit;
+    end;
+
+    WriteError := False;
+    FCpmFileSystem.Open(Inode, CpmFile, O_WRONLY);
+
+    if (AIsTextFile) then begin
+        SetLength(Buffer, 4096);
+        repeat
+            IndexJ := 0;
+
+            while ((IndexJ < (Length(Buffer) div 2)) and not EOF(UnixFile)) do begin
+                Read(UnixFile, DataByte);
+
+                if (DataByte = $0A) then begin
+                    Buffer[IndexJ] := $0D;
+                    Inc(IndexJ);
                 end;
 
-            except
-
-                on e: Exception do begin
-                    MessageDlg(Format('can not read %s from dsik' + LineEnding + '%s', [ExtractFileName(AFileName), e.Message]),
-                        mtError, [mbOK], 0);
-                    exit;
-                end;
-
+                Buffer[IndexJ] := DataByte;
+                Inc(IndexJ);
             end;
-        end;
 
-        if (not FCpmFileSystem.Close(CpmFile) and not WriteError) then begin
-            MessageDlg(Format('can not close %s' + LineEnding + '%s',
-                [Format('%.d:%s', [AUserNumber, ExtractFileName(AFileName)]), FCpmFileSystem.GetErrorMsg]), mtError, [mbOK], 0);
-        end;
+            if (EOF(UnixFile)) then begin
+                Buffer[IndexJ] := &032;
+                Inc(IndexJ);
+            end;
 
-        if (APreserveTimeStamps and not WriteError) then begin
-            {$ifdef UNIX}
-            FpStat(AFileName, StatBuf);
-            Times.AcTime := FileDateToDateTime(StatBuf.st_atime);
-            Times.ModTime := FileDateToDateTime(StatBuf.st_mtime);
-            {$else}
-            GetFileAttributesEx(PChar(AFileName), GetFileExInfoStandard, @FileAttr);
-            FileTimeToSystemTime(FileAttr.ftLastAccessTime, SystemTime);
-            SystemTimeToTzSpecificLocalTime(nil, SystemTime, LocalTime);
-            Times.AcTime := SystemTimeToDateTime(LocalTime);
-            FileTimeToSystemTime(FileAttr.ftLastWriteTime, SystemTime);
-            SystemTimeToTzSpecificLocalTime(nil, SystemTime, LocalTime);
-            Times.ModTime := SystemTimeToDateTime(LocalTime);
-            {$endif}
-            FCpmFileSystem.UpdateTime(Inode, Times);
-        end;
+            if (FCpmFileSystem.Write(CpmFile, @Buffer[0], IndexJ) <> IndexJ) then begin
+                MessageDlg(Format('can not write %s' + LineEnding + '%s',
+                    [Format('%.d:%s', [AUserNumber, ExtractFileName(AFileName)]), FCpmFileSystem.GetErrorMsg]),
+                    mtError, [mbOK], 0);
+                WriteError := True;
+                Break;
+            end;
 
+        until (EOF(UnixFile));
+
+    end
+    else begin
+
+        try
+            SetLength(Buffer, UnixFileSize);
+            BlockRead(UnixFile, Buffer[0], UnixFileSize);
+
+            if (FCpmFileSystem.Write(CpmFile, @Buffer[0], UnixFileSize) <> UnixFileSize) then begin
+                MessageDlg(Format('can not write %s' + LineEnding + '%s',
+                    [Format('%.d:%s', [AUserNumber, ExtractFileName(AFileName)]), FCpmFileSystem.GetErrorMsg]),
+                    mtError, [mbOK], 0);
+                WriteError := True;
+            end;
+
+        except
+
+            on e: Exception do begin
+                MessageDlg(Format('can not read %s from dsik' + LineEnding + '%s', [ExtractFileName(AFileName), e.Message]),
+                    mtError, [mbOK], 0);
+                exit;
+            end;
+
+        end;
+    end;
+
+    if (not FCpmFileSystem.Close(CpmFile) and not WriteError) then begin
+        MessageDlg(Format('can not close %s' + LineEnding + '%s',
+            [Format('%.d:%s', [AUserNumber, ExtractFileName(AFileName)]), FCpmFileSystem.GetErrorMsg]), mtError, [mbOK], 0);
+    end;
+
+    if (APreserveTimeStamps and not WriteError) then begin
+        {$ifdef UNIX}
+        FpStat(AFileName, StatBuf);
+        Times.AcTime := FileDateToDateTime(StatBuf.st_atime);
+        Times.ModTime := FileDateToDateTime(StatBuf.st_mtime);
+        {$else}
+        GetFileAttributesEx(PChar(AFileName), GetFileExInfoStandard, @FileAttr);
+        FileTimeToSystemTime(FileAttr.ftLastAccessTime, SystemTime);
+        SystemTimeToTzSpecificLocalTime(nil, SystemTime, LocalTime);
+        Times.AcTime := SystemTimeToDateTime(LocalTime);
+        FileTimeToSystemTime(FileAttr.ftLastWriteTime, SystemTime);
+        SystemTimeToTzSpecificLocalTime(nil, SystemTime, LocalTime);
+        Times.ModTime := SystemTimeToDateTime(LocalTime);
+        {$endif}
+        FCpmFileSystem.UpdateTime(Inode, Times);
     end;
 
     try
