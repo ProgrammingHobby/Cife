@@ -112,7 +112,6 @@ begin
 
         if ((AImageFile = FHistoryArray[Index].FileName) and (AImageType = FHistoryArray[Index].FileType)) then begin
             DeleteItem(Index);
-            Dec(FHistoryItemsCount);
             break;
         end;
 
@@ -120,8 +119,7 @@ begin
 
     // if History full, delete last item
     if (FHistoryItemsCount = MAXITEMS) then begin
-        Dec(FHistoryItemsCount);
-        DeleteItem(FHistoryItemsCount);
+        DeleteItem(FHistoryItemsCount - 1);
     end;
 
     Inc(FHistoryItemsCount);
