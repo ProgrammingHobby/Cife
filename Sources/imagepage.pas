@@ -351,6 +351,7 @@ var
     FileToPaste: string;
     UserNumber: integer;
     PreserveTimeStamps: boolean;
+    ConvertTextFiles: boolean;
     TextfileEndings: string;
     IsTextFile: boolean;
 begin
@@ -361,6 +362,7 @@ begin
             OpenKey('Settings');
             PreserveTimeStamps := GetValue('KeepTimestamps', True);
             UserNumber := GetValue('DefaultUserNumber', 0);
+            ConvertTextFiles := GetValue('ConvertTextFiles', False);
             TextfileEndings := GetValue('TextFileEndings', 'txt pip pas');
             CloseKey;
         finally
@@ -371,7 +373,8 @@ begin
 
     for IndexI := 0 to (Length(AFiles) - 1) do begin
         FileToPaste := AFiles[IndexI];
-        IsTextFile := TextFileEndings.Contains(RightStr(FileToPaste, (Length(FileToPaste) - Pos('.', FileToPaste))));
+        IsTextFile := (ConvertTextFiles and TextFileEndings.Contains(RightStr(FileToPaste,
+            (Length(FileToPaste) - Pos('.', FileToPaste)))));
 
         if (FileExists(FileToPaste)) then begin
             FCpmTools.WriteFileToImage(FileToPaste, UserNumber, IsTextFile, PreserveTimeStamps);
