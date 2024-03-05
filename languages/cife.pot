@@ -402,6 +402,10 @@ msgctxt "tsettingsdialog.caption"
 msgid "Settings"
 msgstr ""
 
+#: tsettingsdialog.checkboxconverttextfiles.caption
+msgid "convert text files while copying"
+msgstr ""
+
 #: tsettingsdialog.checkboxkeeptimestamps.caption
 msgid "keep last updated timestamps"
 msgstr ""

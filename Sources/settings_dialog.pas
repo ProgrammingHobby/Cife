@@ -33,6 +33,7 @@ type
     TSettingsDialog = class(TForm)
         buttonBrowseDiskdefsFile: TButton;
         ButtonPanel: TButtonPanel;
+        checkboxConvertTextFiles: TCheckBox;
         checkboxKeepTimeStamps: TCheckBox;
         checkboxOpenLastImage: TCheckBox;
         checkboxUppercaseCpmCharacters: TCheckBox;
@@ -56,6 +57,7 @@ type
         Splitter: TSplitter;
         treeviewSettingPages: TTreeView;
         procedure buttonBrowseDiskdefsFileClick(Sender: TObject);
+        procedure checkboxConvertTextFilesChange(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
         procedure FormShow(Sender: TObject);
         procedure PanelPaint(Sender: TObject);
@@ -120,6 +122,7 @@ begin
                 SetValue('UseUppercaseCharacters', checkboxUppercaseCpmCharacters.Checked);
                 SetValue('KeepTimestamps', checkboxKeepTimeStamps.Checked);
                 SetValue('DefaultUserNumber', spineditUserNumber.Value);
+                SetValue('ConvertTextFiles', checkboxConvertTextFiles.Checked);
                 SetValue('TextFileEndings', memoTextfileEndings.Text);
                 SetValue('DiskdefsFile', editDiskdefsPath.Text);
                 CloseKey;
@@ -154,6 +157,13 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
+procedure TSettingsDialog.checkboxConvertTextFilesChange(Sender: TObject);
+begin
+    Label2.Enabled := checkboxConvertTextFiles.Checked;
+    memoTextfileEndings.Enabled := checkboxConvertTextFiles.Checked;
+end;
+
+// --------------------------------------------------------------------------------
 procedure TSettingsDialog.FormShow(Sender: TObject);
 var
     MinWidth, MinHeight: integer;
@@ -167,6 +177,7 @@ begin
             checkboxUppercaseCpmCharacters.Checked := GetValue('UseUppercaseCharacters', False);
             checkboxKeepTimeStamps.Checked := GetValue('KeepTimestamps', True);
             spineditUserNumber.Value := GetValue('DefaultUserNumber', 0);
+            checkboxConvertTextFiles.Checked := GetValue('ConvertTextFiles', False);
             memoTextfileEndings.Text := GetValue('TextFileEndings', 'txt pip pas');
             editDiskdefsPath.Text := GetValue('DiskdefsFile', '');
             editDiskdefsPath.SelStart := editDiskdefsPath.GetTextLen;

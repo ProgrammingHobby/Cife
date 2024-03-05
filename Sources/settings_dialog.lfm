@@ -10,7 +10,6 @@ object SettingsDialog: TSettingsDialog
   OnClose = FormClose
   OnShow = FormShow
   Position = poOwnerFormCenter
-  LCLVersion = '3.0.0.3'
   object Panel1: TPanel
     Left = 4
     Height = 180
@@ -62,7 +61,7 @@ object SettingsDialog: TSettingsDialog
       Height = 172
       Top = 4
       Width = 352
-      PageIndex = 0
+      PageIndex = 1
       Align = alClient
       AutoSize = True
       BorderSpacing.Around = 4
@@ -176,7 +175,7 @@ object SettingsDialog: TSettingsDialog
       object Page2: TPage
         object Panel4: TPanel
           Left = 4
-          Height = 29
+          Height = 33
           Top = 4
           Width = 344
           Align = alTop
@@ -184,14 +183,14 @@ object SettingsDialog: TSettingsDialog
           BorderSpacing.Around = 4
           BevelOuter = bvNone
           ClientHeight = 29
-          ClientWidth = 344
+          ClientWidth = 340
           TabOrder = 0
           OnPaint = PanelPaint
           object checkboxKeepTimeStamps: TCheckBox
             Left = 4
             Height = 21
             Top = 4
-            Width = 336
+            Width = 332
             Align = alClient
             BorderSpacing.Around = 4
             Caption = 'keep last updated timestamps'
@@ -201,7 +200,7 @@ object SettingsDialog: TSettingsDialog
         object Panel5: TPanel
           Left = 4
           Height = 37
-          Top = 37
+          Top = 41
           Width = 344
           Align = alTop
           AutoSize = True
@@ -236,25 +235,37 @@ object SettingsDialog: TSettingsDialog
         end
         object Panel6: TPanel
           Left = 4
-          Height = 90
-          Top = 78
+          Height = 115
+          Top = 82
           Width = 344
           Align = alTop
           AutoSize = True
           BorderSpacing.Around = 4
           BevelOuter = bvNone
-          ClientHeight = 90
+          ClientHeight = 115
           ClientWidth = 344
           TabOrder = 2
           OnPaint = PanelPaint
-          object Label2: TLabel
+          object checkboxConvertTextFiles: TCheckBox
             Left = 4
-            Height = 38
+            Height = 21
             Top = 4
             Width = 336
             Align = alTop
             BorderSpacing.Around = 4
+            Caption = 'convert text files while copying'
+            TabOrder = 1
+            OnChange = checkboxConvertTextFilesChange
+          end
+          object Label2: TLabel
+            Left = 4
+            Height = 38
+            Top = 29
+            Width = 336
+            Align = alTop
+            BorderSpacing.Around = 4
             Caption = 'space separated list of textfile endings to be converted during copy Operations :'
+            Enabled = False
             Layout = tlCenter
             ParentColor = False
             WordWrap = True
@@ -262,10 +273,11 @@ object SettingsDialog: TSettingsDialog
           object memoTextfileEndings: TMemo
             Left = 4
             Height = 40
-            Top = 46
+            Top = 71
             Width = 336
             Align = alClient
             BorderSpacing.Around = 4
+            Enabled = False
             ScrollBars = ssAutoVertical
             TabOrder = 0
             WantReturns = False
