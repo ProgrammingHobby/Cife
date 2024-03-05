@@ -141,9 +141,10 @@
         <Filename Value="Sources/cpmfilesystem.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="CpmFileSystem"/>
+        <IsVisibleTab Value="True"/>
         <EditorIndex Value="4"/>
-        <TopLine Value="1228"/>
-        <CursorPos Y="1264"/>
+        <TopLine Value="1380"/>
+        <CursorPos X="20" Y="1498"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit>
@@ -151,7 +152,6 @@
         <Filename Value="Sources/cpmtools.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="CpmTools"/>
-        <IsVisibleTab Value="True"/>
         <EditorIndex Value="3"/>
         <TopLine Value="602"/>
         <CursorPos X="167" Y="605"/>
@@ -281,10 +281,6 @@
     <JumpHistory HistoryIndex="29">
       <Position>
         <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="3064" TopLine="3012"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
         <Caret Line="646" TopLine="617"/>
       </Position>
       <Position>
@@ -398,6 +394,10 @@
       <Position>
         <Filename Value="Sources/cpmfilesystem.pas"/>
         <Caret Line="1270" TopLine="1228"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/cpmfilesystem.pas"/>
+        <Caret Line="95" Column="20" TopLine="66"/>
       </Position>
     </JumpHistory>
     <RunParams>
