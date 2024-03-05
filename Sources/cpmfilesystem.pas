@@ -91,6 +91,8 @@ type
         function Create(ADirEntry: TCpmInode; const AFileName: string; AFileSize: integer;
             var AInode: TCpmInode; AMode: mode_t): boolean;
         function Open(AInode: TCpmInode; var AFile: TCpmFile; AMode: mode_t): boolean;
+        //ssize_t read(CpmFile_t *file, char *buf, size_t count);
+        function Read(var AFile: TCpmFile; var ABuffer: pbyte; ACount: size_t): ssize_t;
         function Write(var AFile: TCpmFile; ABuffer: pbyte; ACount: size_t): ssize_t;
         function Close(AFile: TCpmFile): boolean;
         procedure UpdateTime(AInode: TCpmInode; ATimes: TUTimeBuf);
@@ -1374,6 +1376,126 @@ begin
         Result := False;
     end;
 
+end;
+
+// --------------------------------------------------------------------------------
+//  -- read a file from CP/M filesystem
+// --------------------------------------------------------------------------------
+//ssize_t CpmFs::read(CpmFile_t *file, char *buf, size_t count) {
+function TCpmFileSystem.Read(var AFile: TCpmFile; var ABuffer: pbyte; ACount: size_t): ssize_t;
+begin
+    //int findext = 1, findblock = 1, extent = -1, block = -1, extentno = -1, got = 0, nextblockpos = -1, nextextpos = -1;
+    //int blocksize = drive.blksiz;
+    //int extcap;
+    //extcap = (drive.size <= 256 ? 16 : 8) * blocksize;
+
+    //if (extcap > 16384) {        // drive.extentsize ???
+    //    extcap = 16384 * drive.extents;    // drive.extentsize ???
+    //}
+
+    //if (file->ino->ino == (ino_t) drive.maxdir + 1) { /* [passwd] */
+    //    if ((file->pos + (off_t)count) > file->ino->size) {
+    //        count = file->ino->size - file->pos;
+    //    }
+
+    //    if (count) {
+    //        memcpy(buf, drive.passwd + file->pos, count);
+    //    }
+
+    //    file->pos += count;
+    //    return (count);
+    //}
+    //else if (file->ino->ino == (ino_t) drive.maxdir + 2) { /* [label] */
+    //    if ((file->pos + (off_t)count) > file->ino->size) {
+    //        count = file->ino->size - file->pos;
+    //    }
+
+    //    if (count) {
+    //        memcpy(buf, drive.label + file->pos, count);
+    //    }
+
+    //    file->pos += count;
+    //    return (count);
+    //}
+    //else while (count > 0 && file->pos < file->ino->size) {
+    //        char buffer[16384];
+
+    //        if (findext) {
+    //            extentno = file->pos / drive.extentsize;
+    //            extent = findFileExtent(drive.dir[file->ino->ino].status, drive.dir[file->ino->ino].name, drive.dir[file->ino->ino].ext, 0, extentno);
+    //            nextextpos = (file->pos / extcap) * extcap + extcap;
+    //            findext = 0;
+    //            findblock = 1;
+    //        }
+
+    //        if (findblock) {
+    //            if (extent != -1) {
+    //                int ptr;
+    //                ptr = (file->pos % extcap) / blocksize;
+
+    //                if (drive.size > 256) {
+    //                    ptr *= 2;
+    //                }
+
+    //                block = (unsigned char) drive.dir[extent].pointers[ptr];
+
+    //                if (drive.size > 256) {
+    //                    block += ((unsigned char) drive.dir[extent].pointers[ptr + 1]) << 8;
+    //                }
+
+    //                if (block == 0) {
+    //                    memset(buffer, 0, blocksize);
+    //                }
+    //                else {
+    //                    int start, end;
+    //                    start = (file->pos % blocksize) / drive.secLength;
+    //                    end = ((file->pos % blocksize + (off_t)count) > blocksize ? blocksize - 1 : (int)(file->pos % blocksize + count - 1)) / drive.secLength;
+
+    //                    if (block < drive.dirblks) {
+    //                        fserr = "Attempting to access block before beginning of data";
+
+    //                        if (got == 0) {
+    //                            got = -1;
+    //                        }
+
+    //                        break;
+    //                    }
+
+    //                    if (readBlock(block, buffer, start, end) == -1) {
+    //                        if (got == 0) {
+    //                            got = -1;
+    //                        }
+
+    //                        break;
+    //                    }
+    //                }
+    //            }
+
+    //            nextblockpos = (file->pos / blocksize) * blocksize + blocksize;
+    //            findblock = 0;
+    //        }
+
+    //        if (file->pos < nextblockpos) {
+    //            if (extent == -1) {
+    //                *buf++ = '\0';
+    //            }
+    //            else {
+    //                *buf++ = buffer[file->pos % blocksize];
+    //            }
+
+    //            ++file->pos;
+    //            ++got;
+    //            --count;
+    //        }
+    //        else if (file->pos == nextextpos) {
+    //            findext = 1;
+    //        }
+    //        else {
+    //            findblock = 1;
+    //        }
+    //    }
+
+    //return (got);
 end;
 
 // --------------------------------------------------------------------------------
