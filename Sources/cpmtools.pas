@@ -422,7 +422,7 @@ begin
         BootTracks[IndexI] := $E5;
     end;
 
-    if ((Length(BootTracks) > 0) and (BootTrackSize > 0)) then begin
+    if ((Length(BootTracks) > 0) and (BootTrackSize > 0) and FileExists(ABootFile)) then begin
 
         try
             AssignFile(BootFile, ABootFile);
