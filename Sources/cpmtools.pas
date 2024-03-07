@@ -652,7 +652,19 @@ begin
     FCpmFileSystem.Open(Inode, CpmFile, O_WRONLY);
 
     if (AIsTextFile) then begin
-        SetLength(Buffer, 4096);
+
+        try
+            SetLength(Buffer, 4096);
+        except
+
+            on e: Exception do begin
+                MessageDlg(Format('can not create buffer space' + LineEnding + '%s', [e.Message]),
+                    mtError, [mbOK], 0);
+                exit;
+            end;
+
+        end;
+
         repeat
             IndexJ := 0;
 
@@ -688,24 +700,35 @@ begin
 
         try
             SetLength(Buffer, UnixFileSize);
-            BlockRead(UnixFile, Buffer[0], UnixFileSize);
-
-            if (FCpmFileSystem.Write(CpmFile, @Buffer[0], UnixFileSize) <> UnixFileSize) then begin
-                MessageDlg(Format('can not write %s' + LineEnding + '%s',
-                    [Format('%.d:%s', [AUserNumber, ExtractFileName(AFileName)]), FCpmFileSystem.GetErrorMsg]),
-                    mtError, [mbOK], 0);
-                WriteError := True;
-            end;
-
         except
 
             on e: Exception do begin
-                MessageDlg(Format('can not read %s from dsik' + LineEnding + '%s', [ExtractFileName(AFileName), e.Message]),
+                MessageDlg(Format('can not create buffer space' + LineEnding + '%s', [e.Message]),
                     mtError, [mbOK], 0);
                 exit;
             end;
 
         end;
+
+        try
+            BlockRead(UnixFile, Buffer[0], UnixFileSize);
+        except
+
+            on e: Exception do begin
+                MessageDlg(Format('can not read %s from disk' + LineEnding + '%s', [ExtractFileName(AFileName), e.Message]),
+                    mtError, [mbOK], 0);
+                exit;
+            end;
+
+        end;
+
+        if (FCpmFileSystem.Write(CpmFile, @Buffer[0], UnixFileSize) <> UnixFileSize) then begin
+            MessageDlg(Format('can not write %s' + LineEnding + '%s',
+                [Format('%.d:%s', [AUserNumber, ExtractFileName(AFileName)]), FCpmFileSystem.GetErrorMsg]),
+                mtError, [mbOK], 0);
+            WriteError := True;
+        end;
+
     end;
 
     if (not FCpmFileSystem.Close(CpmFile) and not WriteError) then begin
