@@ -55,6 +55,7 @@ type
         procedure ShowFileCharacteristics;
         procedure CheckImage;
         procedure PasteFiles(const AFiles: TStringArray);
+        procedure CopyFiles;
     public  // Konstruktor/Destruktor
         constructor Create(ATheOwner: TComponent); override;
         destructor Destroy; override;
@@ -381,6 +382,12 @@ begin
 
     RefreshDirectory;
 
+end;
+
+// --------------------------------------------------------------------------------
+procedure TImagePage.CopyFiles;
+begin
+    { #todo : Copy Files }
 end;
 
 // --------------------------------------------------------------------------------

@@ -150,6 +150,7 @@ type
         procedure actionCheckImageExecute(Sender: TObject);
         procedure actionClearHistoryExecute(Sender: TObject);
         procedure actionCloseExecute(Sender: TObject);
+        procedure actionCopyExecute(Sender: TObject);
         procedure actionDeleteExecute(Sender: TObject);
         procedure actionFormatCurrentExecute(Sender: TObject);
         procedure actionNewExecute(Sender: TObject);
@@ -278,6 +279,18 @@ begin
         AllowDropFiles := False;
     end;
 
+end;
+
+// --------------------------------------------------------------------------------
+procedure TMainWindow.actionCopyExecute(Sender: TObject);
+var
+    Page: TImagePage;
+begin
+    Page := PageControl.ActivePage as TImagePage;
+
+    if (Assigned(Page)) then begin
+        Page.CopyFiles;
+    end;
 end;
 
 // --------------------------------------------------------------------------------
