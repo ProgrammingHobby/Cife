@@ -51,6 +51,7 @@ type
         function GetFileInfo(AFileName: string): TFileInfo;
         procedure SetNewAttributes(AFileName: string; AAttributes: cpm_attr_t);
         procedure WriteFileToImage(AFileName: string; AUserNumber: integer; AIsTextFile: boolean; APreserveTimeStamps: boolean);
+        procedure ReadFileFromImage(AFileName: string; AUserNumber: integer; AIsTextFile: boolean; APreserveTimeStamps: boolean);
     public  // Konstruktor/Destruktor
         constructor Create; overload;
         destructor Destroy; override;
@@ -745,6 +746,138 @@ begin
         MessageDlg(Format('paste error write back directory' + LineEnding + '%s', [FCpmFileSystem.GetErrorMsg]),
             mtError, [mbOK], 0);
     end;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TCpmTools.ReadFileFromImage(AFileName: string; AUserNumber: integer; AIsTextFile: boolean; APreserveTimeStamps: boolean);
+begin
+    //char **gargv;
+    //int gargc;
+    //cmd = "cpm.cp";
+    //wxString cpmfile = wxString::Format("%d:", userNumber) + fileName.substr(fileName.find_last_of("/\\") + 1);
+    //wxString unixfile = filePath + wxFileName::GetPathSeparators() + fileName;
+    //cpmfs->glob(cpmfile.c_str(), &gargc, &gargv);
+    //cpm2unix(unixfile, gargv[0], isTextFile, preserveTimeStamps);
+
+    //CpmFs::CpmInode_t ino;
+    //int exitcode = 0;
+
+    //if (cpmfs->namei(cpmfilename, &ino) == -1) {
+    //    guiintf->printMsg(wxString::Format("%s: can not open %s  (%s)\n", cmd, cpmfilename, toolerr));
+    //    exitcode = 1;
+    //}
+    //else {
+    //    CpmFs::CpmFile_t file;
+    //    FILE *ufp;
+    //    cpmfs->open(&ino, &file, O_RDONLY);
+
+    //    if ((ufp = fopen(unixfilename, text ? "w" : "wb")) == (FILE *)0) {
+    //        guiintf->printMsg(wxString::Format("%s: can not create %s  (%s)\n", cmd, unixfilename, strerror(errno)));
+    //        exitcode = 1;
+    //    }
+    //    else {
+    //        int crpending = 0;
+    //        int ohno = 0;
+    //        ssize_t res;
+    //        char buf[4096];
+
+    //        while ((res = cpmfs->read(&file, buf, sizeof(buf))) > 0) {
+    //            int j;
+
+    //            for (j = 0; j < res; ++j) {
+    //                if (text) {
+    //                    if (buf[j] == '\032') {
+    //                        goto endwhile;
+    //                    }
+
+    //                    if (crpending) {
+    //                        if (buf[j] == '\n') {
+    //                            if (putc('\n', ufp) == EOF) {
+    //                                guiintf->printMsg(wxString::Format("%s: can not write %s  (%s)\n", cmd, unixfilename, strerror(errno)));
+    //                                exitcode = 1;
+    //                                ohno = 1;
+    //                                goto endwhile;
+    //                            }
+
+    //                            crpending = 0;
+    //                        }
+    //                        else {
+    //                            if (putc('\r', ufp) == EOF) {
+    //                                guiintf->printMsg(wxString::Format("%s: can not write %s  (%s)\n", cmd, unixfilename, strerror(errno)));
+    //                                exitcode = 1;
+    //                                ohno = 1;
+    //                                goto endwhile;
+    //                            }
+    //                        }
+
+    //                        crpending = (buf[j] == '\r');
+    //                    }
+    //                    else {
+    //                        if (buf[j] == '\r') {
+    //                            crpending = 1;
+    //                        }
+    //                        else {
+    //                            if (putc(buf[j], ufp) == EOF) {
+    //                                guiintf->printMsg(wxString::Format("%s: can not write %s  (%s)\n", cmd, unixfilename, strerror(errno)));
+    //                                exitcode = 1;
+    //                                ohno = 1;
+    //                                goto endwhile;
+    //                            }
+    //                        }
+    //                    }
+    //                }
+    //                else {
+    //                    if (putc(buf[j], ufp) == EOF) {
+    //                        guiintf->printMsg(wxString::Format("%s: can not write %s  (%s)\n", cmd, unixfilename, strerror(errno)));
+    //                        exitcode = 1;
+    //                        ohno = 1;
+    //                        goto endwhile;
+    //                    }
+    //                }
+    //            }
+    //        }
+
+    //        endwhile:
+
+    //        if (res == -1 && !ohno) {
+    //            guiintf->printMsg(wxString::Format("%s: can not read %s  (%s)\n", cmd, unixfilename, toolerr));
+    //            exitcode = 1;
+    //            ohno = 1;
+    //        }
+
+    //        if (fclose(ufp) == EOF && !ohno) {
+    //            guiintf->printMsg(wxString::Format("%s: can not close %s  (%s)\n", cmd, unixfilename, strerror(errno)));
+    //            exitcode = 1;
+    //            ohno = 1;
+    //        }
+
+    //        if (preserve && !ohno && (ino.atime || ino.mtime)) {
+    //            struct utimbuf ut;
+
+    //            if (ino.atime) {
+    //                ut.actime = ino.atime;
+    //            }
+    //            else {
+    //                time(&ut.actime);
+    //            }
+
+    //            if (ino.mtime) {
+    //                ut.modtime = ino.mtime;
+    //            }
+    //            else {
+    //                time(&ut.modtime);
+    //            }
+
+    //            if (utime(unixfilename, &ut) == -1) {
+    //                guiintf->printMsg(wxString::Format("%s: can not change timestamps of %s  (%s)\n", cmd, unixfilename, strerror(errno)));
+    //                exitcode = 1;
+    //                ohno = 1;
+    //            }
+    //        }
+    //    }
+    //}
+
+    //return exitcode;
 end;
 
 // --------------------------------------------------------------------------------
