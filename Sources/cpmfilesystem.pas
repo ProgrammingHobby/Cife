@@ -64,11 +64,6 @@ type
         Ino: TCpmInode;
     end;
 
-    TUTimeBuf = record
-        AcTime: TDateTime;
-        ModTime: TDatetime;
-    end;
-
     { TCpmFileSystem }
 
     TCpmFileSystem = class
