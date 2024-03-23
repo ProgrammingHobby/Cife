@@ -271,7 +271,7 @@ var
 begin
     MenuActionsControl([]);
     Page := PageControl.ActivePage as TImagePage;
-    Page.Close;
+    Page.CloseImage;
     Page.Free;
 
     if (PageControl.PageCount <= 0) then begin
@@ -314,7 +314,7 @@ begin
     Page := PageControl.ActivePage as TImagePage;
 
     if (Assigned(Page)) then begin
-        Page.Format;
+        Page.FormatImage;
         Page.RefreshDirectory;
     end;
 
@@ -688,14 +688,14 @@ begin
 
     if (ANewImage) then begin
 
-        if not (ImagePage.New(AImageFile, AImageType, ABootFile, AFileSystemLabel, ATimeStampsUsed)) then begin
+        if not (ImagePage.NewImage(AImageFile, AImageType, ABootFile, AFileSystemLabel, ATimeStampsUsed)) then begin
             FreeAndNil(ImagePage);
             exit;
         end;
 
     end;
 
-    if (ImagePage.Open(AImageFile, AImageType)) then begin
+    if (ImagePage.OpenImage(AImageFile, AImageType)) then begin
         ImagePage.Caption := ExtractFileName(AImageFile);
         ImagePage.PageControl := PageControl;
         PageControl.ActivePage := ImagePage;
