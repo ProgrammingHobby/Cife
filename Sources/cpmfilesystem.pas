@@ -86,8 +86,7 @@ type
         function Create(ADirEntry: TCpmInode; const AFileName: string; AFileSize: integer;
             var AInode: TCpmInode; AMode: mode_t): boolean;
         function Open(AInode: TCpmInode; var AFile: TCpmFile; AMode: mode_t): boolean;
-        //ssize_t read(CpmFile_t *file, char *buf, size_t count);
-        function Read(var AFile: TCpmFile; var ABuffer: pbyte; ACount: size_t): ssize_t;
+        function Read(var AFile: TCpmFile; ABuffer: pbyte; ACount: size_t): ssize_t;
         function Write(var AFile: TCpmFile; ABuffer: pbyte; ACount: size_t): ssize_t;
         function Close(AFile: TCpmFile): boolean;
         procedure UpdateTime(AInode: TCpmInode; ATimes: TUTimeBuf);
@@ -98,7 +97,8 @@ type
         function GetFileSystemInfo: TFileSystemInfo;
         function GetBootTrackSize: integer;
         function GetDirectoryRoot: TCpmInode;
-        function GetFreeFileSpace: uint64;
+        function GetFreeFileSpace: size_t;
+        function GetFileSize(AExtent: integer): size_t;
     public  // Konstruktor/Destruktor
         constructor Create(ACpmDevice: TCpmDevice); overload;
         destructor Destroy; override;
@@ -216,7 +216,6 @@ type
         function BcdCheck(AValue: integer; AMax: integer): boolean;
         function PwdCheck(APassword: array of byte; ADecode: byte; var APassWd: string): boolean;
         function DirCheck(AStr: array of char; ALen: size_t; AAllowEmpty: boolean; AType: integer): boolean;
-        function FileSize(AExtent: integer): integer;
         function PrintFile(AExtent: integer): string;
 
     end;
@@ -1376,36 +1375,34 @@ end;
 // --------------------------------------------------------------------------------
 //  -- read a file from CP/M filesystem
 // --------------------------------------------------------------------------------
-//ssize_t CpmFs::read(CpmFile_t *file, char *buf, size_t count) {
-function TCpmFileSystem.Read(var AFile: TCpmFile; var ABuffer: pbyte; ACount: size_t): ssize_t;
+function TCpmFileSystem.Read(var AFile: TCpmFile; ABuffer: pbyte; ACount: size_t): ssize_t;
 var
     FindExt, FindBlock, Ext, Block, Extentno, Got, NextBlockPos, NextExtPos: integer;
     BlockSize, ExtCap, Ptr, RdStart, RdEnd: integer;
     Buffer: array of byte;
 begin
-    { #todo : Konvertiert, muß noch geprüft werden. }
-    //int findext = 1, findblock = 1, extent = -1, block = -1, extentno = -1, got = 0, nextblockpos = -1, nextextpos = -1;
     FindExt := 1;
     FindBlock := 1;
     Ext := -1;
     Block := -1;
     Extentno := -1;
-    Got := -1;
+    Got := 0;
     NextBlockPos := -1;
     NextExtPos := -1;
-    //int blocksize = drive.blksiz;
     BlockSize := FDrive.BlkSiz;
+
     try
         SetLength(Buffer, BlockSize);
     except
+
         on e: Exception do begin
             FFileSystemError := Format('error creating block buffer.' + LineEnding + '%s', [e.Message]);
             Result := -1;
             exit;
         end;
+
     end;
-    //int extcap;
-    //extcap = (drive.size <= 256 ? 16 : 8) * blocksize;
+
     if (FDrive.Size <= 256) then begin
         ExtCap := (16 * BlockSize);
     end
@@ -1413,203 +1410,130 @@ begin
         ExtCap := (8 * BlockSize);
     end;
 
-    //if (extcap > 16384) {        // drive.extentsize ???
     if (ExtCap > 16384) then begin
-        //extcap = 16384 * drive.extents;    // drive.extentsize ???
         ExtCap := (16384 * FDrive.Extents);
-        //}
     end;
 
-    //if (file->ino->ino == (ino_t) drive.maxdir + 1) { /* [passwd] */
-    if (AFile.Ino.Ino = (FDrive.MaxDir + 1)) then begin
+    if (AFile.Ino.Ino = (FDrive.MaxDir + 1)) then begin    // [passwd]
 
-        //if ((file->pos + (off_t)count) > file->ino->size) {
         if ((AFile.Pos + ACount) > AFile.Ino.Size) then begin
-            //count = file->ino->size - file->pos;
             ACount := (AFile.Ino.Size - AFile.Pos);
-            //}
         end;
 
-        //if (count) {
         if (ACount <> 0) then begin
-            //memcpy(buf, drive.passwd + file->pos, count);
-            Move(FDrive.Passwd[AFile.Pos], ABuffer, ACount);
-            //}
+            Move(FDrive.Passwd[AFile.Pos], ABuffer^, ACount);
         end;
 
-        //file->pos += count;
         Inc(AFile.Pos, ACount);
-        //return (count);
         Result := (ACount);
         Exit;
-        //}
     end
-    //else if (file->ino->ino == (ino_t) drive.maxdir + 2) { /* [label] */
-    else if (AFile.Ino.Ino = (FDrive.MaxDir + 2)) then begin
+    else if (AFile.Ino.Ino = (FDrive.MaxDir + 2)) then begin    // [label]
 
-        //if ((file->pos + (off_t)count) > file->ino->size) {
         if ((AFile.Pos + ACount) > AFile.Ino.Size) then begin
-            //count = file->ino->size - file->pos;
             ACount := (AFile.Ino.Size - AFile.Pos);
-            //}
         end;
 
-        //if (count) {
         if (ACount <> 0) then begin
-            //memcpy(buf, drive.label + file->pos, count);
-            Move(FDrive.DiskLabel[AFile.Pos], ABuffer, ACount);
-            //}
+            Move(FDrive.DiskLabel[AFile.Pos], ABuffer^, ACount);
         end;
-        //file->pos += count;
+
         Inc(AFile.Pos, ACount);
-        //return (count);
         Result := (ACount);
         Exit;
-        //}
     end
-    //else while (count > 0 && file->pos < file->ino->size) {
     else begin
         while ((ACount > 0) and (AFile.Pos < AFile.Ino.Size)) do begin
-            //char buffer[16384];
 
-            //if (findext) {
             if (FindExt <> 0) then begin
-                //extentno = file->pos / drive.extentsize;
                 Extentno := (AFile.Pos div FDrive.Extentsize);
-                //extent = findFileExtent(drive.dir[file->ino->ino].status, drive.dir[file->ino->ino].name, drive.dir[file->ino->ino].ext, 0, extentno);
                 Ext := FindFileExtent(FDirectory[AFile.Ino.Ino].Status, FDirectory[AFile.Ino.Ino].Name,
                     FDirectory[AFile.Ino.Ino].Ext, 0, Extentno);
-                //nextextpos = (file->pos / extcap) * extcap + extcap;
                 NextExtPos := (((AFile.Pos div ExtCap) * ExtCap) + ExtCap);
-                //findext = 0;
                 FindExt := 0;
-                //findblock = 1;
                 FindBlock := 1;
-                //}
             end;
 
-            //if (findblock) {
             if (FindBlock <> 0) then begin
 
-                //if (extent != -1) {
                 if (Ext <> -1) then begin
-                    //int ptr;
-                    //ptr = (file->pos % extcap) / blocksize;
                     Ptr := ((AFile.Pos mod ExtCap) div BlockSize);
 
-                    //if (drive.size > 256) {
                     if (FDrive.Size > 256) then begin
-                        //ptr *= 2;
                         Ptr := (Ptr * 2);
-                        //}
                     end;
 
-                    // block = (unsigned char) drive.dir[extent].pointers[ptr];
                     Block := FDirectory[Ext].Pointers[Ptr];
 
-                    //if (drive.size > 256) {
                     if (FDrive.Size > 256) then begin
-                        //block += ((unsigned char) drive.dir[extent].pointers[ptr + 1]) << 8;
                         Block := (Block + (FDirectory[Ext].Pointers[Ptr + 1] shl 8));
-                        //}
                     end;
 
-                    //if (block == 0) {
                     if (Block = 0) then begin
-                        //memset(buffer, 0, blocksize);
-                        FillByte(Buffer, BlockSize, 0);
-                        //}
+                        FillByte(Buffer[0], BlockSize, 0);
                     end
-                    //else {
                     else begin
-                        //int start, end;
-                        //start = (file->pos % blocksize) / drive.secLength;
                         RdStart := ((AFile.Pos mod BlockSize) div FDrive.SecLength);
-                        //end = ((file->pos % blocksize + (off_t)count) > blocksize ? blocksize - 1 : (int)(file->pos % blocksize + count - 1)) / drive.secLength;
+
                         if (((AFile.Pos mod BlockSize) + ACount) > BlockSize) then begin
-                            RdEnd := (BlockSize - 1);
+                            RdEnd := ((BlockSize - 1) div FDrive.SecLength);
                         end
                         else begin
-                            RdEnd := (((AFile.Pos mod BlockSize) + (ACount - 1)) div FDrive.SecLength);
+                            RdEnd := (((AFile.Pos mod BlockSize) + ACount - 1) div FDrive.SecLength);
                         end;
 
-                        //if (block < drive.dirblks) {
                         if (Block < FDrive.DirBlks) then begin
-                            //fserr = "Attempting to access block before beginning of data";
                             FFileSystemError := 'Attempting to access block before beginning of data';
 
-                            //if (got == 0) {
                             if (Got = 0) then begin
-                                //got = -1;
                                 Got := -1;
-                                //}
                             end;
-                            //break;
+
                             Break;
-                            //}
                         end;
-                        //if (readBlock(block, buffer, start, end) == -1) {
+
                         if (not ReadBlock(Block, @Buffer[0], RdStart, RdEnd)) then begin
-                            //if (got == 0) {
+
                             if (Got = 0) then begin
-                                //got = -1;
                                 Got := -1;
-                                //}
                             end;
-                            //break;
-                            //}
+
                         end;
-                        //}
+
                     end;
-                    //}
+
                 end;
-                //nextblockpos = (file->pos / blocksize) * blocksize + blocksize;
+
                 NextBlockPos := (((AFile.Pos div BlockSize) * BlockSize) + BlockSize);
-                //findblock = 0;
                 FindBlock := 0;
-                //}
             end;
-            //if (file->pos < nextblockpos) {
+
             if (AFile.Pos < NextBlockPos) then begin
-                //if (extent == -1) {
+
                 if (Ext = -1) then begin
-                    //*buf++ = '\0';
                     ABuffer^ := 0;
                     Inc(ABuffer);
-                    //}
                 end
-                //else {
                 else begin
-                    //*buf++ = buffer[file->pos % blocksize];
                     ABuffer^ := Buffer[AFile.Pos mod BlockSize];
                     Inc(ABuffer);
-                    //}
                 end;
-                //++file->pos;
+
                 Inc(AFile.Pos);
-                //++got;
                 Inc(Got);
-                //--count;
                 Dec(ACount);
-                //}
             end
-            //else if (file->pos == nextextpos) {
             else if (AFile.Pos = NextExtPos) then begin
-                //findext = 1;
                 FindExt := 1;
-                //}
             end
-            //else {
             else begin
-                //findblock = 1;
                 FindBlock := 1;
-                //}
             end;
-            //}
+
         end;
+
     end;
 
-    //return (got);
     Result := (Got);
 end;
 
@@ -2118,7 +2042,7 @@ begin
                 end;
 
                 ShouldSize := (FDrive.MaxDir * 16);
-                HasSize := FileSize(Extent1);
+                HasSize := GetFileSize(Extent1);
 
                 if (HasSize <> ShouldSize) then begin
                     AMessage(Format('    Warning: DateStamper file is %d, should be %d (extent=%d, name=''%s'')',
@@ -4231,7 +4155,7 @@ end;
 // --------------------------------------------------------------------------------
 //  -- return file size
 // --------------------------------------------------------------------------------
-function TCpmFileSystem.FileSize(AExtent: integer): integer;
+function TCpmFileSystem.GetFileSize(AExtent: integer): size_t;
 type
     PPhysDirectoryEntry = ^TPhysDirectoryEntry;
 var

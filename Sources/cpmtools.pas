@@ -50,9 +50,10 @@ type
         function GetDirectoryStatistic: TDirStatistic;
         function GetFileInfo(AFileName: string): TFileInfo;
         procedure SetNewAttributes(AFileName: string; AAttributes: cpm_attr_t);
-        procedure WriteFileToImage(ACpmFileName: string; ABuffer: pbyte; ACount: size_t; AIsTextFile: boolean;
-            APreserveTimeStamps: boolean; ATimes: TUTimeBuf);
-        procedure ReadFileFromImage(AFileName: string; AUserNumber: integer; AIsTextFile: boolean; APreserveTimeStamps: boolean);
+        procedure WriteFileToImage(ACpmFileName: string; const ABuffer: TBytes; ACount: size_t;
+            AIsTextFile: boolean; APreserveTimeStamps: boolean; ATimes: TUTimeBuf);
+        procedure ReadFileFromImage(ACpmFileName: string; var ABuffer: TBytes; var ACount: size_t;
+            AIsTextFile: boolean; ATimes: TUTimeBuf);
     public  // Konstruktor/Destruktor
         constructor Create; overload;
         destructor Destroy; override;
@@ -582,14 +583,14 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-procedure TCpmTools.WriteFileToImage(ACpmFileName: string; ABuffer: pbyte; ACount: size_t;
+procedure TCpmTools.WriteFileToImage(ACpmFileName: string; const ABuffer: TBytes; ACount: size_t;
     AIsTextFile: boolean; APreserveTimeStamps: boolean; ATimes: TUTimeBuf);
 var
     CpmFile: TCpmFile;
     Inode: TCpmInode;
     TxtBuffer: array[0..2047] of byte;
     WriteError: boolean;
-    IndexJ: size_t;
+    IndexI, IndexJ: size_t;
     DataByte: byte;
 begin
 
@@ -621,13 +622,14 @@ begin
     FCpmFileSystem.Open(Inode, CpmFile, O_WRONLY);
 
     if (AIsTextFile) then begin
+        IndexI := 0;
 
         repeat
             IndexJ := 0;
 
             while ((IndexJ < (Length(TxtBuffer) div 2)) and (ACount > 0)) do begin
-                DataByte := ABuffer^;
-                Inc(ABuffer);
+                DataByte := ABuffer[IndexI];
+                Inc(IndexI);
                 Dec(ACount);
 
                 if (DataByte = $0A) then begin
@@ -680,136 +682,124 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-procedure TCpmTools.ReadFileFromImage(AFileName: string; AUserNumber: integer; AIsTextFile: boolean;
-    APreserveTimeStamps: boolean);
+procedure TCpmTools.ReadFileFromImage(ACpmFileName: string; var ABuffer: TBytes; var ACount: size_t;
+    AIsTextFile: boolean; ATimes: TUTimeBuf);
+var
+    Inode: TCpmInode;
+    CpmFile: TCpmFile;
+    TxtBuffer: array[0..2047] of byte;
+    Res: ssize_t;
+    CrPending: boolean;
+    IndexI, IndexJ: integer;
 begin
-    //char **gargv;
-    //int gargc;
-    //cmd = "cpm.cp";
-    //wxString cpmfile = wxString::Format("%d:", userNumber) + fileName.substr(fileName.find_last_of("/\\") + 1);
-    //wxString unixfile = filePath + wxFileName::GetPathSeparators() + fileName;
-    //cpmfs->glob(cpmfile.c_str(), &gargc, &gargv);
-    //cpm2unix(unixfile, gargv[0], isTextFile, preserveTimeStamps);
 
-    //CpmFs::CpmInode_t ino;
-    //int exitcode = 0;
+    if not FCpmFileSystem.Name2Inode(PChar(ACpmFileName), Inode) then begin
+        MessageDlg(Format('can not open %s' + LineEnding + '%s', [ACpmFileName, FCpmFileSystem.GetErrorMsg]),
+            mtError, [mbOK], 0);
+        exit;
+    end
+    else begin
+        FCpmFileSystem.Open(Inode, CpmFile, O_RDONLY);
+        ACount := CpmFile.Ino.Size;
 
-    //if (cpmfs->namei(cpmfilename, &ino) == -1) {
-    //    guiintf->printMsg(wxString::Format("%s: can not open %s  (%s)\n", cmd, cpmfilename, toolerr));
-    //    exitcode = 1;
-    //}
-    //else {
-    //    CpmFs::CpmFile_t file;
-    //    FILE *ufp;
-    //    cpmfs->open(&ino, &file, O_RDONLY);
+        try
+            SetLength(ABuffer, ACount);
+        except
 
-    //    if ((ufp = fopen(unixfilename, text ? "w" : "wb")) == (FILE *)0) {
-    //        guiintf->printMsg(wxString::Format("%s: can not create %s  (%s)\n", cmd, unixfilename, strerror(errno)));
-    //        exitcode = 1;
-    //    }
-    //    else {
-    //        int crpending = 0;
-    //        int ohno = 0;
-    //        ssize_t res;
-    //        char buf[4096];
+            on e: Exception do begin
+                MessageDlg(Format('error creating read buffer.' + LineEnding + '%s', [e.Message]), mtError, [mbOK], 0);
+                exit;
+            end;
 
-    //        while ((res = cpmfs->read(&file, buf, sizeof(buf))) > 0) {
-    //            int j;
+        end;
 
-    //            for (j = 0; j < res; ++j) {
-    //                if (text) {
-    //                    if (buf[j] == '\032') {
-    //                        goto endwhile;
-    //                    }
+        CrPending := False;
 
-    //                    if (crpending) {
-    //                        if (buf[j] == '\n') {
-    //                            if (putc('\n', ufp) == EOF) {
-    //                                guiintf->printMsg(wxString::Format("%s: can not write %s  (%s)\n", cmd, unixfilename, strerror(errno)));
-    //                                exitcode = 1;
-    //                                ohno = 1;
-    //                                goto endwhile;
-    //                            }
+        if (AIsTextFile) then begin
+            IndexI := 0;
+            Res := FCpmFileSystem.Read(CpmFile, @TxtBuffer[0], SizeOf(TxtBuffer));
 
-    //                            crpending = 0;
-    //                        }
-    //                        else {
-    //                            if (putc('\r', ufp) == EOF) {
-    //                                guiintf->printMsg(wxString::Format("%s: can not write %s  (%s)\n", cmd, unixfilename, strerror(errno)));
-    //                                exitcode = 1;
-    //                                ohno = 1;
-    //                                goto endwhile;
-    //                            }
-    //                        }
+            if (Res = -1) then begin
+                MessageDlg(Format('error reading %s' + LineEnding + '%s', [ACpmFileName, FCpmFileSystem.GetErrorMsg]),
+                    mtError, [mbOK], 0);
+                exit;
+            end;
 
-    //                        crpending = (buf[j] == '\r');
-    //                    }
-    //                    else {
-    //                        if (buf[j] == '\r') {
-    //                            crpending = 1;
-    //                        }
-    //                        else {
-    //                            if (putc(buf[j], ufp) == EOF) {
-    //                                guiintf->printMsg(wxString::Format("%s: can not write %s  (%s)\n", cmd, unixfilename, strerror(errno)));
-    //                                exitcode = 1;
-    //                                ohno = 1;
-    //                                goto endwhile;
-    //                            }
-    //                        }
-    //                    }
-    //                }
-    //                else {
-    //                    if (putc(buf[j], ufp) == EOF) {
-    //                        guiintf->printMsg(wxString::Format("%s: can not write %s  (%s)\n", cmd, unixfilename, strerror(errno)));
-    //                        exitcode = 1;
-    //                        ohno = 1;
-    //                        goto endwhile;
-    //                    }
-    //                }
-    //            }
-    //        }
+            while (Res > 0) do begin
 
-    //        endwhile:
+                for IndexJ := 0 to (Res - 1) do begin
 
-    //        if (res == -1 && !ohno) {
-    //            guiintf->printMsg(wxString::Format("%s: can not read %s  (%s)\n", cmd, unixfilename, toolerr));
-    //            exitcode = 1;
-    //            ohno = 1;
-    //        }
+                    if (TxtBuffer[IndexJ] = &032) then begin
+                        break;
+                    end;
 
-    //        if (fclose(ufp) == EOF && !ohno) {
-    //            guiintf->printMsg(wxString::Format("%s: can not close %s  (%s)\n", cmd, unixfilename, strerror(errno)));
-    //            exitcode = 1;
-    //            ohno = 1;
-    //        }
+                    if (CrPending) then begin
 
-    //        if (preserve && !ohno && (ino.atime || ino.mtime)) {
-    //            struct utimbuf ut;
+                        if (TxtBuffer[IndexJ] = $0A) then begin
+                            ABuffer[IndexI] := $0A;
+                            Inc(IndexI);
+                            CrPending := False;
+                        end
+                        else begin
+                            ABuffer[IndexI] := $0D;
+                            Inc(IndexI);
+                        end;
 
-    //            if (ino.atime) {
-    //                ut.actime = ino.atime;
-    //            }
-    //            else {
-    //                time(&ut.actime);
-    //            }
+                        CrPending := (TxtBuffer[IndexJ] = $0D);
+                    end
+                    else begin
 
-    //            if (ino.mtime) {
-    //                ut.modtime = ino.mtime;
-    //            }
-    //            else {
-    //                time(&ut.modtime);
-    //            }
+                        if (TxtBuffer[IndexJ] = $0D) then begin
+                            CrPending := True;
+                        end
+                        else begin
+                            ABuffer[IndexI] := TxtBuffer[IndexJ];
+                            Inc(IndexI);
+                        end;
 
-    //            if (utime(unixfilename, &ut) == -1) {
-    //                guiintf->printMsg(wxString::Format("%s: can not change timestamps of %s  (%s)\n", cmd, unixfilename, strerror(errno)));
-    //                exitcode = 1;
-    //                ohno = 1;
-    //            }
-    //        }
-    //    }
-    //}
+                    end;
 
-    //return exitcode;
+                end;
+
+                if (TxtBuffer[IndexJ] = &032) then begin
+                    break;
+                end;
+
+                Res := FCpmFileSystem.Read(CpmFile, @TxtBuffer[0], SizeOf(TxtBuffer));
+            end;
+
+            ACount := IndexI;
+        end
+        else begin
+
+            if (FCpmFileSystem.Read(CpmFile, @ABuffer[0], ACount) <> ACount) then begin
+                MessageDlg(Format('error reading %s' + LineEnding + '%s', [ACpmFileName, FCpmFileSystem.GetErrorMsg]),
+                    mtError, [mbOK], 0);
+                exit;
+            end;
+
+        end;
+
+        if ((Inode.ATime <> 0) or (Inode.MTime <> 0)) then begin
+
+            if (Inode.ATime <> 0) then begin
+                ATimes.AcTime := Inode.ATime;
+            end
+            else begin
+                ATimes.AcTime := Now;
+            end;
+
+            if (Inode.MTime <> 0) then begin
+                ATimes.ModTime := Inode.MTime;
+            end
+            else begin
+                ATimes.ModTime := Now;
+            end;
+
+        end;
+
+    end;
+
 end;
 
 // --------------------------------------------------------------------------------
