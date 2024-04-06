@@ -304,8 +304,7 @@ begin
         FDirStatistic.TotalBytes := Format('%5.1fK', [TotalBytes / 1024]);
         FDirStatistic.TotalRecords := IntToStr(TotalRecs);
         FDirStatistic.FilesFound := IntToStr(FilesCount);
-        FDirStatistic.TotalFreeBytes := Format('%5.1fK',
-            [(((Buf.F_BSize * Buf.F_Blocks) - (Buf.F_Files * 32) - TotalBytes) / 1024)]);
+        FDirStatistic.TotalFreeBytes := Format('%dK', [FCpmFileSystem.GetFreeFileSpace div 1024]);
         FDirStatistic.TotalDiskBytes := IntToStr(((Buf.F_BSize * Buf.F_Blocks) div 1024)) + 'K';
         FDirStatistic.Total1KBlocks := Format('%d', [Round(TotalBytes / 1024)]);
         FDirStatistic.UsedDirEntries := IntToStr((Buf.F_Files - Buf.F_FFree));
