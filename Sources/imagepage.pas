@@ -355,7 +355,7 @@ end;
 procedure TImagePage.PasteFiles(const AFiles: TStringArray);
 var
     IndexI: integer;
-    FileToPaste: string;
+    FileToPaste, FileName, FileExtension: string;
     UserNumber: integer;
     PreserveTimeStamps: boolean;
     TextfileEndings: string;
@@ -389,7 +389,10 @@ begin
 
     for IndexI := 0 to (Length(AFiles) - 1) do begin
         FileToPaste := AFiles[IndexI];
-        IsTextFile := TextFileEndings.Contains(RightStr(FileToPaste, (Length(FileToPaste) - Pos('.', FileToPaste))));
+        FileName := LeftStr(ExtractFileName(FileToPaste), Pos('.', ExtractFileName(FileToPaste)) - 1);
+        FileExtension := RightStr(ExtractFileName(FileToPaste), (Length(ExtractFileName(FileToPaste)) -
+            Pos('.', ExtractFileName(FileToPaste))));
+        IsTextFile := TextFileEndings.Contains(FileExtension);
 
         if (FileExists(FileToPaste)) then begin
 
@@ -407,7 +410,7 @@ begin
 
             end;
 
-            CpmName := Format('%.2d%s', [UserNumber, ExtractFileName(FileToPaste)]);
+            CpmName := Format('%.2d%s.%s', [UserNumber, LeftStr(FileName, 8), LeftStr(FileExtension, 3)]);
 
             try
                 SetLength(Buffer, UnixFileSize);
