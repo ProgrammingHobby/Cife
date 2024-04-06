@@ -3206,7 +3206,7 @@ begin
     end
     else begin
         MaxUser := 15;
-    end;               { #todo : Überprüfen, findet schon vorhandenes File nicht. }
+    end;
 
     while (AStart < FDrive.MaxDir) do begin
 
