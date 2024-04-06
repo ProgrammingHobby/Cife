@@ -595,27 +595,25 @@ var
 begin
 
     if (FCpmFileSystem.IsFileExisting(ACpmFileName)) then  begin
+
         if (MessageDlg(Format('file %s already exists.' + LineEnding + 'replace existing file?',
             [ExtractFileName(ACpmFileName)]), mtError, [mbYes, mbNo], 0) = mrYes) then begin
-
-            if not (FCpmFileSystem.Delete(PChar(ACpmFileName))) then begin
-                MessageDlg(Format('can not replace %s' + LineEnding + '%s',
-                    [ExtractFileName(ACpmFileName), FCpmFileSystem.GetErrorMsg]),
-                    mtError, [mbOK], 0);
-                exit;
-            end;
-
+            FCpmFileSystem.Name2Inode(PChar(ACpmFileName), Inode);
         end
         else begin
             exit;
         end;
 
-    end;
+    end
+    else begin
 
-    if not (FCpmFileSystem.Create(FCpmFileSystem.GetDirectoryRoot, ACpmFileName, ACount, Inode, &666)) then begin
-        MessageDlg(Format('can not create %s' + LineEnding + '%s', [ExtractFileName(ACpmFileName), FCpmFileSystem.GetErrorMsg]),
-            mtError, [mbOK], 0);
-        exit;
+        if not (FCpmFileSystem.Create(FCpmFileSystem.GetDirectoryRoot, ACpmFileName, ACount, Inode, &666)) then begin
+            MessageDlg(Format('can not create %s' + LineEnding + '%s', [ExtractFileName(ACpmFileName),
+                FCpmFileSystem.GetErrorMsg]),
+                mtError, [mbOK], 0);
+            exit;
+        end;
+
     end;
 
     WriteError := False;
