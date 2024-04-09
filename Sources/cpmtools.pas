@@ -593,6 +593,25 @@ var
     DataByte: byte;
 begin
 
+    if FCpmFileSystem.Name2Inode(PChar(ACpmFileName), Inode) then begin
+
+        if ((ACount > Inode.Size) and ((ACount - Inode.Size) > FCpmFileSystem.GetFreeFileSpace)) then begin
+            MessageDlg(Format('can not write %s' + LineEnding + 'no more space', [ACpmFileName]),
+                mtError, [mbOK], 0);
+            exit;
+        end;
+
+    end
+    else begin
+
+        if (ACount > FCpmFileSystem.GetFreeFileSpace) then begin
+            MessageDlg(Format('can not write %s' + LineEnding + 'no more space', [ACpmFileName]),
+                mtError, [mbOK], 0);
+            exit;
+        end;
+
+    end;
+
     if (FCpmFileSystem.IsFileExisting(ACpmFileName)) then  begin
 
         if (MessageDlg(Format('file %s already exists.' + LineEnding + 'replace existing file?',
@@ -606,10 +625,8 @@ begin
     end
     else begin
 
-        if not (FCpmFileSystem.Create(FCpmFileSystem.GetDirectoryRoot, ACpmFileName, ACount, Inode, &666)) then begin
-            MessageDlg(Format('can not create %s' + LineEnding + '%s', [ExtractFileName(ACpmFileName),
-                FCpmFileSystem.GetErrorMsg]),
-                mtError, [mbOK], 0);
+        if not (FCpmFileSystem.Create(FCpmFileSystem.GetDirectoryRoot, ACpmFileName, Inode, &666)) then begin
+            MessageDlg(Format('can not create %s' + LineEnding + '%s', [ACpmFileName, FCpmFileSystem.GetErrorMsg]), mtError, [mbOK], 0);
             exit;
         end;
 
