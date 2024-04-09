@@ -83,8 +83,7 @@ type
         function Unmount: boolean;
         function Rename(const AOldName: PChar; const ANewName: PChar): boolean;
         function Delete(const AFileName: PChar): boolean;
-        function Create(ADirEntry: TCpmInode; const AFileName: string; AFileSize: integer;
-            var AInode: TCpmInode; AMode: mode_t): boolean;
+        function Create(ADirEntry: TCpmInode; const AFileName: string; var AInode: TCpmInode; AMode: mode_t): boolean;
         function Open(AInode: TCpmInode; var AFile: TCpmFile; AMode: mode_t): boolean;
         function Read(var AFile: TCpmFile; ABuffer: pbyte; ACount: size_t): ssize_t;
         function Write(var AFile: TCpmFile; ABuffer: pbyte; ACount: size_t): ssize_t;
@@ -1138,7 +1137,7 @@ begin
         end;
 
         // The filesystem does not know about datestamper yet, because it was not there when it was mounted.
-        if (not Create(FRoot, '00!!!TIME&.DAT', (Records * 128), Inode, &0222)) then begin
+        if (not Create(FRoot, '00!!!TIME&.DAT', Inode, &0222)) then begin
             FFileSystemError := Format('Unable to create DateStamper file.  (%s)', [FFileSystemError]);
             Result := False;
             exit;
@@ -1289,8 +1288,7 @@ end;
 // --------------------------------------------------------------------------------
 //  -- creat new CP/M file
 // --------------------------------------------------------------------------------
-function TCpmFileSystem.Create(ADirEntry: TCpmInode; const AFileName: string; AFileSize: integer;
-    var AInode: TCpmInode; AMode: mode_t): boolean;
+function TCpmFileSystem.Create(ADirEntry: TCpmInode; const AFileName: string; var AInode: TCpmInode; AMode: mode_t): boolean;
 type
     PPhysDirectoryEntry = ^TPhysDirectoryEntry;
 var
@@ -1300,12 +1298,6 @@ var
     Ext: integer;
     DirEntry: PPhysDirectoryEntry;
 begin
-
-    if (((AFileSize div FDrive.BlkSiz) + 1) > (GetFreeFileSpace div FDrive.BlkSiz)) then begin
-        FFileSystemError := 'no more space';
-        Result := False;
-        exit;
-    end;
 
     if not (S_ISDIR(ADirEntry.Mode)) then begin
         FFileSystemError := 'no such file or directory';
