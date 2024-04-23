@@ -55,7 +55,7 @@ type
         procedure ShowFileCharacteristics;
         procedure CheckImage;
         procedure PasteFiles(const AFiles: TStringArray);
-        procedure CopyFiles;
+        procedure CopyFiles(ADoCut: boolean);
     public  // Konstruktor/Destruktor
         constructor Create(ATheOwner: TComponent); override;
         destructor Destroy; override;
@@ -394,7 +394,7 @@ begin
         FileName := LeftStr(ExtractFileName(FileToPaste), Pos('.', ExtractFileName(FileToPaste)) - 1);
         FileExtension := RightStr(ExtractFileName(FileToPaste), (Length(ExtractFileName(FileToPaste)) -
             Pos('.', ExtractFileName(FileToPaste))));
-        IsTextFile := TextFileEndings.Contains(FileExtension);
+        IsTextFile := (ConvertTextFiles and TextFileEndings.Contains(FileExtension));
 
         if (FileExists(FileToPaste)) then begin
 
@@ -466,7 +466,7 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-procedure TImagePage.CopyFiles;
+procedure TImagePage.CopyFiles(ADoCut: boolean);
 begin
     { #todo : Copy Files }
 end;
