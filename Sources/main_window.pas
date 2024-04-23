@@ -151,6 +151,7 @@ type
         procedure actionClearHistoryExecute(Sender: TObject);
         procedure actionCloseExecute(Sender: TObject);
         procedure actionCopyExecute(Sender: TObject);
+        procedure actionCutExecute(Sender: TObject);
         procedure actionDeleteExecute(Sender: TObject);
         procedure actionFormatCurrentExecute(Sender: TObject);
         procedure actionNewExecute(Sender: TObject);
@@ -289,8 +290,22 @@ begin
     Page := PageControl.ActivePage as TImagePage;
 
     if (Assigned(Page)) then begin
-        Page.CopyFiles;
+        Page.CopyFiles(False);
     end;
+
+end;
+
+// --------------------------------------------------------------------------------
+procedure TMainWindow.actionCutExecute(Sender: TObject);
+var
+    Page: TImagePage;
+begin
+    Page := PageControl.ActivePage as TImagePage;
+
+    if (Assigned(Page)) then begin
+        Page.CopyFiles(True);
+    end;
+
 end;
 
 // --------------------------------------------------------------------------------

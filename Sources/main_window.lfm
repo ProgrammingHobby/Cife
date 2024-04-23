@@ -10,7 +10,6 @@ object MainWindow: TMainWindow
   OnClose = FormClose
   OnDropFiles = FormDropFiles
   OnShow = FormShow
-  LCLVersion = '3.0.0.3'
   object StatusBar1: TStatusBar
     Left = 4
     Height = 21
@@ -448,7 +447,7 @@ object MainWindow: TMainWindow
       ChildSizing.EnlargeVertical = crsHomogenousChildResize
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
       ChildSizing.ControlsPerLine = 2
-      ClientHeight = 143
+      ClientHeight = 144
       ClientWidth = 98
       Font.Height = -13
       Font.Name = 'Sans'
@@ -1042,6 +1041,7 @@ object MainWindow: TMainWindow
     object actionCut: TAction
       Caption = 'Cut'
       ImageIndex = 7
+      OnExecute = actionCutExecute
       ShortCut = 16472
     end
     object actionCopy: TAction
