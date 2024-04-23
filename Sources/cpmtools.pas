@@ -636,7 +636,8 @@ begin
     else begin
 
         if not (FCpmFileSystem.Create(FCpmFileSystem.GetDirectoryRoot, ACpmFileName, Inode, &666)) then begin
-            MessageDlg(Format('can not create %s' + LineEnding + '%s', [ACpmFileName, FCpmFileSystem.GetErrorMsg]), mtError, [mbOK], 0);
+            MessageDlg(Format('can not create %s' + LineEnding + '%s', [ACpmFileName, FCpmFileSystem.GetErrorMsg]),
+                mtError, [mbOK], 0);
             exit;
         end;
 
