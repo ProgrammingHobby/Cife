@@ -1047,6 +1047,7 @@ object MainWindow: TMainWindow
     object actionCopy: TAction
       Caption = 'Copy'
       ImageIndex = 5
+      OnExecute = actionCopyExecute
       ShortCut = 16451
     end
     object actionPaste: TAction

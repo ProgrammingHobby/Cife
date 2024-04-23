@@ -58,7 +58,7 @@ type
             Tracks: integer;
             SecTrk: integer;
             Offset: integer;
-            Imagefile: file;
+            Imagefile: file of byte;
         end;
 
     var
@@ -135,7 +135,7 @@ begin
     try
         Reset(FDevice.Imagefile, 1);
         Seek(FDevice.Imagefile, (((ASector + (ATrack * FDevice.sectrk)) * FDevice.SecLength) + FDevice.Offset));
-        BlockRead(FDevice.Imagefile, ABuffer, FDevice.SecLength, Count);
+        BlockRead(FDevice.Imagefile, ABuffer[0], FDevice.SecLength, Count);
         Result := True;
     except
         on e: Exception do begin
@@ -161,7 +161,7 @@ begin
     try
         Reset(FDevice.Imagefile, 1);
         Seek(FDevice.Imagefile, (((ASector + (ATrack * FDevice.SecTrk)) * FDevice.SecLength) + FDevice.Offset));
-        BlockWrite(FDevice.Imagefile, ABuffer, FDevice.SecLength, Count);
+        BlockWrite(FDevice.Imagefile, ABuffer[0], FDevice.SecLength, Count);
         Result := True;
     except
 

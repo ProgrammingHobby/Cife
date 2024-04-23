@@ -150,6 +150,7 @@ type
         procedure actionCheckImageExecute(Sender: TObject);
         procedure actionClearHistoryExecute(Sender: TObject);
         procedure actionCloseExecute(Sender: TObject);
+        procedure actionCopyExecute(Sender: TObject);
         procedure actionDeleteExecute(Sender: TObject);
         procedure actionFormatCurrentExecute(Sender: TObject);
         procedure actionNewExecute(Sender: TObject);
@@ -270,7 +271,7 @@ var
 begin
     MenuActionsControl([]);
     Page := PageControl.ActivePage as TImagePage;
-    Page.Close;
+    Page.CloseImage;
     Page.Free;
 
     if (PageControl.PageCount <= 0) then begin
@@ -278,6 +279,18 @@ begin
         AllowDropFiles := False;
     end;
 
+end;
+
+// --------------------------------------------------------------------------------
+procedure TMainWindow.actionCopyExecute(Sender: TObject);
+var
+    Page: TImagePage;
+begin
+    Page := PageControl.ActivePage as TImagePage;
+
+    if (Assigned(Page)) then begin
+        Page.CopyFiles;
+    end;
 end;
 
 // --------------------------------------------------------------------------------
@@ -301,7 +314,7 @@ begin
     Page := PageControl.ActivePage as TImagePage;
 
     if (Assigned(Page)) then begin
-        Page.Format;
+        Page.FormatImage;
         Page.RefreshDirectory;
     end;
 
@@ -675,14 +688,14 @@ begin
 
     if (ANewImage) then begin
 
-        if not (ImagePage.New(AImageFile, AImageType, ABootFile, AFileSystemLabel, ATimeStampsUsed)) then begin
+        if not (ImagePage.NewImage(AImageFile, AImageType, ABootFile, AFileSystemLabel, ATimeStampsUsed)) then begin
             FreeAndNil(ImagePage);
             exit;
         end;
 
     end;
 
-    if (ImagePage.Open(AImageFile, AImageType)) then begin
+    if (ImagePage.OpenImage(AImageFile, AImageType)) then begin
         ImagePage.Caption := ExtractFileName(AImageFile);
         ImagePage.PageControl := PageControl;
         PageControl.ActivePage := ImagePage;

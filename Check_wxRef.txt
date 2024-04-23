@@ -1,0 +1,1 @@
+vbindiff /home/uwe/Programming/freePascal/Projekte/CPM_Image-File_Explorer/Test_Disk-Images/Tst_fpc.img /home/uwe/Programming/wxWidgets/Projekte/CPM_Image-File_Explorer/Test_Disk-Images/Ref_wx.img

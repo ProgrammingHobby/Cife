@@ -64,11 +64,6 @@ type
         Ino: TCpmInode;
     end;
 
-    TUTimeBuf = record
-        AcTime: TDateTime;
-        ModTime: TDatetime;
-    end;
-
     { TCpmFileSystem }
 
     TCpmFileSystem = class
@@ -88,9 +83,9 @@ type
         function Unmount: boolean;
         function Rename(const AOldName: PChar; const ANewName: PChar): boolean;
         function Delete(const AFileName: PChar): boolean;
-        function Create(ADirEntry: TCpmInode; const AFileName: string; AFileSize: integer;
-            var AInode: TCpmInode; AMode: mode_t): boolean;
+        function Create(ADirEntry: TCpmInode; const AFileName: string; var AInode: TCpmInode; AMode: mode_t): boolean;
         function Open(AInode: TCpmInode; var AFile: TCpmFile; AMode: mode_t): boolean;
+        function Read(var AFile: TCpmFile; ABuffer: pbyte; ACount: size_t): ssize_t;
         function Write(var AFile: TCpmFile; ABuffer: pbyte; ACount: size_t): ssize_t;
         function Close(AFile: TCpmFile): boolean;
         procedure UpdateTime(AInode: TCpmInode; ATimes: TUTimeBuf);
@@ -101,7 +96,8 @@ type
         function GetFileSystemInfo: TFileSystemInfo;
         function GetBootTrackSize: integer;
         function GetDirectoryRoot: TCpmInode;
-        function GetFreeFileSpace: uint64;
+        function GetFreeFileSpace: size_t;
+        function GetFileSize(AExtent: integer): size_t;
     public  // Konstruktor/Destruktor
         constructor Create(ACpmDevice: TCpmDevice); overload;
         destructor Destroy; override;
@@ -219,7 +215,6 @@ type
         function BcdCheck(AValue: integer; AMax: integer): boolean;
         function PwdCheck(APassword: array of byte; ADecode: byte; var APassWd: string): boolean;
         function DirCheck(AStr: array of char; ALen: size_t; AAllowEmpty: boolean; AType: integer): boolean;
-        function FileSize(AExtent: integer): integer;
         function PrintFile(AExtent: integer): string;
 
     end;
@@ -1142,7 +1137,7 @@ begin
         end;
 
         // The filesystem does not know about datestamper yet, because it was not there when it was mounted.
-        if (not Create(FRoot, '00!!!TIME&.DAT', (Records * 128), Inode, &0222)) then begin
+        if (not Create(FRoot, '00!!!TIME&.DAT', Inode, &0222)) then begin
             FFileSystemError := Format('Unable to create DateStamper file.  (%s)', [FFileSystemError]);
             Result := False;
             exit;
@@ -1293,8 +1288,7 @@ end;
 // --------------------------------------------------------------------------------
 //  -- creat new CP/M file
 // --------------------------------------------------------------------------------
-function TCpmFileSystem.Create(ADirEntry: TCpmInode; const AFileName: string; AFileSize: integer;
-    var AInode: TCpmInode; AMode: mode_t): boolean;
+function TCpmFileSystem.Create(ADirEntry: TCpmInode; const AFileName: string; var AInode: TCpmInode; AMode: mode_t): boolean;
 type
     PPhysDirectoryEntry = ^TPhysDirectoryEntry;
 var
@@ -1304,12 +1298,6 @@ var
     Ext: integer;
     DirEntry: PPhysDirectoryEntry;
 begin
-
-    if (((AFileSize div FDrive.BlkSiz) + 1) > (GetFreeFileSpace div FDrive.BlkSiz)) then begin
-        FFileSystemError := 'no more space';
-        Result := False;
-        exit;
-    end;
 
     if not (S_ISDIR(ADirEntry.Mode)) then begin
         FFileSystemError := 'no such file or directory';
@@ -1374,6 +1362,171 @@ begin
         Result := False;
     end;
 
+end;
+
+// --------------------------------------------------------------------------------
+//  -- read a file from CP/M filesystem
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.Read(var AFile: TCpmFile; ABuffer: pbyte; ACount: size_t): ssize_t;
+var
+    FindExt, FindBlock, Ext, Block, Extentno, Got, NextBlockPos, NextExtPos: integer;
+    BlockSize, ExtCap, Ptr, RdStart, RdEnd: integer;
+    Buffer: array of byte;
+begin
+    FindExt := 1;
+    FindBlock := 1;
+    Ext := -1;
+    Block := -1;
+    Extentno := -1;
+    Got := 0;
+    NextBlockPos := -1;
+    NextExtPos := -1;
+    BlockSize := FDrive.BlkSiz;
+
+    try
+        SetLength(Buffer, BlockSize);
+    except
+
+        on e: Exception do begin
+            FFileSystemError := Format('error creating block buffer.' + LineEnding + '%s', [e.Message]);
+            Result := -1;
+            exit;
+        end;
+
+    end;
+
+    if (FDrive.Size <= 256) then begin
+        ExtCap := (16 * BlockSize);
+    end
+    else begin
+        ExtCap := (8 * BlockSize);
+    end;
+
+    if (ExtCap > 16384) then begin
+        ExtCap := (16384 * FDrive.Extents);
+    end;
+
+    if (AFile.Ino.Ino = (FDrive.MaxDir + 1)) then begin    // [passwd]
+
+        if ((AFile.Pos + ACount) > AFile.Ino.Size) then begin
+            ACount := (AFile.Ino.Size - AFile.Pos);
+        end;
+
+        if (ACount <> 0) then begin
+            Move(FDrive.Passwd[AFile.Pos], ABuffer^, ACount);
+        end;
+
+        Inc(AFile.Pos, ACount);
+        Result := (ACount);
+        Exit;
+    end
+    else if (AFile.Ino.Ino = (FDrive.MaxDir + 2)) then begin    // [label]
+
+        if ((AFile.Pos + ACount) > AFile.Ino.Size) then begin
+            ACount := (AFile.Ino.Size - AFile.Pos);
+        end;
+
+        if (ACount <> 0) then begin
+            Move(FDrive.DiskLabel[AFile.Pos], ABuffer^, ACount);
+        end;
+
+        Inc(AFile.Pos, ACount);
+        Result := (ACount);
+        Exit;
+    end
+    else begin
+        while ((ACount > 0) and (AFile.Pos < AFile.Ino.Size)) do begin
+
+            if (FindExt <> 0) then begin
+                Extentno := (AFile.Pos div FDrive.Extentsize);
+                Ext := FindFileExtent(FDirectory[AFile.Ino.Ino].Status, FDirectory[AFile.Ino.Ino].Name,
+                    FDirectory[AFile.Ino.Ino].Ext, 0, Extentno);
+                NextExtPos := (((AFile.Pos div ExtCap) * ExtCap) + ExtCap);
+                FindExt := 0;
+                FindBlock := 1;
+            end;
+
+            if (FindBlock <> 0) then begin
+
+                if (Ext <> -1) then begin
+                    Ptr := ((AFile.Pos mod ExtCap) div BlockSize);
+
+                    if (FDrive.Size > 256) then begin
+                        Ptr := (Ptr * 2);
+                    end;
+
+                    Block := FDirectory[Ext].Pointers[Ptr];
+
+                    if (FDrive.Size > 256) then begin
+                        Block := (Block + (FDirectory[Ext].Pointers[Ptr + 1] shl 8));
+                    end;
+
+                    if (Block = 0) then begin
+                        FillByte(Buffer[0], BlockSize, 0);
+                    end
+                    else begin
+                        RdStart := ((AFile.Pos mod BlockSize) div FDrive.SecLength);
+
+                        if (((AFile.Pos mod BlockSize) + ACount) > BlockSize) then begin
+                            RdEnd := ((BlockSize - 1) div FDrive.SecLength);
+                        end
+                        else begin
+                            RdEnd := (((AFile.Pos mod BlockSize) + ACount - 1) div FDrive.SecLength);
+                        end;
+
+                        if (Block < FDrive.DirBlks) then begin
+                            FFileSystemError := 'Attempting to access block before beginning of data';
+
+                            if (Got = 0) then begin
+                                Got := -1;
+                            end;
+
+                            Break;
+                        end;
+
+                        if (not ReadBlock(Block, @Buffer[0], RdStart, RdEnd)) then begin
+
+                            if (Got = 0) then begin
+                                Got := -1;
+                            end;
+
+                        end;
+
+                    end;
+
+                end;
+
+                NextBlockPos := (((AFile.Pos div BlockSize) * BlockSize) + BlockSize);
+                FindBlock := 0;
+            end;
+
+            if (AFile.Pos < NextBlockPos) then begin
+
+                if (Ext = -1) then begin
+                    ABuffer^ := 0;
+                    Inc(ABuffer);
+                end
+                else begin
+                    ABuffer^ := Buffer[AFile.Pos mod BlockSize];
+                    Inc(ABuffer);
+                end;
+
+                Inc(AFile.Pos);
+                Inc(Got);
+                Dec(ACount);
+            end
+            else if (AFile.Pos = NextExtPos) then begin
+                FindExt := 1;
+            end
+            else begin
+                FindBlock := 1;
+            end;
+
+        end;
+
+    end;
+
+    Result := (Got);
 end;
 
 // --------------------------------------------------------------------------------
@@ -1881,7 +2034,7 @@ begin
                 end;
 
                 ShouldSize := (FDrive.MaxDir * 16);
-                HasSize := FileSize(Extent1);
+                HasSize := GetFileSize(Extent1);
 
                 if (HasSize <> ShouldSize) then begin
                     AMessage(Format('    Warning: DateStamper file is %d, should be %d (extent=%d, name=''%s'')',
@@ -2422,6 +2575,7 @@ begin
     Result := FRoot;
 end;
 
+// --------------------------------------------------------------------------------
 function TCpmFileSystem.GetFreeFileSpace: uint64;
 var
     FileSystemStats: TCpmStatFS;
@@ -3044,7 +3198,7 @@ begin
     end
     else begin
         MaxUser := 15;
-    end;               { #todo : Überprüfen, findet schon vorhandenes File nicht. }
+    end;
 
     while (AStart < FDrive.MaxDir) do begin
 
@@ -3993,7 +4147,7 @@ end;
 // --------------------------------------------------------------------------------
 //  -- return file size
 // --------------------------------------------------------------------------------
-function TCpmFileSystem.FileSize(AExtent: integer): integer;
+function TCpmFileSystem.GetFileSize(AExtent: integer): size_t;
 type
     PPhysDirectoryEntry = ^TPhysDirectoryEntry;
 var

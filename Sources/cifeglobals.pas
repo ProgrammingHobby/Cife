@@ -62,6 +62,11 @@ type
         Attributes: integer;
     end;
 
+    TUTimeBuf = record
+        AcTime: TDateTime;
+        ModTime: TDatetime;
+    end;
+
 function SettingsFile: string;
 procedure GetDiskDefsList(APath: string; ADiskDefsList: TComboBox);
 

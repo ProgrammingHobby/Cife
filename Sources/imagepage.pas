@@ -43,11 +43,11 @@ type
         procedure SetDirectoryStatisticCallBack(ADirectoryStatisticCB: TDirectoryStatisticCB);
         procedure SetMenuActionCallBack(AMenuActionEnableCB: TMenuActionEnableCB);
         procedure SetPopupMenu(APopupMenu: TPopupMenu);
-        function Open(const AFileName: string; const AFileType: string): boolean;
-        function New(AImageFile: string; AImageType: string; ABootFile: string; AFileSystemLabel: string;
+        function OpenImage(const AFileName: string; const AFileType: string): boolean;
+        function NewImage(AImageFile: string; AImageType: string; ABootFile: string; AFileSystemLabel: string;
             ATimeStampsUsed: boolean): boolean;
-        procedure Format;
-        function Close: boolean;
+        procedure FormatImage;
+        function CloseImage: boolean;
         function GetFileName: string;
         procedure RefreshDirectory;
         procedure RenameFile;
@@ -55,6 +55,7 @@ type
         procedure ShowFileCharacteristics;
         procedure CheckImage;
         procedure PasteFiles(const AFiles: TStringArray);
+        procedure CopyFiles;
     public  // Konstruktor/Destruktor
         constructor Create(ATheOwner: TComponent); override;
         destructor Destroy; override;
@@ -86,7 +87,13 @@ implementation
 { TImagePage }
 
 uses Controls, StdCtrls, RenameFile_Dialog, StrUtils, Graphics, XMLSettings, Dialogs, Characteristics_Dialog,
-    File_Dialog, CheckImage_Dialog;
+    File_Dialog, CheckImage_Dialog
+    {$ifdef UNIX}
+    , BaseUnix
+    {$else}
+    , Windows
+    {$endif}
+    ;
 
 // --------------------------------------------------------------------------------
 procedure TImagePage.DoShow;
@@ -134,7 +141,7 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-function TImagePage.Open(const AFileName: string; const AFileType: string): boolean;
+function TImagePage.OpenImage(const AFileName: string; const AFileType: string): boolean;
 var
     UpperCase: boolean;
 begin
@@ -154,7 +161,7 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-function TImagePage.New(AImageFile: string; AImageType: string; ABootFile: string; AFileSystemLabel: string;
+function TImagePage.NewImage(AImageFile: string; AImageType: string; ABootFile: string; AFileSystemLabel: string;
     ATimeStampsUsed: boolean): boolean;
 var
     UseUpperCase: boolean;
@@ -175,7 +182,7 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-procedure TImagePage.Format;
+procedure TImagePage.FormatImage;
 var
     Info: TFileSystemInfo;
     Dialog: TFileDialog;
@@ -209,7 +216,7 @@ begin
             end;
 
             FCpmTools.CreateNewImage(Info.FileName, Info.FileType, BootFile, FileSystemLabel, TimeStampsUsed, UseUpperCase);
-            Open(Info.FileName, Info.FileType);
+            OpenImage(Info.FileName, Info.FileType);
 
         end;
 
@@ -220,7 +227,7 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-function TImagePage.Close: boolean;
+function TImagePage.CloseImage: boolean;
 begin
     Result := FCpmTools.CloseImage;
 end;
@@ -348,12 +355,23 @@ end;
 procedure TImagePage.PasteFiles(const AFiles: TStringArray);
 var
     IndexI: integer;
-    FileToPaste: string;
+    FileToPaste, FileName, FileExtension: string;
     UserNumber: integer;
     PreserveTimeStamps: boolean;
     ConvertTextFiles: boolean;
     TextfileEndings: string;
     IsTextFile: boolean;
+    UnixFile: file of byte;
+    UnixFileSize: longword;
+    CpmName: string[15];
+    Buffer: array of byte;
+    Times: TUTimeBuf;
+    {$ifdef UNIX}
+    StatBuf: stat;
+    {$else}
+    FileAttr: TWIN32FILEATTRIBUTEDATA;
+    SystemTime, LocalTime: TSystemTime;
+    {$endif}
 begin
 
     with TXMLSettings.Create(SettingsFile) do begin
@@ -373,17 +391,84 @@ begin
 
     for IndexI := 0 to (Length(AFiles) - 1) do begin
         FileToPaste := AFiles[IndexI];
-        IsTextFile := (ConvertTextFiles and TextFileEndings.Contains(RightStr(FileToPaste,
-            (Length(FileToPaste) - Pos('.', FileToPaste)))));
+        FileName := LeftStr(ExtractFileName(FileToPaste), Pos('.', ExtractFileName(FileToPaste)) - 1);
+        FileExtension := RightStr(ExtractFileName(FileToPaste), (Length(ExtractFileName(FileToPaste)) -
+            Pos('.', ExtractFileName(FileToPaste))));
+        IsTextFile := TextFileEndings.Contains(FileExtension);
 
         if (FileExists(FileToPaste)) then begin
-            FCpmTools.WriteFileToImage(FileToPaste, UserNumber, IsTextFile, PreserveTimeStamps);
+
+            try
+                AssignFile(UnixFile, FileToPaste);
+                Reset(UnixFile, 1);
+                UnixFileSize := FileSize(UnixFile);
+            except
+
+                on e: Exception do begin
+                    MessageDlg(Format('can not open %s' + LineEnding + '%s', [ExtractFileName(FileToPaste), e.Message]),
+                        mtError, [mbOK], 0);
+                    break;
+                end;
+
+            end;
+
+            CpmName := Format('%.2d%s.%s', [UserNumber, LeftStr(FileName, 8), LeftStr(FileExtension, 3)]);
+
+            try
+                SetLength(Buffer, UnixFileSize);
+                BlockRead(UnixFile, Buffer[0], UnixFileSize);
+            except
+
+                on e: Exception do begin
+                    MessageDlg(Format('can not read %s from disk' + LineEnding + '%s',
+                        [ExtractFileName(FileToPaste), e.Message]),
+                        mtError, [mbOK], 0);
+                    exit;
+                end;
+
+            end;
+
+            if (PreserveTimeStamps) then begin
+                {$ifdef UNIX}
+                FpStat(FileToPaste, StatBuf);
+                Times.AcTime := FileDateToDateTime(StatBuf.st_atime);
+                Times.ModTime := FileDateToDateTime(StatBuf.st_mtime);
+                {$else}
+                GetFileAttributesEx(PChar(FileToPaste), GetFileExInfoStandard, @FileAttr);
+                FileTimeToSystemTime(FileAttr.ftLastAccessTime, SystemTime);
+                SystemTimeToTzSpecificLocalTime(nil, SystemTime, LocalTime);
+                Times.AcTime := SystemTimeToDateTime(LocalTime);
+                FileTimeToSystemTime(FileAttr.ftLastWriteTime, SystemTime);
+                SystemTimeToTzSpecificLocalTime(nil, SystemTime, LocalTime);
+                Times.ModTime := SystemTimeToDateTime(LocalTime);
+                {$endif}
+            end;
+
+            FCpmTools.WriteFileToImage(CpmName, @Buffer[0], UnixFileSize, IsTextFile, PreserveTimeStamps, Times);
+
+            try
+                CloseFile(UnixFile);
+            except
+
+                on e: Exception do begin
+                    MessageDlg(Format('can not close %s' + LineEnding + '%s', [ExtractFileName(FileToPaste), e.Message]),
+                        mtError, [mbOK], 0);
+                end;
+
+            end;
+
         end;
 
     end;
 
     RefreshDirectory;
 
+end;
+
+// --------------------------------------------------------------------------------
+procedure TImagePage.CopyFiles;
+begin
+    { #todo : Copy Files }
 end;
 
 // --------------------------------------------------------------------------------
