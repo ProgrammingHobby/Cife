@@ -733,6 +733,7 @@ begin
 
             on e: Exception do begin
                 MessageDlg(Format('error creating read buffer.' + LineEnding + '%s', [e.Message]), mtError, [mbOK], 0);
+                ACount := 0;
                 exit;
             end;
 
@@ -747,6 +748,7 @@ begin
             if (Res = -1) then begin
                 MessageDlg(Format('error reading %s' + LineEnding + '%s', [ACpmFileName, FCpmFileSystem.GetErrorMsg]),
                     mtError, [mbOK], 0);
+                ACount := 0;
                 exit;
             end;
 
@@ -800,6 +802,7 @@ begin
             if (FCpmFileSystem.Read(CpmFile, @ABuffer[0], ACount) <> ACount) then begin
                 MessageDlg(Format('error reading %s' + LineEnding + '%s', [ACpmFileName, FCpmFileSystem.GetErrorMsg]),
                     mtError, [mbOK], 0);
+                ACount := 0;
                 exit;
             end;
 
