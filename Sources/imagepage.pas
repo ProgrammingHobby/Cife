@@ -73,12 +73,14 @@ type
         FDirStatisticCallBack: TDirectoryStatisticCB;
         FMenuActionEnableCallBack: TMenuActionEnableCB;
         FEnableAction: TEnableAction;
+        FTempFolder: string;
 
     private   // Methoden
         procedure CreateDirectoryListView;
         procedure ClearFileSystemInfo;
         procedure ClearDirectoryStatistics;
         procedure PrintDirectoryEntry(AColumn: integer; ARow: integer; AData: string);
+        function CreateTempFolderName(ALength: integer): string;
 
     end;
 
@@ -87,7 +89,7 @@ implementation
 { TImagePage }
 
 uses Controls, StdCtrls, RenameFile_Dialog, StrUtils, Graphics, XMLSettings, Dialogs, Characteristics_Dialog,
-    File_Dialog, CheckImage_Dialog
+    File_Dialog, CheckImage_Dialog, Math, FileUtil
     {$ifdef UNIX}
     , BaseUnix
     {$else}
@@ -481,6 +483,7 @@ begin
     CreateDirectoryListView;
 
     with TXMLSettings.Create(SettingsFile) do begin
+
         try
             OpenKey('Settings');
             DiskdefsPath := GetValue('DiskdefsFile', '');
@@ -488,11 +491,13 @@ begin
         finally
             Free;
         end;
+
     end;
 
     FCpmTools := TCpmTools.Create;
     FCpmTools.SetPrintDirectoryEntryCallBack(@PrintDirectoryEntry);
     FCpmTools.SetDiskDefsPath(DiskdefsPath);
+    FTempFolder := GetTempDir(True) + CreateTempFolderName(13);
     FEnableAction := [];
 end;
 
@@ -502,6 +507,7 @@ begin
     ClearFileSystemInfo;
     ClearDirectoryStatistics;
     FreeAndNil(FCpmTools);
+    DeleteDirectory(FTempFolder, False);
     inherited Destroy;
 end;
 
@@ -701,6 +707,22 @@ begin
     end
     else begin
         FDirectoryList.Items.Item[ARow - 1].SubItems[AColumn - 1] := AData;
+    end;
+
+end;
+
+// --------------------------------------------------------------------------------
+function TImagePage.CreateTempFolderName(ALength: integer): string;
+const
+    BaseStr = '1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+var
+    IndexI: integer;
+begin
+    Result := '';
+    Randomize;
+
+    for IndexI := 1 to ALength do begin
+        Result := Result + BaseStr[RandomRange(1, Length(BaseStr) + 1)];
     end;
 
 end;
