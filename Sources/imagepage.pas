@@ -81,6 +81,7 @@ type
         procedure ClearDirectoryStatistics;
         procedure PrintDirectoryEntry(AColumn: integer; ARow: integer; AData: string);
         function CreateTempFolderName(ALength: integer): string;
+        procedure ReadCpmFile(ACpmFileName: string; ATmpFileName: string; AIsTextFile: boolean;APreserveTimeStamps:boolean);
 
     end;
 
@@ -469,8 +470,39 @@ end;
 
 // --------------------------------------------------------------------------------
 procedure TImagePage.CopyFiles(ADoCut: boolean);
+var
+    SelectedFile, TmpFile, CpmFile: string;
+    FileExt, TextfileEndings: string;
+    PreserveTimeStamps, ConvertTextFiles, IsTextFile: boolean;
+    IndexI: integer;
 begin
-    { #todo : Copy Files }
+
+    with TXMLSettings.Create(SettingsFile) do begin
+
+        try
+            OpenKey('Settings');
+            PreserveTimeStamps := GetValue('KeepTimestamps', True);
+            ConvertTextFiles := GetValue('ConvertTextFiles', False);
+            TextfileEndings := GetValue('TextFileEndings', 'txt pip pas');
+            CloseKey;
+        finally
+            Free;
+        end;
+
+    end;
+
+    for IndexI := 0 to FDirectoryList.Items.Count - 1 do begin
+
+        if (FDirectoryList.Items[IndexI].Selected) then begin
+            SelectedFile := DelSpace(FDirectoryList.Items[IndexI].Caption);
+            TmpFile := RightStr(SelectedFile, Length(SelectedFile) - Pos(':', SelectedFile));
+            CpmFile := Format('%.2d%s', [StrToInt(LeftStr(SelectedFile, Pos(':', SelectedFile) - 1)), TmpFile]);
+            FileExt := RightStr(TmpFile, (Length(TmpFile) - Pos('.', TmpFile)));
+            IsTextFile := (ConvertTextFiles and TextFileEndings.Contains(FileExt));
+            ReadCpmFile(CpmFile, TmpFile, IsTextFile,PreserveTimeStamps);
+        end;
+
+    end;
 end;
 
 // --------------------------------------------------------------------------------
@@ -497,7 +529,8 @@ begin
     FCpmTools := TCpmTools.Create;
     FCpmTools.SetPrintDirectoryEntryCallBack(@PrintDirectoryEntry);
     FCpmTools.SetDiskDefsPath(DiskdefsPath);
-    FTempFolder := GetTempDir(True) + CreateTempFolderName(13);
+    FTempFolder := GetTempDir(True) + CreateTempFolderName(13) + PathDelim;
+    MkDir(FTempFolder);
     FEnableAction := [];
 end;
 
@@ -723,6 +756,43 @@ begin
 
     for IndexI := 1 to ALength do begin
         Result := Result + BaseStr[RandomRange(1, Length(BaseStr) + 1)];
+    end;
+
+end;
+
+// --------------------------------------------------------------------------------
+procedure TImagePage.ReadCpmFile(ACpmFileName: string; ATmpFileName: string; AIsTextFile: boolean;APreserveTimeStamps:boolean);
+var
+    FileLength, Count: size_t;
+    FileData: TBytes;
+    FileTime: TUTimeBuf;
+    TmpFile: file of byte;
+    test: string;
+begin
+    FCpmTools.ReadFileFromImage(ACpmFileName, FileData, FileLength, AIsTextFile, FileTime);
+    if (FileLength > 0) then begin
+
+        try
+            AssignFile(TmpFile, FTempFolder + ATmpFileName);
+            Rewrite(TmpFile);
+
+            try
+                BlockWrite(TmpFile, FileData[0], FileLength, int64(Count));
+            except
+
+                on e: Exception do begin
+
+                    if (Count <> FileLength) then begin
+                        MessageDlg(Format('Error writing %s to Temp Folder' + LineEnding + '%s',
+                            [ExtractFileName(ATmpFileName), e.Message]), mtError, [mbOK], 0);
+                    end;
+
+                end;
+            end;
+
+        finally
+            CloseFile(TmpFile);
+        end;
     end;
 
 end;
