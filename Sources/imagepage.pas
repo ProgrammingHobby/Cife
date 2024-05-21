@@ -81,7 +81,8 @@ type
         procedure ClearDirectoryStatistics;
         procedure PrintDirectoryEntry(AColumn: integer; ARow: integer; AData: string);
         function CreateTempFolderName(ALength: integer): string;
-        procedure ReadCpmFile(ACpmFileName: string; ATmpFileName: string; AIsTextFile: boolean;APreserveTimeStamps:boolean);
+        procedure ReadCpmFile(ACpmFileName: string; ATmpFileName: string; AIsTextFile: boolean; APreserveTimeStamps: boolean);
+        procedure CopyFilesToClipboard(AFileList: TStringList);
 
     end;
 
@@ -90,11 +91,11 @@ implementation
 { TImagePage }
 
 uses Controls, StdCtrls, RenameFile_Dialog, StrUtils, Graphics, XMLSettings, Dialogs, Characteristics_Dialog,
-    File_Dialog, CheckImage_Dialog, Math, FileUtil
+    File_Dialog, CheckImage_Dialog, Math, FileUtil, ClipBrd
     {$ifdef UNIX}
-    , BaseUnix
+    , BaseUnix, URIParser, LCLIntf, LCLType
     {$else}
-    , Windows
+    , Windows, ShlObj
     {$endif}
     ;
 
@@ -475,8 +476,10 @@ var
     FileExt, TextfileEndings: string;
     PreserveTimeStamps, ConvertTextFiles, IsTextFile: boolean;
     IndexI: integer;
+    ClipbrdList: TStringList;
 begin
-
+    { #todo : 'ADoCut' auswerten. }
+    { #todo : Selektionen nach erfolgter Operation löschen }
     with TXMLSettings.Create(SettingsFile) do begin
 
         try
@@ -491,18 +494,30 @@ begin
 
     end;
 
-    for IndexI := 0 to FDirectoryList.Items.Count - 1 do begin
+    try
+        ClipbrdList := TStringList.Create;
+        ClipbrdList.Clear;
 
-        if (FDirectoryList.Items[IndexI].Selected) then begin
-            SelectedFile := DelSpace(FDirectoryList.Items[IndexI].Caption);
-            TmpFile := RightStr(SelectedFile, Length(SelectedFile) - Pos(':', SelectedFile));
-            CpmFile := Format('%.2d%s', [StrToInt(LeftStr(SelectedFile, Pos(':', SelectedFile) - 1)), TmpFile]);
-            FileExt := RightStr(TmpFile, (Length(TmpFile) - Pos('.', TmpFile)));
-            IsTextFile := (ConvertTextFiles and TextFileEndings.Contains(FileExt));
-            ReadCpmFile(CpmFile, TmpFile, IsTextFile,PreserveTimeStamps);
+        for IndexI := 0 to FDirectoryList.Items.Count - 1 do begin
+
+            if (FDirectoryList.Items[IndexI].Selected) then begin
+                SelectedFile := DelSpace(FDirectoryList.Items[IndexI].Caption);
+                TmpFile := RightStr(SelectedFile, Length(SelectedFile) - Pos(':', SelectedFile));
+                CpmFile := Format('%.2d%s', [StrToInt(LeftStr(SelectedFile, Pos(':', SelectedFile) - 1)), TmpFile]);
+                FileExt := RightStr(TmpFile, (Length(TmpFile) - Pos('.', TmpFile)));
+                IsTextFile := (ConvertTextFiles and TextFileEndings.Contains(FileExt));
+                ReadCpmFile(CpmFile, TmpFile, IsTextFile, PreserveTimeStamps);
+                ClipbrdList.Add(FTempFolder + TmpFile);
+            end;
+
         end;
 
+        CopyFilesToClipboard(ClipbrdList);
+
+    finally
+        FreeAndNil(ClipbrdList);
     end;
+
 end;
 
 // --------------------------------------------------------------------------------
@@ -761,15 +776,16 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-procedure TImagePage.ReadCpmFile(ACpmFileName: string; ATmpFileName: string; AIsTextFile: boolean;APreserveTimeStamps:boolean);
+procedure TImagePage.ReadCpmFile(ACpmFileName: string; ATmpFileName: string; AIsTextFile: boolean; APreserveTimeStamps: boolean);
 var
     FileLength, Count: size_t;
     FileData: TBytes;
     FileTime: TUTimeBuf;
     TmpFile: file of byte;
-    test: string;
 begin
+    { #todo : 'APreserveTimeStamps' auswerten !!! }
     FCpmTools.ReadFileFromImage(ACpmFileName, FileData, FileLength, AIsTextFile, FileTime);
+
     if (FileLength > 0) then begin
 
         try
@@ -793,7 +809,79 @@ begin
         finally
             CloseFile(TmpFile);
         end;
+
     end;
+
+end;
+
+// --------------------------------------------------------------------------------
+procedure TImagePage.CopyFilesToClipboard(AFileList: TStringList);
+var
+    {$ifdef UNIX}
+    IndexI: integer;
+    ClipbrdUri: TURI;
+    UriList: string;
+    {$endif}
+
+    {$ifdef WINDOWS}
+    ClipbrdData: PDropFiles;
+    ClipbrdHandle: THandle;
+    IndexI, FileListLength: integer;
+    {$endif}
+
+    FileList: string;
+begin
+    FileList := '';
+
+    {$ifdef UNIX}
+    UriList := '';
+
+    for IndexI := 0 to AFileList.Count - 1 do begin
+        ClipbrdUri.Document := ExtractFileName(AFileList[IndexI]);
+        ClipbrdUri.Path := ExtractFileDir(AFileList[IndexI]);
+        ClipbrdUri.Protocol := 'file';
+        ClipbrdUri.HasAuthority := True;
+        ClipbrdUri.Port := 0;
+        UriList := UriList + EncodeURI(ClipbrdUri);
+        FileList := FileList + AFileList[IndexI];
+        if (IndexI < (AFileList.Count - 1)) then begin
+            UriList := UriList + #$0A;
+            FileList := FileList + #$0A;
+        end;
+    end;
+
+    Clipboard.Open;
+    Clipboard.Clear;
+    Clipboard.AddFormat(RegisterClipboardFormat('text/plain'), FileList[1], Length(FileList));
+    Clipboard.AddFormat(RegisterClipboardFormat('text/uri-list'), UriList[1], Length(UriList));
+    Clipboard.AddFormat(RegisterClipboardFormat('application/x-kde4-urilist'), UriList[1], Length(UriList));
+    UriList := 'copy' + #$0A + UriList;
+    Clipboard.AddFormat(RegisterClipboardFormat('x-special/gnome-copied-files'), UriList[1], Length(UriList));
+    Clipboard.AddFormat(RegisterClipboardFormat('x-special/mate-copied-files'), UriList[1], Length(UriList));
+    Clipboard.Close;
+    {$endif}
+
+
+    {$ifdef WINDOWS}
+    for IndexI := 0 to AFileList.Count - 1 do begin
+        FileList := FileList + AFileList[IndexI] + #0;
+    end;
+
+    FileList := FileList + #0;
+    FileListLength := Length(FileList);
+    ClipbrdHandle := GlobalAlloc(GMEM_SHARE or GMEM_MOVEABLE or GMEM_ZEROINIT, SizeOf(TDropFiles) + FileListLength);
+
+    if (ClipbrdHandle <> 0) then begin
+        ClipbrdData := GlobalLock(ClipbrdHandle);
+        ClipbrdData^.pFiles := SizeOf(TDropFiles);
+        Move(FileList[1], (PChar(ClipbrdData) + SizeOf(TDropFiles))^, FileListLength);
+        GlobalUnlock(ClipbrdHandle);
+        OpenClipboard(self.Handle);
+        EmptyClipboard;
+        SetClipboardData(CF_HDROP, ClipbrdHandle);
+        CloseClipboard;
+    end;
+    {$endif}
 
 end;
 
