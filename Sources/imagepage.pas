@@ -93,7 +93,7 @@ implementation
 uses Controls, StdCtrls, RenameFile_Dialog, StrUtils, Graphics, XMLSettings, Dialogs, Characteristics_Dialog,
     File_Dialog, CheckImage_Dialog, Math, FileUtil, ClipBrd
     {$ifdef UNIX}
-    , BaseUnix, URIParser, LCLIntf, LCLType
+    , BaseUnix, URIParser, DateUtils
     {$else}
     , Windows, ShlObj
     {$endif}
@@ -778,12 +778,19 @@ end;
 // --------------------------------------------------------------------------------
 procedure TImagePage.ReadCpmFile(ACpmFileName: string; ATmpFileName: string; AIsTextFile: boolean; APreserveTimeStamps: boolean);
 var
-    FileLength, Count: size_t;
+    FileLength, Count: QWord;
     FileData: TBytes;
     FileTime: TUTimeBuf;
     TmpFile: file of byte;
+    WriteError: boolean;
+
+    {$ifdef WINDOWS}
+    WinFileTime: TFileTime;
+    WinSystemTime: TSYSTEMTIME;
+    FileHandle: THandle;
+    {$endif}
 begin
-    { #todo : 'APreserveTimeStamps' auswerten !!! }
+    WriteError := False;
     FCpmTools.ReadFileFromImage(ACpmFileName, FileData, FileLength, AIsTextFile, FileTime);
 
     if (FileLength > 0) then begin
@@ -794,20 +801,42 @@ begin
 
             try
                 BlockWrite(TmpFile, FileData[0], FileLength, int64(Count));
+
+
+
             except
 
                 on e: Exception do begin
-
-                    if (Count <> FileLength) then begin
-                        MessageDlg(Format('Error writing %s to Temp Folder' + LineEnding + '%s',
-                            [ExtractFileName(ATmpFileName), e.Message]), mtError, [mbOK], 0);
-                    end;
-
+                    MessageDlg(Format('Error writing %s to Temp Folder' + LineEnding + '%s',
+                        [ExtractFileName(ATmpFileName), e.Message]), mtError, [mbOK], 0);
+                    WriteError := True;
                 end;
             end;
 
         finally
             CloseFile(TmpFile);
+        end;
+
+        if (APreserveTimeStamps and not WriteError) then begin
+            {$ifdef UNIX}
+            FileSetDate((FTempFolder + ATmpFileName), DateTimeToUnix(FileTime.ModTime));
+            {$endif}
+
+            {$ifdef WINDOWS}
+            FileHandle := FileOpen((FTempFolder + ATmpFileName), fmOpenWrite);
+
+            if (FileHandle <> feInvalidHandle) then begin
+
+                try
+                    DateTimeToSystemTime(FileTime.ModTime, WinSystemTime);
+                    SystemTimeToFileTime(@WinSystemTime, @WinFileTime);
+                    SetFileTime(FileHandle, nil, @WinFileTime, @WinFileTime);
+                finally
+                    FileClose(FileHandle);
+                end;
+
+            end;
+            {$endif}
         end;
 
     end;
