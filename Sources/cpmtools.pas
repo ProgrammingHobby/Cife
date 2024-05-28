@@ -53,7 +53,7 @@ type
         procedure WriteFileToImage(ACpmFileName: string; const ABuffer: TBytes; ACount: size_t;
             AIsTextFile: boolean; APreserveTimeStamps: boolean; ATimes: TUTimeBuf);
         procedure ReadFileFromImage(ACpmFileName: string; var ABuffer: TBytes; var ACount: size_t;
-            AIsTextFile: boolean; ATimes: TUTimeBuf);
+            AIsTextFile: boolean; var ATimes: TUTimeBuf);
     public  // Konstruktor/Destruktor
         constructor Create; overload;
         destructor Destroy; override;
@@ -708,7 +708,7 @@ end;
 
 // --------------------------------------------------------------------------------
 procedure TCpmTools.ReadFileFromImage(ACpmFileName: string; var ABuffer: TBytes; var ACount: size_t;
-    AIsTextFile: boolean; ATimes: TUTimeBuf);
+    AIsTextFile: boolean; var ATimes: TUTimeBuf);
 var
     Inode: TCpmInode;
     CpmFile: TCpmFile;
