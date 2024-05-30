@@ -23,7 +23,7 @@ unit ImagePage;
 interface
 
 uses
-    Classes, SysUtils, Menus, ComCtrls, CpmTools, CifeGlobals;
+    Classes, SysUtils, Menus, Controls, ComCtrls, CpmTools, CifeGlobals;
 
 type
     TMenuAction = (MAcut, MAcopy, MApaste, MAselectall, MArename, MAdelete, MAformat, MAcharacteristic, MArefresh, MAcheck);
@@ -65,9 +65,11 @@ type
     protected // Methoden 
         procedure DirectoryListResize(ASender: TObject);
         procedure DirectorySelectItem(Sender: TObject; Item: TListItem; Selected: boolean);
+        procedure DirectoryListMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
 
     private   // Attribute
         FDirectoryList: TListView;
+        FDirPopupMenu: TPopupMenu;
         FCpmTools: TCpmTools;
         FFileSystemInfoCallBack: TFileSystemInfoCB;
         FDirStatisticCallBack: TDirectoryStatisticCB;
@@ -90,7 +92,7 @@ implementation
 
 { TImagePage }
 
-uses Controls, StdCtrls, RenameFile_Dialog, StrUtils, Graphics, XMLSettings, Dialogs, Characteristics_Dialog,
+uses StdCtrls, RenameFile_Dialog, StrUtils, Graphics, XMLSettings, Dialogs, Characteristics_Dialog,
     File_Dialog, CheckImage_Dialog, Math, FileUtil, ClipBrd
     {$ifdef UNIX}
     , BaseUnix, URIParser, DateUtils
@@ -109,7 +111,7 @@ begin
         FFileSystemInfoCallBack(FCpmTools.GetFileSystemInfo);
     end;
 
-    FEnableAction := [MApaste, MArefresh, MAformat, MAcheck];
+    FEnableAction := [MArefresh, MAformat, MAcheck];
 
     if (FDirectoryList.Items.Count > 0) then begin
         FEnableAction := FEnableAction + [MAselectall];
@@ -141,7 +143,7 @@ end;
 
 procedure TImagePage.SetPopupMenu(APopupMenu: TPopupMenu);
 begin
-    FDirectoryList.PopupMenu := APopupMenu;
+    FDirPopupMenu := APopupMenu;
 end;
 
 // --------------------------------------------------------------------------------
@@ -248,8 +250,6 @@ var
     UpperCase: boolean;
 begin
     { #todo : evtl. selektierte Items nach dem Refresh wieder herstellen. }
-    { #todo : bei Selektion mit rechter Maustaste gleich das Popupmenü öffnen }
-    { #todo : Menü 'Paste' wird z.B. nach 'Delete' nicht aktiviert. }
 
     with TXMLSettings.Create(SettingsFile) do begin
         try
@@ -603,7 +603,8 @@ begin
     DirList := TListView(Sender);
 
     if (DirList.SelCount > 0) then begin
-        FEnableAction := FEnableAction + [MAcut, MAcopy, MAdelete] - [MApaste];
+        FEnableAction := FEnableAction + [MAcut, MAcopy, MAdelete];
+        // - [MApaste];{ #todo : Paste nur aktivieren wenn gültige Clipboard Daten vorliegen }
 
         if (DirList.SelCount = 1) then begin
             FEnableAction := FEnableAction + [MAcharacteristic, MArename];
@@ -612,13 +613,33 @@ begin
             FEnableAction := FEnableAction - [MAcharacteristic, MArename];
         end;
 
+        Selected := True;
     end
     else begin
-        FEnableAction := FEnableAction - [MAcut, MAcopy, MAdelete, MAcharacteristic, MArename] + [MApaste];
+        FEnableAction := FEnableAction - [MAcut, MAcopy, MAdelete, MAcharacteristic, MArename];
+        // + [MApaste];{ #todo : Paste nur aktivieren wenn gültige Clipboard Daten vorliegen }
     end;
 
     if Assigned(FMenuActionEnableCallBack) then begin
         FMenuActionEnableCallBack(FEnableAction);
+    end;
+
+end;
+
+// --------------------------------------------------------------------------------
+procedure TImagePage.DirectoryListMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
+var
+    DirList: TListView;
+begin
+    DirList := TListView(Sender);
+
+    if ((Button = mbRight)) then begin
+
+        if ((ssCtrl in Shift) and (DirList.SelCount > 1)) then begin
+            DirList.Items[DirList.GetItemAt(X, Y).Index].Selected := True;
+        end;
+
+        FDirPopupMenu.PopUp;
     end;
 end;
 
@@ -675,6 +696,7 @@ begin
         DirColumn.Alignment := taCenter;
         EndUpdate;
         OnSelectItem := @DirectorySelectItem;
+        OnMouseUp := @DirectoryListMouseUp;
     end;
 
 end;
