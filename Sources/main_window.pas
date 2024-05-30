@@ -169,6 +169,7 @@ type
         procedure PopupMenu1Popup(Sender: TObject);
     private
         FImageFileHistory: TImageFileHistory;
+        FCuttedFilesPage: integer;
         procedure AddImagePage(AImageFile: string; AImageType: string; ANewImage: boolean;
             ABootFile: string = ''; AFileSystemLabel: string = ''; ATimeStampsUsed: boolean = False);
         procedure HistoryMenuItemClick(Sender: TObject);
@@ -307,6 +308,7 @@ begin
 
     if (Assigned(Page)) then begin
         Page.CopyFiles(True);
+        FCuttedFilesPage := Page.TabIndex;
     end;
 
 end;
@@ -458,6 +460,13 @@ begin
 
         if (Assigned(Page)) then begin
             Page.PasteFiles(FilesToPaste);
+
+            if (FCuttedFilesPage <> -1) then begin
+                Page := PageControl.Pages[FCuttedFilesPage] as TImagePage;
+                Page.DeleteCopiedFiles;
+                FCuttedFilesPage := -1;
+            end;
+
         end;
 
     end;
@@ -684,6 +693,7 @@ begin
     FImageFileHistory.SetHistoryMenuItemsEvent(@HistoryMenuItemClick);
     actionClearHistory.Enabled := FImageFileHistory.Load;
     MenuActionsControl([]);
+    FCuttedFilesPage := -1;
 end;
 
 // --------------------------------------------------------------------------------

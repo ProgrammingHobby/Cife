@@ -56,6 +56,7 @@ type
         procedure CheckImage;
         procedure PasteFiles(const AFiles: TStringArray);
         procedure CopyFiles(ADoCut: boolean);
+        procedure DeleteCopiedFiles;
     public  // Konstruktor/Destruktor
         constructor Create(ATheOwner: TComponent); override;
         destructor Destroy; override;
@@ -76,6 +77,7 @@ type
         FMenuActionEnableCallBack: TMenuActionEnableCB;
         FEnableAction: TEnableAction;
         FTempFolder: string;
+        FCuttedFiles: TStringList;
 
     private   // Methoden
         procedure CreateDirectoryListView;
@@ -479,7 +481,6 @@ var
     ClipbrdList: TStringList;
 begin
     { #todo : 'ADoCut' auswerten. }
-    { #todo : Selektionen nach erfolgter Operation löschen }
     with TXMLSettings.Create(SettingsFile) do begin
 
         try
@@ -490,6 +491,17 @@ begin
             CloseKey;
         finally
             Free;
+        end;
+
+    end;
+
+    if (ADoCut) then begin
+
+        try
+            FCuttedFiles := TStringList.Create;
+            FCuttedFiles.Clear;
+        except
+            ADoCut := False;
         end;
 
     end;
@@ -508,6 +520,11 @@ begin
                 IsTextFile := (ConvertTextFiles and TextFileEndings.Contains(FileExt));
                 ReadCpmFile(CpmFile, TmpFile, IsTextFile, PreserveTimeStamps);
                 ClipbrdList.Add(FTempFolder + TmpFile);
+
+                if (ADoCut) then begin
+                    FCuttedFiles.Add(SelectedFile);
+                end;
+
             end;
 
         end;
@@ -518,6 +535,14 @@ begin
         FreeAndNil(ClipbrdList);
     end;
 
+end;
+
+// --------------------------------------------------------------------------------
+procedure TImagePage.DeleteCopiedFiles;
+begin
+    FCpmTools.DeleteFile(FCuttedFiles);
+    FreeAndNil(FCuttedFiles);
+    RefreshDirectory;
 end;
 
 // --------------------------------------------------------------------------------
