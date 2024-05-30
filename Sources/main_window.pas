@@ -164,7 +164,9 @@ type
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
         procedure FormDropFiles(Sender: TObject; const FileNames: array of string);
         procedure FormShow(Sender: TObject);
+        procedure menuEditClick(Sender: TObject);
         procedure PageControlCloseTabClicked(Sender: TObject);
+        procedure PopupMenu1Popup(Sender: TObject);
     private
         FImageFileHistory: TImageFileHistory;
         procedure AddImagePage(AImageFile: string; AImageType: string; ANewImage: boolean;
@@ -174,6 +176,7 @@ type
         procedure ShowDirectoryStatistic(AStatistic: TDirStatistic);
         procedure MenuActionsControl(AMenuAction: TEnableAction);
         function IsTabExisting(AImageFile, AImageType: string): boolean;
+        procedure CheckValidClipboardData;
         {$ifdef UNIX}
         function IsRegular(const AStrPath: string): boolean;
         {$endif}
@@ -412,8 +415,12 @@ begin
                     try
 
                         if (DragQueryFile(ClipboardFileList, IndexI, FileBuffer, BufferSize + 1) > 0) then begin
-                            SetLength(FilesToPaste, IndexI + 1);
-                            FilesToPaste[IndexI] := FileBuffer;
+
+                            if (FileExists(FileBuffer)) then begin
+                                SetLength(FilesToPaste, IndexI + 1);
+                                FilesToPaste[IndexI] := FileBuffer;
+                            end;
+
                         end;
 
                     finally
@@ -680,6 +687,12 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
+procedure TMainWindow.menuEditClick(Sender: TObject);
+begin
+    CheckValidClipboardData;
+end;
+
+// --------------------------------------------------------------------------------
 procedure TMainWindow.PageControlCloseTabClicked(Sender: TObject);
 begin
 
@@ -687,6 +700,12 @@ begin
         TTabSheet(Sender).Free;
     end;
 
+end;
+
+// --------------------------------------------------------------------------------
+procedure TMainWindow.PopupMenu1Popup(Sender: TObject);
+begin
+    CheckValidClipboardData;
 end;
 
 // --------------------------------------------------------------------------------
@@ -845,6 +864,79 @@ begin
 
     end;
 
+end;
+
+// --------------------------------------------------------------------------------
+procedure TMainWindow.CheckValidClipboardData;
+var
+    {$ifdef WINDOWS}
+    ClipboardFileList: HDROP;
+    FileBuffer: PChar;
+    BufferSize: integer;
+    {$else}
+    ClipboardFileList: TStringArray;
+    FileBuffer: string;
+    {$endif}
+    IndexI: integer;
+begin
+    actionPaste.Enabled := False;
+
+    if (PageControl.PageCount >= 1) then begin
+
+        {$ifdef WINDOWS}
+        if (Clipboard.HasFormat(CF_HDROP) and OpenClipboard(0)) then begin
+
+            try
+                ClipboardFileList := GetClipboardData(CF_HDROP);
+
+                if ClipboardFileList <> 0 then begin
+
+                    for IndexI := 0 to (DragQueryFile(ClipboardFileList, $FFFFFFFF, nil, 0) - 1) do begin
+                        BufferSize := DragQueryFile(ClipboardFileList, IndexI, nil, 0);
+                        FileBuffer := StrAlloc(BufferSize + 1);
+
+                        try
+
+                            if (DragQueryFile(ClipboardFileList, IndexI, FileBuffer, BufferSize + 1) > 0) then begin
+
+                                if (FileExists(FileBuffer)) then begin
+                                    actionPaste.Enabled := True;
+                                    break;
+                                end;
+
+                            end;
+
+                        finally
+                            StrDispose(FileBuffer);
+                        end;
+
+                    end;
+
+                end;
+
+            finally
+                CloseClipboard;
+            end;
+
+        end;
+        {$else}
+        if Clipboard.HasFormat(CF_Text) then begin
+            ClipboardFileList := Clipboard.AsText.Trim.Split(Chr($0A));
+
+            for IndexI := 0 to (Length(ClipboardFileList) - 1) do begin
+                FileBuffer := ParseURI(ClipboardFileList[IndexI]).Path + ParseURI(ClipboardFileList[IndexI]).Document;
+
+                if (IsRegular(FileBuffer)) then begin
+                    actionPaste.Enabled := True;
+                    break;
+                end;
+
+            end;
+
+        end;
+        {$endif}
+
+    end;
 end;
 
 {$ifdef UNIX}

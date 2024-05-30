@@ -10,6 +10,7 @@ object MainWindow: TMainWindow
   OnClose = FormClose
   OnDropFiles = FormDropFiles
   OnShow = FormShow
+  LCLVersion = '3.2.0.0'
   object StatusBar1: TStatusBar
     Left = 4
     Height = 21
@@ -447,7 +448,7 @@ object MainWindow: TMainWindow
       ChildSizing.EnlargeVertical = crsHomogenousChildResize
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
       ChildSizing.ControlsPerLine = 2
-      ClientHeight = 144
+      ClientHeight = 143
       ClientWidth = 98
       Font.Height = -13
       Font.Name = 'Sans'
@@ -718,6 +719,7 @@ object MainWindow: TMainWindow
     end
     object menuEdit: TMenuItem
       Caption = 'Edit'
+      OnClick = menuEditClick
       object menuItemCut: TMenuItem
         Action = actionCut
       end
@@ -1113,6 +1115,7 @@ object MainWindow: TMainWindow
   end
   object PopupMenu1: TPopupMenu
     Images = ImageList
+    OnPopup = PopupMenu1Popup
     Left = 272
     Top = 456
     object popupItemRefresh: TMenuItem
