@@ -2844,7 +2844,8 @@ begin
 
                     break;
                 end
-                else if (Length(DefinitionLine) = 2) then begin
+                else if ((Length(DefinitionLine) = 2) or ((Length(DefinitionLine) > 2) and
+                    ((DefinitionLine[2] = '#') or (DefinitionLine[2][1] = '#')))) then begin
 
                     if (DefinitionLine[0] = 'seclen') then begin
                         FDrive.SecLength := StrToIntDef(DefinitionLine[1], -1);
