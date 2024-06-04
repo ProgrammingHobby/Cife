@@ -108,6 +108,8 @@ type
 
     private   // Attribute
     type
+        TSideOrder = (soTrack, soSide, soSideOut, soSideBack);
+
         TCpmDirent = record
             Ino: ino_t;
             Off: off_t;
@@ -154,6 +156,7 @@ type
             BootTrk: integer;
             Offset: off_t;
             OsType: integer;
+            SideOrder: TSideOrder;
             Size: integer;
             Extents: integer; // logical extents per physical extent
             Extentsize: integer; // pretty much always 16384
@@ -216,6 +219,7 @@ type
         function PwdCheck(APassword: array of byte; ADecode: byte; var APassWd: string): boolean;
         function DirCheck(AStr: array of char; ALen: size_t; AAllowEmpty: boolean; AType: integer): boolean;
         function PrintFile(AExtent: integer): string;
+        procedure CalcSecTrack(ABlockNr: integer; AOffset: integer; var ASect: integer; var ATrack: integer);
 
     end;
 
@@ -2576,7 +2580,7 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-function TCpmFileSystem.GetFreeFileSpace: uint64;
+function TCpmFileSystem.GetFreeFileSpace: size_t;
 var
     FileSystemStats: TCpmStatFS;
 begin
@@ -2800,6 +2804,7 @@ begin
     FDrive.Extents := 0;
     FDrive.Extentsize := 16384;
     FDrive.OsType := CPMFS_DR22;
+    FDrive.SideOrder := soTrack;
     FSkewTab := nil;
     FDrive.Offset := 0;
     FDrive.BlkSiz := -1;
@@ -2999,6 +3004,26 @@ begin
 
                     end
 
+                    else if (DefinitionLine[0] = 'sideorder') then begin
+
+                        if (DefinitionLine[1] = 'track') then begin
+                            FDrive.SideOrder := soTrack;
+                        end
+                        else if (DefinitionLine[1] = 'side') then begin
+                            FDrive.SideOrder := soSide;
+                        end
+                        else if (DefinitionLine[1] = 'sideout') then begin
+                            FDrive.SideOrder := soSideOut;
+                        end
+                        else if (DefinitionLine[1] = 'sideback') then begin
+                            FDrive.SideOrder := soSideBack;
+                        end
+                        else begin
+                            FDrive.SideOrder := soTrack;
+                        end;
+
+                    end
+
                     else if (DefinitionLine[0] = 'os') then begin
 
                         case (DefinitionLine[1]) of
@@ -3117,10 +3142,8 @@ begin
         AEnd := ((FDrive.BlkSiz div FDrive.SecLength) - 1);
     end;
 
-    Sect := (((ABlockNr * (FDrive.BlkSiz div FDrive.SecLength)) + BootOffset) mod FDrive.SecTrk);
-    Track := (((ABlockNr * (FDrive.BlkSiz div FDrive.SecLength)) + BootOffset) div FDrive.SecTrk);
-
     for Counter := 0 to AEnd do begin
+        CalcSecTrack(ABlockNr, (BootOffset + Counter), Sect, Track);
 
         if (Counter >= AStart) then begin
 
@@ -3130,13 +3153,6 @@ begin
                 exit;
             end;
 
-        end;
-
-        Inc(Sect);
-
-        if (Sect >= FDrive.SecTrk) then begin
-            Sect := 0;
-            Inc(Track);
         end;
 
     end;
@@ -3156,10 +3172,8 @@ begin
         AEnd := ((FDrive.BlkSiz div FDrive.SecLength) - 1);
     end;
 
-    Sect := (((ABlockNr * (FDrive.BlkSiz div FDrive.SecLength)) + BootOffset) mod FDrive.SecTrk);
-    Track := (((ABlockNr * (FDrive.BlkSiz div FDrive.SecLength)) + BootOffset) div FDrive.SecTrk);
-
     for Counter := 0 to AEnd do begin
+        CalcSecTrack(ABlockNr, (BootOffset + Counter), Sect, Track);
 
         if (Counter >= AStart) then begin
 
@@ -3169,13 +3183,6 @@ begin
                 exit;
             end;
 
-        end;
-
-        Inc(Sect);
-
-        if (Sect >= FDrive.SecTrk) then begin
-            Sect := 0;
-            Inc(Track);
         end;
 
     end;
@@ -4250,6 +4257,39 @@ begin
 
     end;
 
+end;
+
+// --------------------------------------------------------------------------------
+procedure TCpmFileSystem.CalcSecTrack(ABlockNr: integer; AOffset: integer; var ASect: integer; var ATrack: integer);
+var
+    TmpBlkNr: integer;
+begin
+    TmpBlkNr := ((ABlockNr * (FDrive.BlkSiz div FDrive.SecLength)) + AOffset);
+
+    case (FDrive.SideOrder) of
+
+        soTrack: begin
+            ASect := (TmpBlkNr mod FDrive.SecTrk);
+            ATrack := (TmpBlkNr div FDrive.SecTrk);
+        end;
+
+        soSide: begin
+            ASect := ((TmpBlkNr div 2) mod FDrive.SecTrk);
+            ATrack := ((TmpBlkNr mod 2) + ((TmpBlkNr div (FDrive.SecTrk * 2)) * 2));
+        end;
+
+        soSideOut: begin
+            ASect := (TmpBlkNr mod FDrive.SecTrk);
+            ATrack := ((ASect * 2) + ((TmpBlkNr div FDrive.SecTrk) mod 2) + ((TmpBlkNr div 10) * 10));
+        end;
+
+        soSideBack: begin
+            ASect := (TmpBlkNr mod FDrive.SecTrk);
+            ATrack := Abs((((TmpBlkNr div FDrive.SecTrk) mod 2) * ((FDrive.SecTrk * 2) - 1)) - (ASect * 2)) +
+                ((TmpBlkNr div 10) * 10);
+        end;
+
+    end;
 end;
 
 // --------------------------------------------------------------------------------
