@@ -824,6 +824,10 @@ begin
                 ATimes.ModTime := Now;
             end;
 
+        end
+        else begin
+            ATimes.AcTime := Now;
+            ATimes.ModTime := Now;
         end;
 
     end;
