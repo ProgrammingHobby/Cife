@@ -108,7 +108,7 @@ type
 
     private   // Attribute
     type
-        TSideOrder = (soTrack, soSide, soSideOut, soSideBack);
+        TSideOrder = (soAlt, soOutOut, soOutBack);
 
         TCpmDirent = record
             Ino: ino_t;
@@ -2804,7 +2804,7 @@ begin
     FDrive.Extents := 0;
     FDrive.Extentsize := 16384;
     FDrive.OsType := CPMFS_DR22;
-    FDrive.SideOrder := soTrack;
+    FDrive.SideOrder := soAlt;
     FSkewTab := nil;
     FDrive.Offset := 0;
     FDrive.BlkSiz := -1;
@@ -3007,20 +3007,19 @@ begin
 
                     else if (DefinitionLine[0] = 'sideorder') then begin
 
-                        if (DefinitionLine[1] = 'track') then begin
-                            FDrive.SideOrder := soTrack;
+                        if (DefinitionLine[1] = 'alternate') then begin
+                            FDrive.SideOrder := soAlt;
                         end
-                        else if (DefinitionLine[1] = 'side') then begin
-                            FDrive.SideOrder := soSide;
+                        else if (DefinitionLine[1] = 'outout') then begin
+                            FDrive.SideOrder := soOutOut;
                         end
-                        else if (DefinitionLine[1] = 'sideout') then begin
-                            FDrive.SideOrder := soSideOut;
-                        end
-                        else if (DefinitionLine[1] = 'sideback') then begin
-                            FDrive.SideOrder := soSideBack;
+                        else if (DefinitionLine[1] = 'outback') then begin
+                            FDrive.SideOrder := soOutBack;
                         end
                         else begin
-                            FDrive.SideOrder := soTrack;
+                            FFileSystemError := Format('sideorder invalid value in line %d', [(LineNumber)]);
+                            Result := False;
+                            exit;
                         end;
 
                     end
@@ -4266,31 +4265,34 @@ var
     TmpBlkNr: integer;
 begin
     TmpBlkNr := ((ABlockNr * (FDrive.BlkSiz div FDrive.SecLength)) + AOffset);
+    ASect := (TmpBlkNr mod FDrive.SecTrk);
 
     case (FDrive.SideOrder) of
 
-        soTrack: begin
-            ASect := (TmpBlkNr mod FDrive.SecTrk);
+        soAlt: begin
             ATrack := (TmpBlkNr div FDrive.SecTrk);
         end;
 
-        soSide: begin
-            ASect := ((TmpBlkNr div 2) mod FDrive.SecTrk);
-            ATrack := ((TmpBlkNr mod 2) + ((TmpBlkNr div (FDrive.SecTrk * 2)) * 2));
+        soOutOut: begin
+            if ((TmpBlkNr div FDrive.SecTrk) < (FDrive.Tracks div 2)) then begin
+                ATrack := ((TmpBlkNr div FDrive.SecTrk) * 2);
+            end
+            else begin
+                ATrack := (((TmpBlkNr div FDrive.SecTrk) * 2) - FDrive.Tracks + 1);
+            end;
         end;
 
-        soSideOut: begin
-            ASect := (TmpBlkNr mod FDrive.SecTrk);
-            ATrack := ((ASect * 2) + ((TmpBlkNr div FDrive.SecTrk) mod 2) + ((TmpBlkNr div 10) * 10));
-        end;
-
-        soSideBack: begin
-            ASect := (TmpBlkNr mod FDrive.SecTrk);
-            ATrack := Abs((((TmpBlkNr div FDrive.SecTrk) mod 2) * ((FDrive.SecTrk * 2) - 1)) - (ASect * 2)) +
-                ((TmpBlkNr div 10) * 10);
+        soOutBack: begin
+            if ((TmpBlkNr div FDrive.SecTrk) < (FDrive.Tracks div 2)) then begin
+                ATrack := ((TmpBlkNr div FDrive.SecTrk) * 2);
+            end
+            else begin
+                ATrack := (FDrive.Tracks - Abs(FDrive.Tracks - ((TmpBlkNr div FDrive.SecTrk) * 2)) - 1);
+            end;
         end;
 
     end;
+
 end;
 
 // --------------------------------------------------------------------------------
