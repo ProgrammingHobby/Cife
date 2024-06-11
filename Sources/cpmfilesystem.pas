@@ -2859,7 +2859,7 @@ begin
                     else if (DefinitionLine[0] = 'blocksize') then begin
                         FDrive.BlkSiz := StrToIntDef(DefinitionLine[1], -1);
 
-                        if (FDrive.BlkSiz <= 0) then begin
+                        if ((FDrive.BlkSiz <= 0) or ((FDrive.BlkSiz mod 2) <> 0)) then begin
                             FFileSystemError :=
                                 Format('invalid blocksize ''%s'' in line %d', [DefinitionLine[1], (LineNumber)]);
                             Result := False;
