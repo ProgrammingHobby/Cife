@@ -67,6 +67,7 @@ type
         procedure DirectoryListResize(ASender: TObject);
         procedure DirectorySelectItem(Sender: TObject; Item: TListItem; Selected: boolean);
         procedure DirectoryListMouseUp(Sender: TObject; Button: TMouseButton; Shift: TShiftState; X, Y: integer);
+        procedure DirectoryItemDblClick(ASender: TObject);
 
     private   // Attribute
         FDirectoryList: TListView;
@@ -669,6 +670,14 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
+procedure TImagePage.DirectoryItemDblClick(ASender: TObject);
+var
+    DirList: TListView;
+begin
+    DirList := TListView(ASender);
+end;
+
+// --------------------------------------------------------------------------------
 procedure TImagePage.CreateDirectoryListView;
 var
     DirColumn: TListColumn;
@@ -722,6 +731,7 @@ begin
         EndUpdate;
         OnSelectItem := @DirectorySelectItem;
         OnMouseUp := @DirectoryListMouseUp;
+        OnDblClick:=@DirectoryItemDblClick;
     end;
 
 end;
