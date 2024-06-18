@@ -96,7 +96,7 @@ implementation
 { TImagePage }
 
 uses StdCtrls, RenameFile_Dialog, StrUtils, Graphics, XMLSettings, Dialogs, Characteristics_Dialog,
-    File_Dialog, CheckImage_Dialog, Math, FileUtil, ClipBrd
+    File_Dialog, CheckImage_Dialog, Math, FileUtil, ClipBrd, FileHexEdit_Dialog
     {$ifdef UNIX}
     , BaseUnix, URIParser, DateUtils
     {$else}
@@ -673,8 +673,33 @@ end;
 procedure TImagePage.DirectoryItemDblClick(ASender: TObject);
 var
     DirList: TListView;
+    DirEntry, TmpFile, CpmFileName: string;
+    FileLength: QWord;
+    FileData: TBytes;
+    FileTime: TUTimeBuf;
+    DataStream: TMemoryStream;
+    Dialog: TFileHexEditDialog;
 begin
     DirList := TListView(ASender);
+    DirEntry := DelSpace(DirList.Items[DirList.ItemIndex].Caption);
+    TmpFile := RightStr(DirEntry, Length(DirEntry) - Pos(':', DirEntry));
+    CpmFileName := Format('%.2d%s', [StrToInt(LeftStr(DirEntry, Pos(':', DirEntry) - 1)), TmpFile]);
+    FCpmTools.ReadFileFromImage(CpmFileName, FileData, FileLength, False, FileTime);
+    try
+        DataStream := TMemoryStream.Create;
+        DataStream.WriteBuffer(FileData, FileLength);
+
+        try
+            Dialog := TFileHexEditDialog.Create(self);
+            Dialog.SetFileData(DataStream, FileLength, TmpFile);
+            Dialog.ShowModal;
+        finally
+            FreeAndNil(Dialog);
+        end;
+    finally
+        DataStream.Free;
+    end;
+
 end;
 
 // --------------------------------------------------------------------------------
@@ -731,7 +756,7 @@ begin
         EndUpdate;
         OnSelectItem := @DirectorySelectItem;
         OnMouseUp := @DirectoryListMouseUp;
-        OnDblClick:=@DirectoryItemDblClick;
+        OnDblClick := @DirectoryItemDblClick;
     end;
 
 end;
