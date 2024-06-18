@@ -1,0 +1,7 @@
+{"version":1,"strings":[
+{"hash":103734471,"name":"tfilehexeditdialog.caption","sourcebytes":[70,105,108,101,72,101,120,69,100,105,116,68,105,97,108,111,103],"value":"FileHexEditDialog"},
+{"hash":2857157,"name":"tfilehexeditdialog.buttonpanel.okbutton.caption","sourcebytes":[38,83,97,118,101],"value":"&Save"},
+{"hash":11220634,"name":"tfilehexeditdialog.labelposition.caption","sourcebytes":[80,111,115,105,116,105,111,110,32,58],"value":"Position :"},
+{"hash":157040034,"name":"tfilehexeditdialog.checkboxshowruler.caption","sourcebytes":[83,104,111,119,32,82,117,108,101,114],"value":"Show Ruler"},
+{"hash":124198281,"name":"tfilehexeditdialog.checkboxreadonly.caption","sourcebytes":[82,101,97,100,32,111,110,108,121],"value":"Read only"}
+]}

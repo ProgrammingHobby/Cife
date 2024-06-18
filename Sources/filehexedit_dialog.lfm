@@ -1,0 +1,115 @@
+object FileHexEditDialog: TFileHexEditDialog
+  Left = 2160
+  Height = 240
+  Top = 250
+  Width = 552
+  Caption = 'FileHexEditDialog'
+  ClientHeight = 240
+  ClientWidth = 552
+  Position = poMainFormCenter
+  object buttonPanel: TButtonPanel
+    Left = 6
+    Height = 34
+    Top = 200
+    Width = 540
+    OKButton.Name = 'OKButton'
+    OKButton.Caption = '&Save'
+    HelpButton.Name = 'HelpButton'
+    HelpButton.DefaultCaption = True
+    CloseButton.Name = 'CloseButton'
+    CloseButton.DefaultCaption = True
+    CancelButton.Name = 'CancelButton'
+    CancelButton.DefaultCaption = True
+    ButtonOrder = boCloseOKCancel
+    TabOrder = 0
+    ShowButtons = [pbOK, pbCancel]
+    ShowBevel = False
+    object labelPosition: TLabel
+      Left = 0
+      Height = 34
+      Top = 0
+      Width = 56
+      Align = alLeft
+      Caption = 'Position :'
+      Layout = tlCenter
+    end
+  end
+  object panelToolButtons: TPanel
+    Left = 0
+    Height = 35
+    Top = 0
+    Width = 552
+    Align = alTop
+    AutoSize = True
+    ClientHeight = 35
+    ClientWidth = 552
+    TabOrder = 1
+    object buttonUndo: TSpeedButton
+      Left = 65
+      Height = 23
+      Top = 6
+      Width = 23
+      Align = alLeft
+      BorderSpacing.Left = 64
+      BorderSpacing.Top = 5
+      BorderSpacing.Bottom = 5
+      Images = imageList
+      ImageIndex = 1
+    end
+    object buttonRedo: TSpeedButton
+      Left = 104
+      Height = 23
+      Top = 6
+      Width = 23
+      Align = alLeft
+      BorderSpacing.Left = 16
+      BorderSpacing.Top = 5
+      BorderSpacing.Bottom = 5
+      Images = imageList
+      ImageIndex = 0
+    end
+    object checkboxShowRuler: TCheckBox
+      Left = 310
+      Height = 21
+      Top = 7
+      Width = 93
+      Align = alRight
+      BorderSpacing.Top = 6
+      BorderSpacing.Right = 32
+      BorderSpacing.Bottom = 6
+      Caption = 'Show Ruler'
+      TabOrder = 0
+    end
+    object checkboxReadOnly: TCheckBox
+      Left = 435
+      Height = 21
+      Top = 7
+      Width = 84
+      Align = alRight
+      BorderSpacing.Top = 6
+      BorderSpacing.Right = 32
+      BorderSpacing.Bottom = 6
+      Caption = 'Read only'
+      TabOrder = 1
+    end
+  end
+  object imageList: TImageList
+    Left = 107
+    Top = 159
+    Bitmap = {
+      4C7A020000001000000010000000780100000000000078DA636018FCC0DD9EC1
+      212E90C19A5CFD6E760CA157F630FCECAD65882752BD1A10FB83F48170590643
+      1F50FF7F105E3285A14B4C848109AB3B6D1824F62C67D805538B0B03D56C1417
+      61E041D60BE4B35DDEC77091905E5CFA816E4C40923F559AC1104B8AFB816133
+      17A606A8478AD4F043D60F8C2F6952E30FE8C67898FEBD50F7EB6B3258101BC7
+      C0F060450F3FA09B5691944E1C18C48161B7935CFDE8E98714F78F0208A873E0
+      F6755064F724559F0C103738F3961C4815F90BD41F4A8A5E516E26B655514273
+      0FA48AFE07E1A97E02C71B9CF956A162DE25405CA725C6A280AC1714C1AB2285
+      36C2F412C6223F81E624239B61AFC8AE0D14BF4782197F437538ED50F298188B
+      C8EA28A1C320796CFED714656507DA9B0B3303E8DF9DD8C26175A4D0027CE107
+      D47B08EA864F58C3920F6C8E002EFD07D3440EE3D38F0B6889B3B0D723B91FE8
+      4EB8FB41EE85F91B1F8D1A7E1CB664EAFFD1E0C49B84E23631160B501AC14F83
+      D20F5F2D7AFA196800009B4F3BFE
+    }
+  end
+end
