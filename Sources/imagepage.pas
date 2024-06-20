@@ -687,7 +687,7 @@ begin
     FCpmTools.ReadFileFromImage(CpmFileName, FileData, FileLength, False, FileTime);
     try
         DataStream := TMemoryStream.Create;
-        DataStream.WriteBuffer(FileData, FileLength);
+        DataStream.Write(FileData[0], FileLength);
 
         try
             Dialog := TFileHexEditDialog.Create(self);
