@@ -6,12 +6,17 @@ object FileHexEditDialog: TFileHexEditDialog
   Caption = 'FileHexEditDialog'
   ClientHeight = 240
   ClientWidth = 552
+  OnCreate = FormCreate
+  OnDestroy = FormDestroy
+  OnResize = FormResize
+  OnShow = FormShow
   Position = poMainFormCenter
   object buttonPanel: TButtonPanel
-    Left = 6
+    Left = 92
     Height = 34
     Top = 200
-    Width = 540
+    Width = 454
+    BorderSpacing.Left = 86
     OKButton.Name = 'OKButton'
     OKButton.Caption = '&Save'
     HelpButton.Name = 'HelpButton'
@@ -20,7 +25,6 @@ object FileHexEditDialog: TFileHexEditDialog
     CloseButton.DefaultCaption = True
     CancelButton.Name = 'CancelButton'
     CancelButton.DefaultCaption = True
-    ButtonOrder = boCloseOKCancel
     TabOrder = 0
     ShowButtons = [pbOK, pbCancel]
     ShowBevel = False
@@ -36,61 +40,69 @@ object FileHexEditDialog: TFileHexEditDialog
   end
   object panelToolButtons: TPanel
     Left = 0
-    Height = 35
+    Height = 37
     Top = 0
     Width = 552
     Align = alTop
     AutoSize = True
-    ClientHeight = 35
-    ClientWidth = 552
+    BevelOuter = bvNone
+    ClientHeight = 33
+    ClientWidth = 548
+    ParentBackground = False
     TabOrder = 1
     object buttonUndo: TSpeedButton
-      Left = 65
+      Left = 86
       Height = 23
-      Top = 6
+      Top = 7
       Width = 23
       Align = alLeft
-      BorderSpacing.Left = 64
-      BorderSpacing.Top = 5
-      BorderSpacing.Bottom = 5
+      BorderSpacing.Left = 86
+      BorderSpacing.Top = 7
+      BorderSpacing.Bottom = 3
       Images = imageList
       ImageIndex = 1
+      OnClick = buttonUndoClick
     end
     object buttonRedo: TSpeedButton
-      Left = 104
+      Left = 141
       Height = 23
-      Top = 6
+      Top = 7
       Width = 23
       Align = alLeft
-      BorderSpacing.Left = 16
-      BorderSpacing.Top = 5
-      BorderSpacing.Bottom = 5
+      BorderSpacing.Left = 32
+      BorderSpacing.Top = 7
+      BorderSpacing.Bottom = 3
       Images = imageList
       ImageIndex = 0
+      OnClick = buttonRedoClick
     end
     object checkboxShowRuler: TCheckBox
-      Left = 310
+      Left = 307
       Height = 21
-      Top = 7
+      Top = 8
       Width = 93
       Align = alRight
-      BorderSpacing.Top = 6
+      BorderSpacing.Top = 8
       BorderSpacing.Right = 32
-      BorderSpacing.Bottom = 6
+      BorderSpacing.Bottom = 4
       Caption = 'Show Ruler'
       TabOrder = 0
+      OnChange = checkboxShowRulerChange
     end
     object checkboxReadOnly: TCheckBox
-      Left = 435
+      Left = 432
       Height = 21
-      Top = 7
+      Top = 8
       Width = 84
       Align = alRight
-      BorderSpacing.Top = 6
+      BorderSpacing.Top = 8
       BorderSpacing.Right = 32
-      BorderSpacing.Bottom = 6
+      BorderSpacing.Bottom = 4
       Caption = 'Read only'
+      Checked = True
+      State = cbChecked
       TabOrder = 1
+      OnChange = checkboxReadOnlyChange
     end
   end
   object imageList: TImageList
