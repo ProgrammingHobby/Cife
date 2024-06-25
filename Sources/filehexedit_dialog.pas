@@ -158,6 +158,7 @@ begin
         buttonUndo.ShowHint := CanUndo;
         buttonUndo.Hint := Format('Undo: %s', [UndoDescription]);
         buttonRedo.Enabled := CanRedo;
+        buttonPanel.OKButton.Enabled:=Modified;
     end;
 
 end;
