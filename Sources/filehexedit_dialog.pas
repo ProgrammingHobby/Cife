@@ -51,7 +51,7 @@ type
         FHexEditor: TMPHexEditor;
         procedure AppIdle(Sender: TObject; var Done: boolean);
     public
-        procedure SetFileData(AFileData: TMemoryStream; ALength: QWord; AName: string);
+        procedure SetFileData(AFileData: TMemoryStream; AName: string);
     end;
 
 var
@@ -164,7 +164,7 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-procedure TFileHexEditDialog.SetFileData(AFileData: TMemoryStream; ALength: QWord; AName: string);
+procedure TFileHexEditDialog.SetFileData(AFileData: TMemoryStream; AName: string);
 begin
     Caption := AName;
     FHexEditor.LoadFromStream(AFileData);

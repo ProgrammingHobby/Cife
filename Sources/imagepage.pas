@@ -691,7 +691,7 @@ begin
 
         try
             Dialog := TFileHexEditDialog.Create(self);
-            Dialog.SetFileData(DataStream, FileLength, TmpFile);
+            Dialog.SetFileData(DataStream, TmpFile);
             Dialog.ShowModal;
         finally
             FreeAndNil(Dialog);
