@@ -51,7 +51,7 @@ type
         function GetFileInfo(AFileName: string): TFileInfo;
         procedure SetNewAttributes(AFileName: string; AAttributes: cpm_attr_t);
         procedure WriteFileToImage(ACpmFileName: string; const ABuffer: TBytes; ACount: size_t;
-            AIsTextFile: boolean; APreserveTimeStamps: boolean; ATimes: TUTimeBuf);
+            AIsTextFile: boolean; APreserveTimeStamps: boolean; ATimes: TUTimeBuf; AAutoOverwrite: boolean = False);
         procedure ReadFileFromImage(ACpmFileName: string; var ABuffer: TBytes; var ACount: size_t;
             AIsTextFile: boolean; var ATimes: TUTimeBuf);
     public  // Konstruktor/Destruktor
@@ -593,7 +593,7 @@ end;
 
 // --------------------------------------------------------------------------------
 procedure TCpmTools.WriteFileToImage(ACpmFileName: string; const ABuffer: TBytes; ACount: size_t;
-    AIsTextFile: boolean; APreserveTimeStamps: boolean; ATimes: TUTimeBuf);
+    AIsTextFile: boolean; APreserveTimeStamps: boolean; ATimes: TUTimeBuf; AAutoOverwrite: boolean);
 var
     CpmFile: TCpmFile;
     Inode: TCpmInode;
@@ -624,8 +624,8 @@ begin
 
     if (FCpmFileSystem.IsFileExisting(ACpmFileName)) then  begin
 
-        if (MessageDlg(Format('file %s already exists.' + LineEnding + 'replace existing file?',
-            [ExtractFileName(ACpmFileName)]), mtError, [mbYes, mbNo], 0) = mrYes) then begin
+        if (AAutoOverwrite or (MessageDlg(Format('file %s already exists.' + LineEnding +
+            'replace existing file?', [ExtractFileName(ACpmFileName)]), mtError, [mbYes, mbNo], 0) = mrYes)) then begin
             FCpmFileSystem.Name2Inode(PChar(ACpmFileName), Inode);
         end
         else begin
