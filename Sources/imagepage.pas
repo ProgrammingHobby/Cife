@@ -692,7 +692,21 @@ begin
         try
             Dialog := TFileHexEditDialog.Create(self);
             Dialog.SetFileData(DataStream, TmpFile);
-            Dialog.ShowModal;
+            if (Dialog.ShowModal = mrOk) then begin
+                DataStream.Clear;
+                Dialog.GetFileData(DataStream);
+                if (DataStream.Size <> FileLength) then begin
+                    MessageDlg('Error retrieving data from HexEditor', mtError, [mbOK], 0);
+                    exit;
+                end;
+                SetLength(FileData, 0);
+                SetLength(FileData, FileLength);
+                DataStream.Position := 0;
+                DataStream.Read(FileData[0], FileLength);
+                FileTime.ModTime := now;
+                FCpmTools.WriteFileToImage(CpmFileName, FileData, FileLength, False, True, FileTime, True);
+                RefreshDirectory;
+            end;
         finally
             FreeAndNil(Dialog);
         end;
