@@ -11,6 +11,7 @@ object FileHexEditDialog: TFileHexEditDialog
   OnResize = FormResize
   OnShow = FormShow
   Position = poMainFormCenter
+  LCLVersion = '3.4.0.0'
   object buttonPanel: TButtonPanel
     Left = 92
     Height = 34
@@ -46,8 +47,8 @@ object FileHexEditDialog: TFileHexEditDialog
     Align = alTop
     AutoSize = True
     BevelOuter = bvNone
-    ClientHeight = 33
-    ClientWidth = 548
+    ClientHeight = 37
+    ClientWidth = 552
     ParentBackground = False
     TabOrder = 1
     object buttonUndo: TSpeedButton

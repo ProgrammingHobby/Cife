@@ -52,6 +52,7 @@ type
         procedure AppIdle(Sender: TObject; var Done: boolean);
     public
         procedure SetFileData(AFileData: TMemoryStream; AName: string);
+        procedure GetFileData(var AFileData: TMemoryStream);
     end;
 
 var
@@ -142,7 +143,7 @@ begin
     Self.Constraints.MaxWidth := HexEditorWidth;
     HexEditorHeight := (16 * FHexEditor.RowHeight) + panelToolButtons.Height + buttonPanel.Height +
         (2 * FHexEditor.BorderSpacing.Around) + (GetSystemMetrics(SM_CYHSCROLL) div 4) +
-        (GetSystemMetrics(SM_CYFIXEDFRAME) * ((GetSystemMetrics(SM_CYHSCROLL) + GetSystemMetrics(SM_CYFIXEDFRAME) + 1) div 7));
+        (GetSystemMetrics(SM_CYFIXEDFRAME) * ((GetSystemMetrics(SM_CYHSCROLL) + GetSystemMetrics(SM_CYFIXEDFRAME)) div 7) + 1);
     Self.Height := HexEditorHeight;
     Self.Constraints.MinHeight := HexEditorHeight;
 end;
@@ -158,7 +159,7 @@ begin
         buttonUndo.ShowHint := CanUndo;
         buttonUndo.Hint := Format('Undo: %s', [UndoDescription]);
         buttonRedo.Enabled := CanRedo;
-        buttonPanel.OKButton.Enabled:=Modified;
+        buttonPanel.OKButton.Enabled := Modified;
     end;
 
 end;
@@ -168,6 +169,12 @@ procedure TFileHexEditDialog.SetFileData(AFileData: TMemoryStream; AName: string
 begin
     Caption := AName;
     FHexEditor.LoadFromStream(AFileData);
+end;
+
+// --------------------------------------------------------------------------------
+procedure TFileHexEditDialog.GetFileData(var AFileData: TMemoryStream);
+begin
+    FHexEditor.SaveToStream(AFileData);
 end;
 
 end.
