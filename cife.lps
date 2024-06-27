@@ -18,11 +18,10 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Main_Window"/>
-        <TopLine Value="399"/>
-        <CursorPos X="193" Y="423"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="902"/>
+        <CursorPos X="51" Y="946"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
-        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/file_dialog.pas"/>
@@ -32,8 +31,7 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="File_Dialog"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="228"/>
-        <CursorPos X="143" Y="259"/>
+        <CursorPos X="29" Y="20"/>
         <UsageCount Value="200"/>
       </Unit>
       <Unit>
@@ -44,7 +42,7 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="RenameFile_Dialog"/>
         <EditorIndex Value="-1"/>
-        <CursorPos Y="18"/>
+        <CursorPos X="9" Y="8"/>
         <UsageCount Value="200"/>
       </Unit>
       <Unit>
@@ -55,7 +53,7 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="Characteristics_Dialog"/>
         <EditorIndex Value="-1"/>
-        <CursorPos Y="18"/>
+        <CursorPos X="28" Y="26"/>
         <UsageCount Value="200"/>
       </Unit>
       <Unit>
@@ -77,29 +75,29 @@
         <HasResources Value="True"/>
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="About_Dialog"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="32"/>
-        <CursorPos X="5" Y="95"/>
+        <IsVisibleTab Value="True"/>
+        <TopLine Value="36"/>
+        <CursorPos X="76" Y="64"/>
         <UsageCount Value="200"/>
+        <Loaded Value="True"/>
+        <LoadedDesigner Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/imagepage.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="ImagePage"/>
-        <IsVisibleTab Value="True"/>
-        <EditorIndex Value="1"/>
-        <TopLine Value="816"/>
-        <CursorPos Y="828"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="70"/>
+        <CursorPos X="12" Y="101"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/imagefilehistory.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="ImageFileHistory"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="52"/>
-        <CursorPos X="14" Y="77"/>
+        <TopLine Value="16"/>
+        <CursorPos X="72" Y="40"/>
         <UsageCount Value="200"/>
       </Unit>
       <Unit>
@@ -107,8 +105,8 @@
         <IsPartOfProject Value="True"/>
         <UnitName Value="VersionInfo"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="211"/>
-        <CursorPos X="66" Y="233"/>
+        <TopLine Value="210"/>
+        <CursorPos X="55" Y="226"/>
         <UsageCount Value="200"/>
       </Unit>
       <Unit>
@@ -123,57 +121,54 @@
         <Filename Value="Sources/cifeglobals.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="CifeGlobals"/>
-        <EditorIndex Value="5"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="66"/>
-        <CursorPos X="4" Y="86"/>
+        <CursorPos X="64" Y="85"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/cpmdevice.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="CpmDevice"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="118"/>
-        <CursorPos X="42" Y="101"/>
+        <TopLine Value="101"/>
+        <CursorPos X="58" Y="123"/>
         <UsageCount Value="200"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/cpmfilesystem.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="CpmFileSystem"/>
-        <EditorIndex Value="3"/>
-        <TopLine Value="1266"/>
-        <CursorPos X="10" Y="1291"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="585"/>
+        <CursorPos X="10" Y="585"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/cpmtools.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="CpmTools"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="623"/>
-        <CursorPos X="29" Y="681"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="597"/>
+        <CursorPos X="90" Y="627"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/cpmdefs.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="CpmDefs"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="-1"/>
         <CursorPos X="12" Y="87"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/quicksort.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="QuickSort"/>
         <EditorIndex Value="-1"/>
-        <CursorPos Y="127"/>
-        <UsageCount Value="168"/>
+        <TopLine Value="68"/>
+        <CursorPos X="37" Y="86"/>
+        <UsageCount Value="182"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/checkimage_dialog.pas"/>
@@ -183,9 +178,30 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="CheckImage_Dialog"/>
         <EditorIndex Value="-1"/>
-        <TopLine Value="62"/>
-        <CursorPos X="50" Y="105"/>
-        <UsageCount Value="61"/>
+        <TopLine Value="74"/>
+        <CursorPos X="12" Y="93"/>
+        <UsageCount Value="75"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Sources/filehexedit_dialog.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FileHexEditDialog"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="FileHexEdit_Dialog"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="103"/>
+        <CursorPos X="55" Y="153"/>
+        <UsageCount Value="33"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Sources/mphexeditor/mphexeditor.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="MPHexEditor"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="8947"/>
+        <CursorPos X="8" Y="9001"/>
+        <UsageCount Value="32"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/unixcopyclipboard.pas"/>
@@ -291,14 +307,14 @@
         <UsageCount Value="10"/>
       </Unit>
       <Unit>
-        <Filename Value="../../../../fpcupdeluxe/lazarus-3.0.0/lazarus/lcl/include/clipbrd.inc"/>
+        <Filename Value="../../../fpcupdeluxe/lazarus-3.0.0/lazarus/lcl/include/clipbrd.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="263"/>
         <CursorPos Y="308"/>
         <UsageCount Value="11"/>
       </Unit>
       <Unit>
-        <Filename Value="../../../../fpcupdeluxe/lazarus-3.0.0/lazarus/lcl/lcltype.pp"/>
+        <Filename Value="../../../fpcupdeluxe/lazarus-3.0.0/lazarus/lcl/lcltype.pp"/>
         <UnitName Value="LCLType"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="2943"/>
@@ -306,7 +322,7 @@
         <UsageCount Value="10"/>
       </Unit>
       <Unit>
-        <Filename Value="../../../../fpcupdeluxe/lazarus-3.0.0/lazarus/lcl/clipbrd.pp"/>
+        <Filename Value="../../../fpcupdeluxe/lazarus-3.0.0/lazarus/lcl/clipbrd.pp"/>
         <UnitName Value="Clipbrd"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="105"/>
@@ -314,135 +330,28 @@
         <UsageCount Value="10"/>
       </Unit>
       <Unit>
-        <Filename Value="../../../../fpcupdeluxe/lazarus-3.2/lazarus/lcl/include/clipbrd.inc"/>
+        <Filename Value="../../../fpcupdeluxe/lazarus-3.2/lazarus/lcl/include/clipbrd.inc"/>
         <EditorIndex Value="-1"/>
         <TopLine Value="456"/>
         <CursorPos Y="486"/>
         <UsageCount Value="10"/>
       </Unit>
+      <Unit>
+        <Filename Value="../../../fpcupdeluxe/lazarus-3.2/lazarus/lcl/include/wincontrol.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="5782"/>
+        <CursorPos Y="5834"/>
+        <UsageCount Value="10"/>
+      </Unit>
+      <Unit>
+        <Filename Value="../../../fpcupdeluxe/lazarus-3.2/lazarus/lcl/include/customform.inc"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="356"/>
+        <CursorPos Y="386"/>
+        <UsageCount Value="10"/>
+      </Unit>
     </Units>
-    <JumpHistory HistoryIndex="29">
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="842" TopLine="814"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="843" TopLine="814"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="844" TopLine="814"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="845" TopLine="814"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="838" TopLine="814"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="848" TopLine="814"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="849" TopLine="814"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="850" TopLine="814"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="851" TopLine="814"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="852" TopLine="814"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="853" TopLine="814"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="854" TopLine="814"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="855" TopLine="814"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="854" Column="98" TopLine="804"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="830" Column="56" TopLine="804"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="823" Column="16" TopLine="804"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="848" Column="38" TopLine="805"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="837" TopLine="815"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="838" TopLine="815"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="839" TopLine="815"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="840" TopLine="815"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="841" TopLine="815"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="842" TopLine="815"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="843" TopLine="815"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="844" TopLine="815"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="845" TopLine="815"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="846" TopLine="815"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="838" TopLine="815"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="857" Column="23" TopLine="810"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/imagepage.pas"/>
-        <Caret Line="880" Column="109" TopLine="823"/>
-      </Position>
-    </JumpHistory>
+    <JumpHistory HistoryIndex="-1"/>
     <RunParams>
       <FormatVersion Value="2"/>
       <Modes ActiveMode=""/>
@@ -463,26 +372,14 @@
         <Source Value="Sources/unixcopyclipboard.pas"/>
         <Line Value="55"/>
       </Item>
-      <Item>
-        <Kind Value="bpkSource"/>
-        <WatchScope Value="wpsLocal"/>
-        <WatchKind Value="wpkWrite"/>
-        <Source Value="Sources/main_window.pas"/>
-        <Line Value="433"/>
-      </Item>
     </BreakPoints>
     <Watches>
       <Item>
-        <Expression Value="MaxUser"/>
+        <Expression Value="LIntDataPos"/>
       </Item>
       <Item>
-        <Expression Value="FDirectory[Extent1]"/>
-      </Item>
-      <Item>
-        <Expression Value="Gargv[IndexI]"/>
-      </Item>
-      <Item>
-        <Expression Value="ErrorNo"/>
+        <Expression Value="LWChrOutput"/>
+        <DisplayStyle Value="wdfHex"/>
       </Item>
     </Watches>
   </Debugging>

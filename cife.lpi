@@ -21,8 +21,8 @@
     <VersionInfo>
       <UseVersionInfo Value="True"/>
       <AutoIncrementBuild Value="True"/>
-      <MinorVersionNr Value="9"/>
-      <BuildNr Value="1673"/>
+      <MajorVersionNr Value="1"/>
+      <BuildNr Value="1690"/>
       <StringTable FileDescription="CP/M Image-File Explorer" InternalName="CIFE" OriginalFilename="CIFE"/>
     </VersionInfo>
     <BuildModes>
@@ -38,7 +38,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="Sources"/>
+            <OtherUnitFiles Value="Sources;Sources/mphexeditor"/>
             <UnitOutputDirectory Value="Build-$(BuildMode)_$(TargetCPU)/lib"/>
           </SearchPaths>
           <Parsing>
@@ -80,7 +80,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="Sources"/>
+            <OtherUnitFiles Value="Sources;Sources/mphexeditor"/>
             <UnitOutputDirectory Value="Build-$(BuildMode)_$(TargetCPU)/lib"/>
           </SearchPaths>
           <CodeGeneration>
@@ -112,7 +112,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="Sources"/>
+            <OtherUnitFiles Value="Sources;Sources/mphexeditor"/>
             <UnitOutputDirectory Value="Build-$(BuildMode)_$(TargetCPU)/lib"/>
           </SearchPaths>
           <Parsing>
@@ -154,7 +154,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="Sources"/>
+            <OtherUnitFiles Value="Sources;Sources/mphexeditor"/>
             <UnitOutputDirectory Value="Build-$(BuildMode)_$(TargetCPU)/lib"/>
           </SearchPaths>
           <CodeGeneration>
@@ -186,7 +186,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="Sources"/>
+            <OtherUnitFiles Value="Sources;Sources/mphexeditor"/>
             <UnitOutputDirectory Value="Build-$(BuildMode)_$(TargetCPU)/lib"/>
           </SearchPaths>
           <Parsing>
@@ -233,7 +233,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="Sources"/>
+            <OtherUnitFiles Value="Sources;Sources/mphexeditor"/>
             <UnitOutputDirectory Value="Build-$(BuildMode)_$(TargetCPU)/lib"/>
           </SearchPaths>
           <CodeGeneration>
@@ -270,7 +270,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="Sources"/>
+            <OtherUnitFiles Value="Sources;Sources/mphexeditor"/>
             <UnitOutputDirectory Value="Build-$(BuildMode)_$(TargetCPU)/lib"/>
           </SearchPaths>
           <Parsing>
@@ -317,7 +317,7 @@
           </Target>
           <SearchPaths>
             <IncludeFiles Value="$(ProjOutDir)"/>
-            <OtherUnitFiles Value="Sources"/>
+            <OtherUnitFiles Value="Sources;Sources/mphexeditor"/>
             <UnitOutputDirectory Value="Build-$(BuildMode)_$(TargetCPU)/lib"/>
           </SearchPaths>
           <CodeGeneration>
@@ -477,6 +477,19 @@
         <ResourceBaseClass Value="Form"/>
         <UnitName Value="CheckImage_Dialog"/>
       </Unit>
+      <Unit>
+        <Filename Value="Sources/filehexedit_dialog.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="FileHexEditDialog"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="FileHexEdit_Dialog"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Sources/mphexeditor/mphexeditor.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="MPHexEditor"/>
+      </Unit>
     </Units>
   </ProjectOptions>
   <CompilerOptions>
@@ -486,7 +499,7 @@
     </Target>
     <SearchPaths>
       <IncludeFiles Value="$(ProjOutDir)"/>
-      <OtherUnitFiles Value="Sources"/>
+      <OtherUnitFiles Value="Sources;Sources/mphexeditor"/>
       <UnitOutputDirectory Value="Build-$(BuildMode)_$(TargetCPU)/lib"/>
     </SearchPaths>
     <Parsing>

@@ -29,7 +29,7 @@ uses
     Interfaces, // this includes the LCL widgetset
     Forms,
     Dialogs,
-    Main_Window { you can add units after this };
+    Main_Window, FileHexEdit_Dialog { you can add units after this };
 
 {$R *.res}
 

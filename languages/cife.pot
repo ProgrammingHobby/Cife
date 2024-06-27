@@ -1,6 +1,215 @@
 msgid ""
 msgstr "Content-Type: text/plain; charset=UTF-8"
 
+#: mphexeditor.err_cancelled
+msgid "Operation cancelled"
+msgstr ""
+
+#: mphexeditor.err_data_bounds
+msgid "Data position/length out of data bounds"
+msgstr ""
+
+#: mphexeditor.err_file_open_failed
+#, object-pascal-format
+msgid ""
+"Cannot open %s.\n"
+"(%s.)"
+msgstr ""
+
+#: mphexeditor.err_file_readonly
+#, object-pascal-format
+msgid "Cannot save readonly file %s."
+msgstr ""
+
+#: mphexeditor.err_fixed_filesize
+msgid "Cannot change fixed filesize"
+msgstr ""
+
+#: mphexeditor.err_invalid_bookmark
+msgid "Invalid bookmark index"
+msgstr ""
+
+#: mphexeditor.err_invalid_bookmarkbmp
+msgid "Invalid bookmark bitmap (must be 10 x 200 px)"
+msgstr ""
+
+#: mphexeditor.err_invalid_bpu
+#, object-pascal-format
+msgid "Invalid bytes per unit value %d, allowed: 1,2,4,8"
+msgstr ""
+
+#: mphexeditor.err_invalid_bpu_u
+msgid "BytesPerUnit must be set to 2 in unicode mode"
+msgstr ""
+
+#: mphexeditor.err_invalid_bufferfromfile
+msgid "Invalid buffer from file argument"
+msgstr ""
+
+#: mphexeditor.err_invalid_bytespercol
+msgid "Invalid bytes per column argument"
+msgstr ""
+
+#: mphexeditor.err_invalid_bytesperline
+msgid "Invalid bytes per line argument"
+msgstr ""
+
+#: mphexeditor.err_invalid_formatradix
+#, object-pascal-format
+msgid "Invalid radix in offset format (%xh), allowed: 02h..10h"
+msgstr ""
+
+#: mphexeditor.err_invalid_radixchar
+#, object-pascal-format
+msgid "Invalid character %s, cannot convert using radix %xh"
+msgstr ""
+
+#: mphexeditor.err_invalid_rbpu
+#, object-pascal-format
+msgid "Invalid ruler bytes per unit value %d, allowed: -1,1,2,4,8"
+msgstr ""
+
+#: mphexeditor.err_invalid_selend
+msgid "Invalid selection end"
+msgstr ""
+
+#: mphexeditor.err_invalid_selstart
+msgid "Invalid selection start"
+msgstr ""
+
+#: mphexeditor.err_missing_formatchar
+#, object-pascal-format
+msgid "Missing char in offset format: %s"
+msgstr ""
+
+#: mphexeditor.err_noundo
+msgid "Cannot update undo storage"
+msgstr ""
+
+#: mphexeditor.err_no_translation_in_unicode_mode
+msgid "Translations cannot be used in unicode mode"
+msgstr ""
+
+#: mphexeditor.err_odd_filesize_unicode
+msgid "Cannot use unicode mode with odd-sized files"
+msgstr ""
+
+#: mphexeditor.mph_tk_ascii7
+msgid "ASCII 7 bits"
+msgstr ""
+
+#: mphexeditor.mph_tk_ascii7_s
+msgid "ASC"
+msgstr ""
+
+#: mphexeditor.mph_tk_asis
+msgid "Windows"
+msgstr ""
+
+#: mphexeditor.mph_tk_asis_s
+msgid "WIN"
+msgstr ""
+
+#: mphexeditor.mph_tk_bcd38
+msgid "EBCDIC codepage 38"
+msgstr ""
+
+#: mphexeditor.mph_tk_bcd38_s
+msgid "BCD"
+msgstr ""
+
+#: mphexeditor.mph_tk_custom
+msgid "Custom translation"
+msgstr ""
+
+#: mphexeditor.mph_tk_custom_s
+msgid "Cust"
+msgstr ""
+
+#: mphexeditor.mph_tk_dos8
+msgid "Dos 8 bits"
+msgstr ""
+
+#: mphexeditor.mph_tk_dos8_s
+msgid "DOS"
+msgstr ""
+
+#: mphexeditor.mph_tk_mac
+msgid "Macintosh"
+msgstr ""
+
+#: mphexeditor.mph_tk_mac_s
+msgid "MAC"
+msgstr ""
+
+#: mphexeditor.mph_uc
+msgid "Unicode little endian"
+msgstr ""
+
+#: mphexeditor.mph_uc_be
+msgid "Unicode big endian"
+msgstr ""
+
+#: mphexeditor.mph_uc_be_s
+msgid "UCBE"
+msgstr ""
+
+#: mphexeditor.mph_uc_s
+msgid "UCLE"
+msgstr ""
+
+#: mphexeditor.undo_alldata
+msgid "All data saved"
+msgstr ""
+
+#: mphexeditor.undo_append
+msgid "Append buffer"
+msgstr ""
+
+#: mphexeditor.undo_byteschanged
+msgid "Change byte(s)"
+msgstr ""
+
+#: mphexeditor.undo_combined
+msgid "Multiple modification"
+msgstr ""
+
+#: mphexeditor.undo_convert
+msgid "Convert"
+msgstr ""
+
+#: mphexeditor.undo_delnibble
+msgid "Delete nibble"
+msgstr ""
+
+#: mphexeditor.undo_insert
+msgid "Insert buffer"
+msgstr ""
+
+#: mphexeditor.undo_insnibble
+msgid "Insert nibble"
+msgstr ""
+
+#: mphexeditor.undo_noundo
+msgid "No undo"
+msgstr ""
+
+#: mphexeditor.undo_removed
+msgid "Remove data"
+msgstr ""
+
+#: mphexeditor.undo_replace
+msgid "Replace"
+msgstr ""
+
+#: mphexeditor.undo_selection
+msgid "Cursor movement"
+msgstr ""
+
+#: mphexeditor.unnamed_file
+msgid "Untitled"
+msgstr ""
+
 #: taboutdialog.caption
 msgid "About CP/M Image-File Explorer"
 msgstr ""
@@ -13,16 +222,27 @@ msgstr ""
 msgid "https://github.com/ProgrammingHobby/Cife"
 msgstr ""
 
+#: taboutdialog.labelcpmtoolshyperlink.caption
+msgctxt "taboutdialog.labelcpmtoolshyperlink.caption"
+msgid "http://www.moria.de/~michael/cpmtools"
+msgstr ""
+
 #: taboutdialog.labeldeveloper.caption
 msgid "Uwe Merker    2023"
 msgstr ""
 
-#: taboutdialog.labelhyperlink.caption
-msgid "http://www.moria.de/~michael/cpmtools"
-msgstr ""
-
 #: taboutdialog.labeliconhyperlink.caption
 msgid "https://icons8.com"
+msgstr ""
+
+#: taboutdialog.labelmphexeditorcopyright.caption
+msgid ""
+"The HexEditor function is provided by the MPHexEditor component\n"
+"from Markus Stephany."
+msgstr ""
+
+#: taboutdialog.labelmphexeditorhyperlink.caption
+msgid "https://github.com/michalgw/mphexeditor"
 msgstr ""
 
 #: taboutdialog.labeltitle.caption
@@ -166,6 +386,26 @@ msgstr ""
 #: tfiledialog.label4.caption
 msgctxt "tfiledialog.label4.caption"
 msgid "File-System Label :"
+msgstr ""
+
+#: tfilehexeditdialog.buttonpanel.okbutton.caption
+msgid "&Save"
+msgstr ""
+
+#: tfilehexeditdialog.caption
+msgid "FileHexEditDialog"
+msgstr ""
+
+#: tfilehexeditdialog.checkboxreadonly.caption
+msgid "Read only"
+msgstr ""
+
+#: tfilehexeditdialog.checkboxshowruler.caption
+msgid "Show Ruler"
+msgstr ""
+
+#: tfilehexeditdialog.labelposition.caption
+msgid "Position :"
 msgstr ""
 
 #: tmainwindow.actionabout.caption
