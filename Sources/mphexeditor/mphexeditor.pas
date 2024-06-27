@@ -6590,7 +6590,7 @@ var
             SwapWideChar(LWChrOutput);
         end
         else
-          LWChrOutput := char(Data[LIntDataPos]);
+          LWChrOutput := WideChar(Data[LIntDataPos]);
         if (LWChrOutput < #256) and (Char(LWChrOutput) in FMaskedChars) then
           LWChrOutput := FReplaceUnprintableCharsBy;
       end;
