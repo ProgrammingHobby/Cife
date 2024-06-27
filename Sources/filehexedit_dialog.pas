@@ -97,24 +97,28 @@ end;
 procedure TFileHexEditDialog.checkboxReadOnlyChange(Sender: TObject);
 begin
     FHexEditor.ReadOnlyView := checkboxReadOnly.Checked;
+    FHexEditor.SetFocus;
 end;
 
 // --------------------------------------------------------------------------------
 procedure TFileHexEditDialog.buttonRedoClick(Sender: TObject);
 begin
     FHexEditor.Redo;
+    FHexEditor.SetFocus;
 end;
 
 // --------------------------------------------------------------------------------
 procedure TFileHexEditDialog.buttonUndoClick(Sender: TObject);
 begin
     FHexEditor.Undo;
+    FHexEditor.SetFocus;
 end;
 
 // --------------------------------------------------------------------------------
 procedure TFileHexEditDialog.checkboxShowRulerChange(Sender: TObject);
 begin
     FHexEditor.ShowRuler := checkboxShowRuler.Checked;
+    FHexEditor.SetFocus;
 end;
 
 // --------------------------------------------------------------------------------
@@ -137,15 +141,16 @@ var
     HexEditorWidth, HexEditorHeight: integer;
 begin
     HexEditorWidth := FHexEditor.DisplayWidth + GetSystemMetrics(SM_CXVSCROLL) + (2 * FHexEditor.BorderSpacing.Around) +
-        (GetSystemMetrics(SM_CXFRAME) div 2);
+        (GetSystemMetrics(SM_CXFRAME) div 2) + 1;
     Self.Width := HexEditorWidth;
     Self.Constraints.MinWidth := HexEditorWidth;
     Self.Constraints.MaxWidth := HexEditorWidth;
     HexEditorHeight := (16 * FHexEditor.RowHeight) + panelToolButtons.Height + buttonPanel.Height +
         (2 * FHexEditor.BorderSpacing.Around) + (GetSystemMetrics(SM_CYHSCROLL) div 4) +
-        (GetSystemMetrics(SM_CYFIXEDFRAME) * ((GetSystemMetrics(SM_CYHSCROLL) + GetSystemMetrics(SM_CYFIXEDFRAME)) div 7) + 1);
+        (GetSystemMetrics(SM_CYFIXEDFRAME) * ((GetSystemMetrics(SM_CYHSCROLL) + GetSystemMetrics(SM_CYFIXEDFRAME)) div 7) + 2);
     Self.Height := HexEditorHeight;
     Self.Constraints.MinHeight := HexEditorHeight;
+    FHexEditor.SetFocus;
 end;
 
 // --------------------------------------------------------------------------------
