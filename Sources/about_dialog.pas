@@ -34,15 +34,18 @@ type
         ButtonPanel1: TButtonPanel;
         Image1: TImage;
         Label1: TLabel;
+        labelMPHexEditorCopyright: TLabel;
+        labelMpHexEditorHyperlink: TLabel;
         labelCifeHyperlink: TLabel;
         labelIconHyperlink: TLabel;
         labelDeveloper: TLabel;
-        labelHyperlink: TLabel;
+        labelCpmToolsHyperlink: TLabel;
         labelToolsCopyright: TLabel;
         labelSystem: TLabel;
         labelVersion: TLabel;
         labelTitle: TLabel;
         Panel1: TPanel;
+        Panel10: TPanel;
         Panel2: TPanel;
         Panel3: TPanel;
         Panel4: TPanel;
@@ -50,11 +53,12 @@ type
         Panel6: TPanel;
         Panel7: TPanel;
         Panel8: TPanel;
+        Panel9: TPanel;
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
         procedure FormShow(Sender: TObject);
-        procedure labelHyperlinkClick(Sender: TObject);
-        procedure labelHyperlinkMouseEnter(Sender: TObject);
-        procedure labelHyperlinkMouseLeave(Sender: TObject);
+        procedure labelCpmToolsHyperlinkClick(Sender: TObject);
+        procedure labelCpmToolsHyperlinkMouseEnter(Sender: TObject);
+        procedure labelCpmToolsHyperlinkMouseLeave(Sender: TObject);
     private
 
     public
@@ -91,19 +95,19 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-procedure TAboutDialog.labelHyperlinkClick(Sender: TObject);
+procedure TAboutDialog.labelCpmToolsHyperlinkClick(Sender: TObject);
 begin
     OpenURL((Sender as TLabel).Caption);
 end;
 
 // --------------------------------------------------------------------------------
-procedure TAboutDialog.labelHyperlinkMouseEnter(Sender: TObject);
+procedure TAboutDialog.labelCpmToolsHyperlinkMouseEnter(Sender: TObject);
 begin
     (Sender as TLabel).Cursor := crHandPoint;
 end;
 
 // --------------------------------------------------------------------------------
-procedure TAboutDialog.labelHyperlinkMouseLeave(Sender: TObject);
+procedure TAboutDialog.labelCpmToolsHyperlinkMouseLeave(Sender: TObject);
 begin
     (Sender as TLabel).Cursor := crDefault;
 end;
