@@ -17,7 +17,8 @@
  *}
 unit QuickSort;
 
-{$mode ObjFPC}{$H+}
+{$mode ObjFPC}
+{$H+}
 
 interface
 
@@ -35,7 +36,7 @@ var
     x, temp: ansistring;
     u: array[0..255] of byte;  {look up table for speed}
 
-    // --------------------------------------------------------------------------------
+// --------------------------------------------------------------------------------
     function lessthan(const a: ansistring; const b: ansistring): integer;
     var
         n, lim, lena, lenb: longint;
@@ -82,10 +83,10 @@ var
     begin
         for x := 0 to 255 do begin
             r := x;
-   {$ifdef caseinsensitive}
+            {$ifdef caseinsensitive}
             if (r < 91) and (r > 64) then
                 r := r + 32;
-   {$endif}
+            {$endif}
             u[x] := r;
         end;
     end;

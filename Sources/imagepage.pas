@@ -97,9 +97,12 @@ implementation
 
 uses StdCtrls, RenameFile_Dialog, StrUtils, Graphics, XMLSettings, Dialogs, Characteristics_Dialog,
     File_Dialog, CheckImage_Dialog, Math, FileUtil, ClipBrd, FileHexEdit_Dialog
+
     {$ifdef UNIX}
     , BaseUnix, URIParser, DateUtils
-    {$else}
+    {$endif}
+
+    {$ifdef WINDOWS}
     , Windows, ShlObj
     {$endif}
     ;
@@ -373,12 +376,16 @@ var
     CpmName: string[15];
     Buffer: array of byte;
     Times: TUTimeBuf;
+
     {$ifdef UNIX}
     StatBuf: stat;
-    {$else}
+    {$endif}
+
+    {$ifdef WINDOWS}
     FileAttr: TWIN32FILEATTRIBUTEDATA;
     SystemTime, LocalTime: TSystemTime;
     {$endif}
+
 begin
 
     with TXMLSettings.Create(SettingsFile) do begin
@@ -436,11 +443,14 @@ begin
             end;
 
             if (PreserveTimeStamps) then begin
+
                 {$ifdef UNIX}
                 FpStat(FileToPaste, StatBuf);
                 Times.AcTime := FileDateToDateTime(StatBuf.st_atime);
                 Times.ModTime := FileDateToDateTime(StatBuf.st_mtime);
-                {$else}
+                {$endif}
+
+                {$ifdef WINDOWS}
                 GetFileAttributesEx(PChar(FileToPaste), GetFileExInfoStandard, @FileAttr);
                 FileTimeToSystemTime(FileAttr.ftLastAccessTime, SystemTime);
                 SystemTimeToTzSpecificLocalTime(nil, SystemTime, LocalTime);
@@ -449,6 +459,7 @@ begin
                 SystemTimeToTzSpecificLocalTime(nil, SystemTime, LocalTime);
                 Times.ModTime := SystemTimeToDateTime(LocalTime);
                 {$endif}
+
             end;
 
             FCpmTools.WriteFileToImage(CpmName, @Buffer[0], UnixFileSize, IsTextFile, PreserveTimeStamps, Times);
@@ -737,11 +748,15 @@ begin
         SortType := stNone;
         AutoWidthLastColumn := False;
         RowSelect := True;
-        {$ifdef Windows}
-        Font.Name := 'Consolas';
-        {$else}
+
+        {$ifdef UNIX}
         Font.Name := 'Liberation Mono';
         {$endif}
+
+        {$ifdef Windows}
+        Font.Name := 'Consolas';
+        {$endif}
+
         BeginUpdate;
         DirColumn := Columns.Add;
         DirColumn.Caption := 'User : Name';
@@ -885,6 +900,7 @@ var
     WinSystemTime: TSYSTEMTIME;
     FileHandle: THandle;
     {$endif}
+
 begin
     WriteError := False;
     FCpmTools.ReadFileFromImage(ACpmFileName, FileData, FileLength, AIsTextFile, FileTime);

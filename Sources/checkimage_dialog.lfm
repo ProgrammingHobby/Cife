@@ -9,6 +9,7 @@ object CheckImageDialog: TCheckImageDialog
   OnClose = FormClose
   OnShow = FormShow
   Position = poOwnerFormCenter
+  LCLVersion = '3.4.0.0'
   object Panel1: TPanel
     Left = 0
     Height = 106

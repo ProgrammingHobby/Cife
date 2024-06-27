@@ -10,7 +10,7 @@ object MainWindow: TMainWindow
   OnClose = FormClose
   OnDropFiles = FormDropFiles
   OnShow = FormShow
-  LCLVersion = '3.2.0.0'
+  LCLVersion = '3.4.0.0'
   object StatusBar1: TStatusBar
     Left = 4
     Height = 21

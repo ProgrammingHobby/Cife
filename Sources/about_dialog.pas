@@ -17,7 +17,8 @@
  *}
 unit About_Dialog;
 
-{$mode ObjFPC}{$H+}
+{$mode ObjFPC}
+{$H+}
 
 interface
 
@@ -69,7 +70,7 @@ implementation
 
 uses VersionInfo, LCLIntf;
 
-{ TAboutDialog }
+    { TAboutDialog }
 
 // --------------------------------------------------------------------------------
 procedure TAboutDialog.FormClose(Sender: TObject; var CloseAction: TCloseAction);

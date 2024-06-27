@@ -90,10 +90,12 @@ begin
 
     end;
 
+    {$ifdef UNIX}
+    memoCheckMessages.Font.Name := 'Liberation Mono';
+    {$endif}
+
     {$ifdef Windows}
     memoCheckMessages.Font.Name := 'Consolas';
-    {$else}
-    memoCheckMessages.Font.Name := 'Liberation Mono';
     {$endif}
 
     Canvas.Font := memoCheckMessages.Font;
@@ -101,13 +103,16 @@ begin
     CharHeight := Canvas.Font.GetTextHeight('#');
     ScrollWidth := GetSystemMetrics(SM_CXVSCROLL);
 
-    {$ifdef Windows}
-    memoCheckMessages.Constraints.MinWidth := (81 * (CharWidth)) + ScrollWidth;
-    memoCheckMessages.Constraints.MinHeight := (24 * CharHeight) + 7;
-    {$else}
+    {$ifdef UNIX}
     memoCheckMessages.Constraints.MinWidth := (80 * (CharWidth)) + ScrollWidth;
     memoCheckMessages.Constraints.MinHeight := (24 * CharHeight) - 4;
     {$endif}
+
+    {$ifdef Windows}
+    memoCheckMessages.Constraints.MinWidth := (81 * (CharWidth)) + ScrollWidth;
+    memoCheckMessages.Constraints.MinHeight := (24 * CharHeight) + 7;
+    {$endif}
+
     memoCheckMessages.Clear;
 
     SetAutoSize(True);

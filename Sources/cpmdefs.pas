@@ -24,8 +24,8 @@ interface
 
 type
     off_t = longint;
-    size_t = UInt64;
-    ssize_t = Int64;
+    size_t = uint64;
+    ssize_t = int64;
     ino_t = cardinal;
     mode_t = nativeuint;
     cpm_attr_t = integer;

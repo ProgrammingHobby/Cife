@@ -15,6 +15,7 @@ object AboutDialog: TAboutDialog
   OnClose = FormClose
   OnShow = FormShow
   Position = poMainFormCenter
+  LCLVersion = '3.4.0.0'
   object Panel1: TPanel
     Left = 24
     Height = 95
@@ -28,8 +29,8 @@ object AboutDialog: TAboutDialog
     ChildSizing.EnlargeVertical = crsHomogenousSpaceResize
     ChildSizing.Layout = cclLeftToRightThenTopToBottom
     ChildSizing.ControlsPerLine = 1
-    ClientHeight = 91
-    ClientWidth = 432
+    ClientHeight = 95
+    ClientWidth = 436
     TabOrder = 0
     object Image1: TImage
       Left = 166
@@ -994,7 +995,7 @@ object AboutDialog: TAboutDialog
     BorderSpacing.Bottom = 8
     BevelOuter = bvNone
     ClientHeight = 1
-    ClientWidth = 432
+    ClientWidth = 436
     TabOrder = 2
     object labelVersion: TLabel
       Left = 0
@@ -1016,7 +1017,7 @@ object AboutDialog: TAboutDialog
     BorderSpacing.Bottom = 8
     BevelOuter = bvNone
     ClientHeight = 1
-    ClientWidth = 432
+    ClientWidth = 436
     TabOrder = 3
     object labelSystem: TLabel
       Left = 0

@@ -17,7 +17,8 @@
  *}
 unit XMLSettings;
 
-{$mode ObjFPC}{$H+}
+{$mode ObjFPC}
+{$H+}
 
 interface
 
@@ -58,7 +59,6 @@ type
         procedure DeletePath(const APath: DOMString);
         procedure DeleteValue(const APath: DOMString);
         procedure DeleteAttribute(const APath: DOMString);
-
     public  // Konstruktor/Destruktor
         constructor Create(const AFilename: string);
         destructor Destroy; override;
@@ -564,9 +564,9 @@ begin
             break;
         end;
         Child := Result.FirstChild;
-        while Assigned(Child) and not ((Child.NodeType = ELEMENT_NODE) and (0 =
-                CompareDOMStrings(DOMPChar(TDOMElement(Child).TagName), @APath[StartPos], Length(TDOMElement(Child).TagName),
-                EndPos - StartPos))) do begin
+        while Assigned(Child) and not ((Child.NodeType = ELEMENT_NODE) and
+                (0 = CompareDOMStrings(DOMPChar(TDOMElement(Child).TagName), @APath[StartPos],
+                Length(TDOMElement(Child).TagName), EndPos - StartPos))) do begin
             Child := Child.NextSibling;
         end;
         if (Child = nil) and (nfWriteAccess in AFlags) then begin

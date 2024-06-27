@@ -178,6 +178,7 @@ type
         procedure MenuActionsControl(AMenuAction: TEnableAction);
         function IsTabExisting(AImageFile, AImageType: string): boolean;
         procedure CheckValidClipboardData;
+
         {$ifdef UNIX}
         function IsRegular(const AStrPath: string): boolean;
         {$endif}
@@ -193,10 +194,13 @@ implementation
 {$R *.lfm}
 
 uses File_Dialog, Settings_Dialog, About_Dialog, XMLSettings, Clipbrd, Types
+
+    {$ifdef UNIX}
+    , URIParser, BaseUnix
+    {$endif}
+
     {$ifdef WINDOWS}
     , Windows
-    {$else}
-    , URIParser, BaseUnix
     {$endif}
     ;
 
@@ -390,17 +394,38 @@ end;
 procedure TMainWindow.actionPasteExecute(Sender: TObject);
 var
     Page: TImagePage;
+
+    {$ifdef UNIX}
+    ClipboardFileList: TStringArray;
+    FileBuffer: string;
+    {$endif}
+
     {$ifdef WINDOWS}
     ClipboardFileList: HDROP;
     FileBuffer: PChar;
     BufferSize: integer;
-    {$else}
-    ClipboardFileList: TStringArray;
-    FileBuffer: string;
     {$endif}
+
     IndexI: integer;
     FilesToPaste: TStringArray;
 begin
+
+    {$ifdef UNIX}
+    if Clipboard.HasFormat(CF_Text) then begin
+        ClipboardFileList := Clipboard.AsText.Trim.Split(Chr($0A));
+
+        for IndexI := 0 to (Length(ClipboardFileList) - 1) do begin
+            FileBuffer := ParseURI(ClipboardFileList[IndexI]).Path + ParseURI(ClipboardFileList[IndexI]).Document;
+
+            if (IsRegular(FileBuffer)) then begin
+                SetLength(FilesToPaste, IndexI + 1);
+                FilesToPaste[IndexI] := FileBuffer;
+            end;
+
+        end;
+
+    end;
+    {$endif}
 
     {$ifdef WINDOWS}
     if (Clipboard.HasFormat(CF_HDROP) and OpenClipboard(0)) then begin
@@ -435,21 +460,6 @@ begin
 
         finally
             CloseClipboard;
-        end;
-
-    end;
-    {$else}
-    if Clipboard.HasFormat(CF_Text) then begin
-        ClipboardFileList := Clipboard.AsText.Trim.Split(Chr($0A));
-
-        for IndexI := 0 to (Length(ClipboardFileList) - 1) do begin
-            FileBuffer := ParseURI(ClipboardFileList[IndexI]).Path + ParseURI(ClipboardFileList[IndexI]).Document;
-
-            if (IsRegular(FileBuffer)) then begin
-                SetLength(FilesToPaste, IndexI + 1);
-                FilesToPaste[IndexI] := FileBuffer;
-            end;
-
         end;
 
     end;
@@ -595,17 +605,7 @@ begin
 
         if Page.ClientRect.Contains(MousePoint) then begin
 
-            {$ifdef WINDOWS}
-            for IndexI := Low(FileNames) to High(FileNames) do begin
-                FileBuffer := FileNames[IndexI];
-
-                if not DirectoryExists(FileBuffer) then begin
-                    SetLength(FilesToPaste, IndexI + 1);
-                    FilesToPaste[IndexI] := FileBuffer;
-                end;
-
-            end;
-            {$else}
+            {$ifdef UNIX}
             for IndexI := Low(FileNames) to High(FileNames) do begin
                 FileBuffer := FileNames[IndexI];
 
@@ -616,6 +616,19 @@ begin
 
             end;
             {$endif}
+
+            {$ifdef WINDOWS}
+            for IndexI := Low(FileNames) to High(FileNames) do begin
+                FileBuffer := FileNames[IndexI];
+
+                if not DirectoryExists(FileBuffer) then begin
+                    SetLength(FilesToPaste, IndexI + 1);
+                    FilesToPaste[IndexI] := FileBuffer;
+                end;
+
+            end;
+            {$endif}
+
             Page.PasteFiles(FilesToPaste);
         end;
 
@@ -879,19 +892,39 @@ end;
 // --------------------------------------------------------------------------------
 procedure TMainWindow.CheckValidClipboardData;
 var
+    {$ifdef UNIX}
+    ClipboardFileList: TStringArray;
+    FileBuffer: string;
+    {$endif}
+
     {$ifdef WINDOWS}
     ClipboardFileList: HDROP;
     FileBuffer: PChar;
     BufferSize: integer;
-    {$else}
-    ClipboardFileList: TStringArray;
-    FileBuffer: string;
     {$endif}
+
     IndexI: integer;
 begin
     actionPaste.Enabled := False;
 
     if (PageControl.PageCount >= 1) then begin
+
+        {$ifdef UNIX}
+        if Clipboard.HasFormat(CF_Text) then begin
+            ClipboardFileList := Clipboard.AsText.Trim.Split(Chr($0A));
+
+            for IndexI := 0 to (Length(ClipboardFileList) - 1) do begin
+                FileBuffer := ParseURI(ClipboardFileList[IndexI]).Path + ParseURI(ClipboardFileList[IndexI]).Document;
+
+                if (IsRegular(FileBuffer)) then begin
+                    actionPaste.Enabled := True;
+                    break;
+                end;
+
+            end;
+
+        end;
+        {$endif}
 
         {$ifdef WINDOWS}
         if (Clipboard.HasFormat(CF_HDROP) and OpenClipboard(0)) then begin
@@ -926,21 +959,6 @@ begin
 
             finally
                 CloseClipboard;
-            end;
-
-        end;
-        {$else}
-        if Clipboard.HasFormat(CF_Text) then begin
-            ClipboardFileList := Clipboard.AsText.Trim.Split(Chr($0A));
-
-            for IndexI := 0 to (Length(ClipboardFileList) - 1) do begin
-                FileBuffer := ParseURI(ClipboardFileList[IndexI]).Path + ParseURI(ClipboardFileList[IndexI]).Document;
-
-                if (IsRegular(FileBuffer)) then begin
-                    actionPaste.Enabled := True;
-                    break;
-                end;
-
             end;
 
         end;

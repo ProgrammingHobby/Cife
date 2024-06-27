@@ -11,6 +11,7 @@ object CharacteristicsDialog: TCharacteristicsDialog
   OnClose = FormClose
   OnShow = FormShow
   Position = poOwnerFormCenter
+  LCLVersion = '3.4.0.0'
   object ButtonPanel1: TButtonPanel
     Left = 4
     Height = 26
@@ -41,8 +42,8 @@ object CharacteristicsDialog: TCharacteristicsDialog
     TabOrder = 1
     object sheetGeneral: TTabSheet
       Caption = 'General'
-      ClientHeight = 203
-      ClientWidth = 190
+      ClientHeight = 197
+      ClientWidth = 188
       object panelFileData: TPanel
         Left = 0
         Height = 125
@@ -210,8 +211,8 @@ object CharacteristicsDialog: TCharacteristicsDialog
     end
     object sheetPermissions: TTabSheet
       Caption = 'Permissions'
-      ClientHeight = 203
-      ClientWidth = 190
+      ClientHeight = 197
+      ClientWidth = 188
       object checkgroupAttributes: TCheckGroup
         Left = 2
         Height = 108
@@ -233,7 +234,7 @@ object CharacteristicsDialog: TCharacteristicsDialog
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 2
         ClientHeight = 88
-        ClientWidth = 182
+        ClientWidth = 184
         Columns = 2
         Items.Strings = (
           'F1'
@@ -271,7 +272,7 @@ object CharacteristicsDialog: TCharacteristicsDialog
         ChildSizing.Layout = cclLeftToRightThenTopToBottom
         ChildSizing.ControlsPerLine = 1
         ClientHeight = 69
-        ClientWidth = 182
+        ClientWidth = 184
         Items.Strings = (
           'read Protect'
           'write Protect'

@@ -17,7 +17,8 @@
  *}
 unit Characteristics_Dialog;
 
-{$mode ObjFPC}{$H+}
+{$mode ObjFPC}
+{$H+}
 
 interface
 
@@ -57,7 +58,6 @@ type
         FOldAttributes: integer;
         procedure SetAttributes(AAttributes: integer);
         function GetAttributes: integer;
-
     public
         function GetNewAttributes: integer;
         procedure SetFileInfo(AFileInfo: TFileInfo);
@@ -73,7 +73,7 @@ implementation
 
 uses XMLSettings, CpmDefs;
 
-{ TCharacteristicsDialog }
+    { TCharacteristicsDialog }
 
 // --------------------------------------------------------------------------------
 function TCharacteristicsDialog.GetNewAttributes: integer;

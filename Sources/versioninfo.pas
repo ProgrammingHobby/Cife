@@ -49,7 +49,7 @@ implementation
 uses
     resource, versiontypes, versionresource, LCLVersion, InterfaceBase, lclplatformdef;
 
-// --------------------------------------------------------------------------------
+    // --------------------------------------------------------------------------------
 type
     TVersionInfo = class
     private
