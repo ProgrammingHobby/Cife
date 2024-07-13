@@ -3334,7 +3334,7 @@ begin
 
     // Get datestamp struct
     Stamp := @FDateStamps[AExtent];
-    Unix2DsTime(AInode.ATime, Stamp^.Modify);
+    Unix2DsTime(AInode.MTime, Stamp^.Modify);
     Unix2DsTime(AInode.CTime, Stamp^.Create);
     Unix2DsTime(AInode.ATime, Stamp^.Access);
     FDrive.DirtyDateStamp := True;
@@ -3805,6 +3805,9 @@ end;
 //  -- convert Unix to DS time
 // --------------------------------------------------------------------------------
 procedure TCpmFileSystem.Unix2DsTime(ANow: TDateTime; var AEntry: TDsEntry);
+var
+    Hour, Min, Sec, MilliSec: word;
+    Year, Month, Day: word;
 begin
 
     if (ANow = 0) then begin
@@ -3815,11 +3818,20 @@ begin
         AEntry.Year := 0;
     end
     else begin
-        AEntry.Minute := BIN2BCD(MinuteOf(ANow));
-        AEntry.Hour := BIN2BCD(HourOf(ANow));
-        AEntry.Day := BIN2BCD(DayOf(ANow));
-        AEntry.Month := BIN2BCD(MonthOf(ANow) + 1);
-        AEntry.Year := BIN2BCD(YearOf(ANow));
+        DecodeDate(ANow, Year, Month, Day);
+        DecodeTime(ANow, Hour, Min, Sec, MilliSec);
+
+        AEntry.Minute := BIN2BCD(Min);
+        AEntry.Hour := BIN2BCD(Hour);
+        AEntry.Day := BIN2BCD(Day);
+        AEntry.Month := BIN2BCD(Month);
+        Dec(Year, 1900);
+
+        if (Year > 100) then begin
+            Dec(Year, 100);
+        end;
+
+        AEntry.Year := BIN2BCD(Year);
     end;
 end;
 
