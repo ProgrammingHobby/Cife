@@ -168,6 +168,7 @@ type
             PasswdLength: size_t;
             DirtyDirectory: boolean;
             DirtyDateStamp: boolean;
+            LibdskGeometry: TLibdskGeometry;
         end;
 
         TIntArray = array of integer;
@@ -2782,6 +2783,7 @@ begin
         FDrive.Extents := ((FDrive.BlkSiz * 16) div 16384);
     end;
     FDrive.Extentsize := 16384;
+    FDrive.LibdskGeometry[0] := #0;  // LibDsk can recognise an Amstrad superblock and autodetect
     Result := True;
 end;
 
@@ -2815,10 +2817,13 @@ begin
     FDrive.Tracks := -1;
     FDrive.MaxDir := -1;
     FDrive.DirBlks := 0;
+    FDrive.LibdskGeometry[0] := #0;
     Result := True;
+
     try
         DiskDefs := TStringList.Create;
         DiskDefs.LoadFromFile(ADiskdefsPath);
+
         for LineNumber := 1 to Diskdefs.Count do begin
             DefinitionLine := Diskdefs[LineNumber - 1].Trim.Split(' ');
 
@@ -3050,7 +3055,17 @@ begin
                             end;
                         end;
 
+                    end
+                    else if (DefinitionLine[0] = 'libdsk:format') then begin
+                        FDrive.SideOrder := soAlt;
+
+                        for Pass := 0 to DefinitionLine[1].Length - 1 do begin
+                            FDrive.LibdskGeometry[Pass] := DefinitionLine[1][Pass + 1];
+                        end;
+
+                        FDrive.LibdskGeometry[DefinitionLine[1].Length] := #0;
                     end;
+
                 end
                 else if ((Length(DefinitionLine) > 0) and not (DefinitionLine[0][1] = '#') and not (DefinitionLine[0][1] = ';'))
                 then begin
@@ -3063,7 +3078,9 @@ begin
             begin
                 FoundDefinition := True;
             end;
+
         end;
+
     finally
         FreeAndNil(DiskDefs);
     end;
