@@ -23,7 +23,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
       <RevisionNr Value="1"/>
-      <BuildNr Value="1698"/>
+      <BuildNr Value="1704"/>
       <StringTable FileDescription="CP/M Image-File Explorer" InternalName="CIFE" OriginalFilename="CIFE"/>
     </VersionInfo>
     <BuildModes>
@@ -729,6 +729,16 @@
         <Filename Value="Sources/mphexeditor/mphexeditor.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="MPHexEditor"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Sources/cpmdevice_libdsk.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="CpmDevice_Libdsk"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Sources/cpmdevice_posix.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="CpmDevice_Posix"/>
       </Unit>
     </Units>
   </ProjectOptions>

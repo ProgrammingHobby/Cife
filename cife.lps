@@ -83,10 +83,10 @@
         <Filename Value="Sources/imagepage.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="ImagePage"/>
-        <TopLine Value="101"/>
-        <CursorPos X="12" Y="101"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="874"/>
+        <CursorPos X="5" Y="903"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/imagefilehistory.pas"/>
@@ -118,29 +118,28 @@
         <Filename Value="Sources/cifeglobals.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="CifeGlobals"/>
-        <EditorIndex Value="3"/>
-        <TopLine Value="52"/>
-        <CursorPos Y="85"/>
+        <EditorIndex Value="-1"/>
+        <TopLine Value="50"/>
+        <CursorPos X="9" Y="68"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/cpmdevice.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="CpmDevice"/>
-        <EditorIndex Value="-1"/>
-        <TopLine Value="101"/>
-        <CursorPos X="58" Y="123"/>
+        <EditorIndex Value="1"/>
+        <TopLine Value="31"/>
+        <CursorPos X="93" Y="64"/>
         <UsageCount Value="200"/>
+        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/cpmfilesystem.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="CpmFileSystem"/>
         <IsVisibleTab Value="True"/>
-        <EditorIndex Value="2"/>
-        <TopLine Value="1760"/>
-        <CursorPos X="26" Y="1768"/>
+        <TopLine Value="227"/>
+        <CursorPos Y="244"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit>
@@ -148,9 +147,9 @@
         <Filename Value="Sources/cpmtools.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="CpmTools"/>
-        <EditorIndex Value="1"/>
-        <TopLine Value="652"/>
-        <CursorPos Y="700"/>
+        <EditorIndex Value="2"/>
+        <TopLine Value="82"/>
+        <CursorPos Y="110"/>
         <UsageCount Value="200"/>
         <Loaded Value="True"/>
       </Unit>
@@ -158,11 +157,10 @@
         <Filename Value="Sources/cpmdefs.pas"/>
         <IsPartOfProject Value="True"/>
         <UnitName Value="CpmDefs"/>
-        <EditorIndex Value="4"/>
+        <EditorIndex Value="-1"/>
         <TopLine Value="70"/>
         <CursorPos X="33" Y="101"/>
         <UsageCount Value="200"/>
-        <Loaded Value="True"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/quicksort.pas"/>
@@ -171,7 +169,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="68"/>
         <CursorPos X="37" Y="86"/>
-        <UsageCount Value="186"/>
+        <UsageCount Value="191"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/checkimage_dialog.pas"/>
@@ -183,7 +181,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="74"/>
         <CursorPos X="12" Y="93"/>
-        <UsageCount Value="79"/>
+        <UsageCount Value="84"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/filehexedit_dialog.pas"/>
@@ -195,7 +193,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="103"/>
         <CursorPos X="55" Y="153"/>
-        <UsageCount Value="37"/>
+        <UsageCount Value="42"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/mphexeditor/mphexeditor.pas"/>
@@ -204,7 +202,7 @@
         <EditorIndex Value="-1"/>
         <TopLine Value="8947"/>
         <CursorPos X="8" Y="9001"/>
-        <UsageCount Value="36"/>
+        <UsageCount Value="41"/>
       </Unit>
       <Unit>
         <Filename Value="Sources/unixcopyclipboard.pas"/>
@@ -353,127 +351,147 @@
         <CursorPos Y="386"/>
         <UsageCount Value="10"/>
       </Unit>
+      <Unit>
+        <Filename Value="Sources/cpmdevice_libdsk.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="CpmDevice_Libdsk"/>
+        <EditorIndex Value="3"/>
+        <TopLine Value="68"/>
+        <CursorPos Y="97"/>
+        <UsageCount Value="23"/>
+        <Loaded Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Sources/cpmdevice_posix.pas"/>
+        <IsPartOfProject Value="True"/>
+        <UnitName Value="CpmDevice_Posix"/>
+        <EditorIndex Value="4"/>
+        <TopLine Value="26"/>
+        <CursorPos X="90" Y="36"/>
+        <UsageCount Value="23"/>
+        <Loaded Value="True"/>
+      </Unit>
     </Units>
     <JumpHistory HistoryIndex="29">
       <Position>
         <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="3339" TopLine="3306"/>
+        <Caret Line="242" TopLine="227"/>
       </Position>
       <Position>
         <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="3340" TopLine="3306"/>
+        <Caret Line="243" TopLine="227"/>
       </Position>
       <Position>
         <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="3341" TopLine="3306"/>
+        <Caret Line="244" TopLine="227"/>
       </Position>
       <Position>
         <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="1696" TopLine="1667"/>
+        <Caret Line="256" TopLine="227"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/cpmdevice_posix.pas"/>
+        <Caret Line="42" Column="50" TopLine="155"/>
       </Position>
       <Position>
         <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="1697" TopLine="1667"/>
+        <Caret Line="240" TopLine="227"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/cpmdevice_posix.pas"/>
+        <Caret Line="182" Column="5" TopLine="65"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/cpmdevice_posix.pas"/>
+        <Caret Line="93" Column="132" TopLine="59"/>
       </Position>
       <Position>
         <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="1701" TopLine="1667"/>
+        <Caret Line="308" Column="112" TopLine="287"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/cpmdevice_posix.pas"/>
+        <Caret Line="36" Column="90" TopLine="26"/>
       </Position>
       <Position>
         <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="3336" TopLine="3306"/>
+        <Caret Line="174" Column="55" TopLine="155"/>
       </Position>
       <Position>
         <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="3337" TopLine="3306"/>
+        <Caret Line="2870" TopLine="2838"/>
       </Position>
       <Position>
         <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="3338" TopLine="3306"/>
+        <Caret Line="2871" TopLine="2838"/>
       </Position>
       <Position>
         <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="3339" TopLine="3306"/>
+        <Caret Line="3127" Column="25" TopLine="3101"/>
       </Position>
       <Position>
         <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="3340" TopLine="3306"/>
+        <Caret Line="3123" Column="25" TopLine="3098"/>
       </Position>
       <Position>
         <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="3341" TopLine="3306"/>
+        <Caret Line="1394" Column="10" TopLine="1372"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/cpmdevice_libdsk.pas"/>
+        <Caret Line="97" TopLine="70"/>
       </Position>
       <Position>
         <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="1767" TopLine="1738"/>
+        <Caret Line="244" TopLine="218"/>
       </Position>
       <Position>
         <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="3336" TopLine="3306"/>
+        <Caret Line="248" TopLine="218"/>
       </Position>
       <Position>
         <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="3337" TopLine="3306"/>
+        <Caret Line="257" TopLine="224"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/cpmdevice_libdsk.pas"/>
+        <Caret Line="76" TopLine="68"/>
+      </Position>
+      <Position>
+        <Filename Value="Sources/cpmdevice_libdsk.pas"/>
+        <Caret Line="77" TopLine="68"/>
       </Position>
       <Position>
         <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="3338" TopLine="3306"/>
+        <Caret Line="257" TopLine="224"/>
       </Position>
       <Position>
         <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="3339" TopLine="3306"/>
+        <Caret Line="3122" TopLine="3113"/>
       </Position>
       <Position>
         <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="3340" TopLine="3297"/>
+        <Caret Line="296" Column="10" TopLine="274"/>
       </Position>
       <Position>
         <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="3341" TopLine="3297"/>
+        <Caret Line="257" Column="66" TopLine="227"/>
       </Position>
       <Position>
         <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="1696" TopLine="1667"/>
+        <Caret Line="230" Column="132" TopLine="227"/>
       </Position>
       <Position>
         <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="3336" TopLine="3306"/>
+        <Caret Line="248" TopLine="227"/>
       </Position>
       <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="3337" TopLine="3306"/>
+        <Filename Value="Sources/cpmdevice_libdsk.pas"/>
+        <Caret Line="76" TopLine="68"/>
       </Position>
       <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="3829" TopLine="3781"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="3336" TopLine="3306"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="1797" Column="46" TopLine="1776"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="3836" Column="9" TopLine="3802"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="1799" Column="16" TopLine="1759"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="3311" Column="159" TopLine="3293"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="3323" Column="11" TopLine="3292"/>
-      </Position>
-      <Position>
-        <Filename Value="Sources/cpmfilesystem.pas"/>
-        <Caret Line="3254" Column="11" TopLine="3223"/>
+        <Filename Value="Sources/cpmdevice_libdsk.pas"/>
+        <Caret Line="77" TopLine="68"/>
       </Position>
     </JumpHistory>
     <RunParams>
