@@ -23,7 +23,7 @@ unit CpmTools;
 interface
 
 uses
-    Classes, SysUtils, CpmFileSystem, CpmDevice, CifeGlobals, CpmDefs;
+    Classes, SysUtils, CpmFileSystem, CifeGlobals, CpmDefs;
 
 type
 
@@ -63,7 +63,6 @@ type
     protected // Methoden
 
     private   // Attribute
-        FCpmDevice: TCpmDevice;
         FCpmFileSystem: TCpmFileSystem;
         FFileName: string;
         FFileType: string;
@@ -101,8 +100,8 @@ begin
     FFileName := AFileName;
     FFileType := AFileType;
 
-    if not (FCpmDevice.Open(AFileName, dmOpenReadWrite)) then begin
-        MessageDlg(Format('cannot open %s' + LineEnding + '(%s)', [ExtractFileName(AFileName), FCpmDevice.GetErrorMsg()]),
+    if not (FCpmFileSystem.OpenImage(AFileName)) then begin
+        MessageDlg(Format('cannot open %s' + LineEnding + '(%s)', [ExtractFileName(AFileName), FCpmFileSystem.GetErrorMsg()]),
             mtError, [mbOK], 0);
         Result := False;
         Exit;
@@ -133,7 +132,7 @@ begin
         Exit;
     end;
 
-    if not (FCpmDevice.Close) then begin
+    if not (FCpmFileSystem.CloseImage) then begin
         MessageDlg(Format('cannot close image %s' + LineEnding + '(%s)', [ExtractFileName(FFileName),
             FCpmFileSystem.GetErrorMsg()]), mtError, [mbOK], 0);
         Result := False;
@@ -838,15 +837,13 @@ end;
 constructor TCpmTools.Create;
 begin
     inherited Create;
-    FCpmDevice := TCpmDevice.Create;
-    FCpmFileSystem := TCpmFileSystem.Create(FCpmDevice);
+    FCpmFileSystem := TCpmFileSystem.Create;
 end;
 
 // --------------------------------------------------------------------------------
 destructor TCpmTools.Destroy;
 begin
     FreeAndNil(FCpmFileSystem);
-    FreeAndNil(FCpmDevice);
     inherited Destroy;
 end;
 

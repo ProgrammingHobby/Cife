@@ -70,6 +70,8 @@ type
     public    // Attribute
 
     public    // Methoden
+        function OpenImage(const AFileName: string): boolean;
+        function CloseImage: boolean;
         function ReadDiskdefData(const AImageType: string; ADiskdefsPath: string): boolean;
         function InitDriveData(AUpperCase: boolean): boolean;
         procedure Glob(const AArgv: PChar; var AGargc: integer; var AGargv: TStringList);
@@ -99,7 +101,7 @@ type
         function GetFreeFileSpace: size_t;
         function GetFileSize(AExtent: integer): size_t;
     public  // Konstruktor/Destruktor
-        constructor Create(ACpmDevice: TCpmDevice); overload;
+        constructor Create; overload;
         destructor Destroy; override;
 
     protected // Attribute
@@ -229,6 +231,34 @@ implementation
 { TCpmFileSystem }
 
 uses Character, StrUtils, DateUtils;
+
+// --------------------------------------------------------------------------------
+//  -- Open Image
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.OpenImage(const AFileName: string): boolean;
+begin
+    Result := True;
+
+    if not (FCpmDevice.Open(AFileName, dmOpenReadWrite)) then begin
+        FFileSystemError := FCpmDevice.GetErrorMsg();
+        Result := False;
+    end;
+
+end;
+
+// --------------------------------------------------------------------------------
+//  -- Close Image
+// --------------------------------------------------------------------------------
+function TCpmFileSystem.CloseImage: boolean;
+begin
+    Result := True;
+
+    if not (FCpmDevice.Close) then begin
+        FFileSystemError := FCpmDevice.GetErrorMsg();
+        Result := False;
+    end;
+
+end;
 
 // --------------------------------------------------------------------------------
 //  -- get DPB
@@ -2591,15 +2621,16 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-constructor TCpmFileSystem.Create(ACpmDevice: TCpmDevice);
+constructor TCpmFileSystem.Create;
 begin
     inherited Create;
-    FCpmDevice := ACpmDevice;
+    FCpmDevice := TCpmDevice.Create;
 end;
 
 // --------------------------------------------------------------------------------
 destructor TCpmFileSystem.Destroy;
 begin
+    FreeAndNil(FCpmDevice);
     inherited Destroy;
 end;
 
