@@ -67,8 +67,6 @@ type
         ModTime: TDatetime;
     end;
 
-    TLibdskGeometry = array[0..255] of char;
-
 function SettingsFile: string;
 procedure GetDiskDefsList(APath: string; ADiskDefsList: TComboBox);
 
