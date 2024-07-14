@@ -100,15 +100,15 @@ begin
     FFileName := AFileName;
     FFileType := AFileType;
 
-    if not (FCpmFileSystem.OpenImage(AFileName)) then begin
-        MessageDlg(Format('cannot open %s' + LineEnding + '(%s)', [ExtractFileName(AFileName), FCpmFileSystem.GetErrorMsg()]),
-            mtError, [mbOK], 0);
+    if not (FCpmFileSystem.ReadDiskdefData(AFileType, FDiskdefsPath)) then begin
+        MessageDlg(Format('cannot read superblock' + LineEnding + '(%s)', [FCpmFileSystem.GetErrorMsg()]), mtError, [mbOK], 0);
         Result := False;
         Exit;
     end;
 
-    if not (FCpmFileSystem.ReadDiskdefData(AFileType, FDiskdefsPath)) then begin
-        MessageDlg(Format('cannot read superblock' + LineEnding + '(%s)', [FCpmFileSystem.GetErrorMsg()]), mtError, [mbOK], 0);
+    if not (FCpmFileSystem.OpenImage(AFileName)) then begin
+        MessageDlg(Format('cannot open %s' + LineEnding + '(%s)', [ExtractFileName(AFileName), FCpmFileSystem.GetErrorMsg()]),
+            mtError, [mbOK], 0);
         Result := False;
         Exit;
     end;
