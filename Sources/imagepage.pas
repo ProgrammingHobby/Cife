@@ -492,7 +492,7 @@ var
     IndexI: integer;
     ClipbrdList: TStringList;
 begin
-    { #todo : 'ADoCut' auswerten. }
+
     with TXMLSettings.Create(SettingsFile) do begin
 
         try
