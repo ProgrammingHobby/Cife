@@ -171,6 +171,7 @@ type
             DirtyDirectory: boolean;
             DirtyDateStamp: boolean;
             LibdskGeometry: TLibdskGeometry;
+            LibdskDeviceOptions: TLibdskDeviceOptions;
         end;
 
         TIntArray = array of integer;
@@ -230,7 +231,7 @@ implementation
 
 { TCpmFileSystem }
 
-uses Character, StrUtils, DateUtils;
+uses Character, StrUtils, DateUtils, CpmDevice_Libdsk, CpmDevice_Posix;
 
 // --------------------------------------------------------------------------------
 //  -- Open Image
@@ -239,7 +240,21 @@ function TCpmFileSystem.OpenImage(const AFileName: string): boolean;
 begin
     Result := True;
 
-    if not (FCpmDevice.Open(AFileName, dmOpenReadWrite)) then begin
+    try
+        if (FDrive.LibdskGeometry[0] = #0) then begin
+            FCpmDevice := TCpmDevice_Posix.Create;
+        end
+        else begin
+            FCpmDevice := TCpmDevice_Libdsk.Create;
+        end;
+
+    except
+        FFileSystemError := 'Cannot open Image-Device';
+        Result := False;
+        exit;
+    end;
+
+    if not (FCpmDevice.Open(AFileName, FDrive.LibdskDeviceOptions)) then begin
         FFileSystemError := FCpmDevice.GetErrorMsg();
         Result := False;
     end;
@@ -291,7 +306,7 @@ begin
         FDrive.DirBlks := ((FDrive.MaxDir * 32 + (FDrive.BlkSiz - 1)) div FDrive.BlkSiz);
     end;
 
-    FCpmDevice.SetGeometry(FDrive.SecLength, FDrive.SecTrk, FDrive.Tracks, FDrive.Offset);
+    FCpmDevice.SetGeometry(FDrive.SecLength, FDrive.SecTrk, FDrive.Tracks, FDrive.Offset, FDrive.LibdskGeometry);
 
     // generate skew table
     if (FSkewTab = nil) then begin
@@ -1130,7 +1145,7 @@ begin
 
     if (ATimeStampsUsed and not ((FDrive.OsType = CPMFS_P2DOS) or (FDrive.OsType = CPMFS_DR3))) then begin
 
-        if not FCpmDevice.Open(AImageName, dmOpenReadWrite) then begin
+        if not FCpmDevice.Open(AImageName, '') then begin
             FFileSystemError := Format('Cannot open %s  (%s)', [ExtractFileName(AImageName), FCpmDevice.GetErrorMsg()]);
             Result := False;
             exit;
@@ -2624,7 +2639,6 @@ end;
 constructor TCpmFileSystem.Create;
 begin
     inherited Create;
-    FCpmDevice := TCpmDevice.Create;
 end;
 
 // --------------------------------------------------------------------------------
@@ -2737,6 +2751,7 @@ begin
         ADestination[ACount - 1] := Chr((Ord(ADestination[ACount - 1]) and $80) or (Ord(ASource[ACount - 1]) and $7F));
         Dec(ACount);
     end;
+
 end;
 
 // --------------------------------------------------------------------------------
@@ -2748,7 +2763,7 @@ var
     BootSpec: integer;
     IDString1, IDString2, IDString3: string;
 begin
-    FCpmDevice.SetGeometry(512, 9, 40, 0);
+    FCpmDevice.SetGeometry(512, 9, 40, 0, 'pcw180');
 
     if (not (FCpmDevice.ReadSector(0, 0, BootSector))) then begin
         FFileSystemError := Format('Failed to read Amstrad superblock  (%s)', [FCpmDevice.GetErrorMsg()]);
@@ -2815,6 +2830,7 @@ begin
     end;
     FDrive.Extentsize := 16384;
     FDrive.LibdskGeometry[0] := #0;  // LibDsk can recognise an Amstrad superblock and autodetect
+    FDrive.LibdskDeviceOptions[0] := #0;
     Result := True;
 end;
 
@@ -2849,6 +2865,7 @@ begin
     FDrive.MaxDir := -1;
     FDrive.DirBlks := 0;
     FDrive.LibdskGeometry[0] := #0;
+    FDrive.LibdskDeviceOptions[0] := #0;
     Result := True;
 
     try
@@ -3090,11 +3107,27 @@ begin
                     else if (DefinitionLine[0] = 'libdsk:format') then begin
                         FDrive.SideOrder := soAlt;
 
-                        for Pass := 0 to DefinitionLine[1].Length - 1 do begin
-                            FDrive.LibdskGeometry[Pass] := DefinitionLine[1][Pass + 1];
-                        end;
+                        if (DefinitionLine[1].Length < SizeOf(FDrive.LibdskGeometry)) then begin
 
-                        FDrive.LibdskGeometry[DefinitionLine[1].Length] := #0;
+                            for Pass := 0 to DefinitionLine[1].Length - 1 do begin
+                                FDrive.LibdskGeometry[Pass] := DefinitionLine[1][Pass + 1];
+                            end;
+
+                            FDrive.LibdskGeometry[DefinitionLine[1].Length] := #0;
+
+                        end;
+                    end
+                    else if (DefinitionLine[0] = 'libdsk:devopts') then begin
+
+                        if (DefinitionLine[1].Length < SizeOf(FDrive.LibdskDeviceOptions)) then begin
+
+                            for Pass := 0 to DefinitionLine[1].Length - 1 do begin
+                                FDrive.LibdskDeviceOptions[Pass] := DefinitionLine[1][Pass + 1];
+                            end;
+
+                            FDrive.LibdskDeviceOptions[DefinitionLine[1].Length] := #0;
+
+                        end;
                     end;
 
                 end
