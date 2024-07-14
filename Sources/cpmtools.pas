@@ -127,7 +127,7 @@ end;
 function TCpmTools.CloseImage: boolean;
 begin
 
-    if not (FCpmFileSystem.Unmount) then begin
+    if not (FCpmFileSystem.UnmountFile) then begin
         MessageDlg(Format('error write back directory' + LineEnding + '%s', [FCpmFileSystem.GetErrorMsg]), mtError, [mbOK], 0);
         Result := False;
         Exit;
@@ -344,7 +344,7 @@ begin
         Gargv := TStringList.Create;
         FCpmFileSystem.Glob(PChar(AOldName), Gargc, Gargv);
 
-        if not ((Gargc > 0) and (FCpmFileSystem.Rename(PChar(Gargv[0]), PChar(ConvertFilename(ANewName))))) then begin
+        if not ((Gargc > 0) and (FCpmFileSystem.RenameFile(PChar(Gargv[0]), PChar(ConvertFilename(ANewName))))) then begin
             MessageDlg(Format('can not rename %s in %s' + LineEnding + '(%s)', [AOldName, ANewName, FCpmFileSystem.GetErrorMsg]),
                 mtError, [mbOK], 0);
             Result := False;
@@ -355,7 +355,7 @@ begin
         FreeAndNil(Gargv);
     end;
 
-    if not FCpmFileSystem.Sync then begin
+    if not FCpmFileSystem.SyncDirectory then begin
         MessageDlg(Format('error write back directory' + LineEnding + '%s', [FCpmFileSystem.GetErrorMsg]), mtError, [mbOK], 0);
         Result := False;
     end;
@@ -375,7 +375,7 @@ begin
         for IndexI := 0 to AFileNames.Count - 1 do begin
             FCpmFileSystem.Glob(PChar(AFileNames[IndexI]), Gargc, Gargv);
 
-            if not ((Gargc > 0) and (FCpmFileSystem.Delete(PChar(Gargv[IndexI])))) then begin
+            if not ((Gargc > 0) and (FCpmFileSystem.DeleteFile(PChar(Gargv[IndexI])))) then begin
                 MessageDlg(Format('can not erase %s' + LineEnding + '(%s)', [Gargv[0], FCpmFileSystem.GetErrorMsg]),
                     mtError, [mbOK], 0);
                 Result := False;
@@ -388,7 +388,7 @@ begin
         FreeAndNil(Gargv);
     end;
 
-    if not FCpmFileSystem.Sync then begin
+    if not FCpmFileSystem.SyncDirectory then begin
         MessageDlg(Format('error write back directory' + LineEnding + '%s', [FCpmFileSystem.GetErrorMsg]), mtError, [mbOK], 0);
         Result := False;
     end;
@@ -490,7 +490,7 @@ begin
 
     if ((CheckResult and FS_MODIFIED) <> 0) then begin
 
-        if not FCpmFileSystem.Sync then begin
+        if not FCpmFileSystem.SyncDirectory then begin
             AMessage(Format('write error on ''%s''  (%s)', [ExtractFileName(FFileName), FCpmFileSystem.GetErrorMsg]));
             CheckResult := (CheckResult or FS_BROKEN);
         end;
@@ -580,7 +580,7 @@ begin
             Exit;
         end;
 
-        if not FCpmFileSystem.Sync then begin
+        if not FCpmFileSystem.SyncDirectory then begin
             MessageDlg(Format('error write back directory' + LineEnding + '%s', [FCpmFileSystem.GetErrorMsg]),
                 mtError, [mbOK], 0);
         end;
@@ -635,7 +635,7 @@ begin
     end
     else begin
 
-        if not (FCpmFileSystem.Create(FCpmFileSystem.GetDirectoryRoot, ACpmFileName, Inode, &666)) then begin
+        if not (FCpmFileSystem.CreateFile(FCpmFileSystem.GetDirectoryRoot, ACpmFileName, Inode, &666)) then begin
             MessageDlg(Format('can not create %s' + LineEnding + '%s', [ACpmFileName, FCpmFileSystem.GetErrorMsg]),
                 mtError, [mbOK], 0);
             exit;
@@ -644,7 +644,7 @@ begin
     end;
 
     WriteError := False;
-    FCpmFileSystem.Open(Inode, CpmFile, O_WRONLY);
+    FCpmFileSystem.OpenFile(Inode, CpmFile, O_WRONLY);
 
     if (AIsTextFile) then begin
         IndexI := 0;
@@ -671,7 +671,7 @@ begin
                 Inc(IndexJ);
             end;
 
-            if (FCpmFileSystem.Write(CpmFile, @TxtBuffer[0], IndexJ) <> IndexJ) then begin
+            if (FCpmFileSystem.WriteFile(CpmFile, @TxtBuffer[0], IndexJ) <> IndexJ) then begin
                 MessageDlg(Format('can not write %s' + LineEnding + '%s', [ACpmFileName, FCpmFileSystem.GetErrorMsg]),
                     mtError, [mbOK], 0);
                 WriteError := True;
@@ -683,7 +683,7 @@ begin
     end
     else begin
 
-        if (FCpmFileSystem.Write(CpmFile, @ABuffer[0], ACount) <> ACount) then begin
+        if (FCpmFileSystem.WriteFile(CpmFile, @ABuffer[0], ACount) <> ACount) then begin
             MessageDlg(Format('can not write %s' + LineEnding + '%s', [ACpmFileName, FCpmFileSystem.GetErrorMsg]),
                 mtError, [mbOK], 0);
             WriteError := True;
@@ -691,7 +691,7 @@ begin
 
     end;
 
-    if (not FCpmFileSystem.Close(CpmFile) and not WriteError) then begin
+    if (not FCpmFileSystem.CloseFile(CpmFile) and not WriteError) then begin
         MessageDlg(Format('can not close %s' + LineEnding + '%s', [ACpmFileName, FCpmFileSystem.GetErrorMsg]),
             mtError, [mbOK], 0);
     end;
@@ -700,7 +700,7 @@ begin
         FCpmFileSystem.UpdateTime(Inode, ATimes);
     end;
 
-    if not FCpmFileSystem.Sync then begin
+    if not FCpmFileSystem.SyncDirectory then begin
         MessageDlg(Format('paste error write back directory' + LineEnding + '%s', [FCpmFileSystem.GetErrorMsg]),
             mtError, [mbOK], 0);
     end;
@@ -724,7 +724,7 @@ begin
         exit;
     end
     else begin
-        FCpmFileSystem.Open(Inode, CpmFile, O_RDONLY);
+        FCpmFileSystem.OpenFile(Inode, CpmFile, O_RDONLY);
         ACount := CpmFile.Ino.Size;
 
         try
@@ -743,7 +743,7 @@ begin
 
         if (AIsTextFile) then begin
             IndexI := 0;
-            Res := FCpmFileSystem.Read(CpmFile, @TxtBuffer[0], SizeOf(TxtBuffer));
+            Res := FCpmFileSystem.ReadFile(CpmFile, @TxtBuffer[0], SizeOf(TxtBuffer));
 
             if (Res = -1) then begin
                 MessageDlg(Format('error reading %s' + LineEnding + '%s', [ACpmFileName, FCpmFileSystem.GetErrorMsg]),
@@ -792,14 +792,14 @@ begin
                     break;
                 end;
 
-                Res := FCpmFileSystem.Read(CpmFile, @TxtBuffer[0], SizeOf(TxtBuffer));
+                Res := FCpmFileSystem.ReadFile(CpmFile, @TxtBuffer[0], SizeOf(TxtBuffer));
             end;
 
             ACount := IndexI;
         end
         else begin
 
-            if (FCpmFileSystem.Read(CpmFile, @ABuffer[0], ACount) <> ACount) then begin
+            if (FCpmFileSystem.ReadFile(CpmFile, @ABuffer[0], ACount) <> ACount) then begin
                 MessageDlg(Format('error reading %s' + LineEnding + '%s', [ACpmFileName, FCpmFileSystem.GetErrorMsg]),
                     mtError, [mbOK], 0);
                 ACount := 0;

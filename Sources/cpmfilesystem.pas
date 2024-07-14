@@ -80,17 +80,17 @@ type
         procedure AttrSet(var AInode: TCpmInode; const AAttrib: cpm_attr_t);
         function MakeFileSystem(const AImageName: string; const ABootTracks: array of byte;
             AFileSystemLabel: string; ATimeStampsUsed: boolean; AUseUpperCase: boolean): boolean;
-        function Unmount: boolean;
-        function Rename(const AOldName: PChar; const ANewName: PChar): boolean;
-        function Delete(const AFileName: PChar): boolean;
-        function Create(ADirEntry: TCpmInode; const AFileName: string; var AInode: TCpmInode; AMode: mode_t): boolean;
-        function Open(AInode: TCpmInode; var AFile: TCpmFile; AMode: mode_t): boolean;
-        function Read(var AFile: TCpmFile; ABuffer: pbyte; ACount: size_t): ssize_t;
-        function Write(var AFile: TCpmFile; ABuffer: pbyte; ACount: size_t): ssize_t;
-        function Close(AFile: TCpmFile): boolean;
+        function UnmountFile: boolean;
+        function RenameFile(const AOldName: PChar; const ANewName: PChar): boolean;
+        function DeleteFile(const AFileName: PChar): boolean;
+        function CreateFile(ADirEntry: TCpmInode; const AFileName: string; var AInode: TCpmInode; AMode: mode_t): boolean;
+        function OpenFile(AInode: TCpmInode; var AFile: TCpmFile; AMode: mode_t): boolean;
+        function ReadFile(var AFile: TCpmFile; ABuffer: pbyte; ACount: size_t): ssize_t;
+        function WriteFile(var AFile: TCpmFile; ABuffer: pbyte; ACount: size_t): ssize_t;
+        function CloseFile(AFile: TCpmFile): boolean;
         procedure UpdateTime(AInode: TCpmInode; ATimes: TUTimeBuf);
         function CheckFileSystem(ADoRepair: boolean; AMessage: TCheckMessageCallBack): integer;
-        function Sync: boolean;
+        function SyncDirectory: boolean;
         function IsFileExisting(ACpmFileName: string): boolean;
         function GetErrorMsg: string;
         function GetFileSystemInfo: TFileSystemInfo;
@@ -335,7 +335,7 @@ begin
         end;
 
     end
-    else begin  // read directory in core
+    else begin  // ReadFile directory in core
         Blocks := (((FDrive.MaxDir * 32) + FDrive.BlkSiz - 1) div FDrive.BlkSiz);
 
         for IndexI := 0 to Blocks - 1 do begin
@@ -351,7 +351,7 @@ begin
 
     AlvInit;
 
-    // read additional superblock information
+    // ReadFile additional superblock information
     if ((FDrive.OsType and CPMFS_CPM3_OTHER) <> 0) then begin
         // passwords
         Passwords := 0;
@@ -712,7 +712,7 @@ begin
     AInode.Ino := LowestExt;
     AInode.Mode := S_IFREG;
 
-    // read timestamps
+    // ReadFile timestamps
     ProtectMode := ReadTimeStamps(AInode, LowestExt);
 
     // Determine the inode attributes
@@ -928,7 +928,7 @@ begin
         AFileSystemLabel := 'UNLABELED';
     end;
 
-    // open image file
+    // OpenFile image file
     try
         FileMode := fmOpenWrite;
         AssignFile(ImageFile, AImageName);
@@ -942,7 +942,7 @@ begin
     end;
 
 
-    ///* write system tracks */
+    ///* WriteFile system tracks */
     ///* this initialises only whole tracks, so it skew is not an issue */
     TrackBytes := (FDrive.SecLength * FDrive.SecTrk);
     IndexI := 0;
@@ -956,7 +956,7 @@ begin
 
                 if (Count <> FDrive.SecLength) then begin
                     FFileSystemError := e.Message;
-                    CloseFile(ImageFile);
+                    Close(ImageFile);
                     Result := False;
                     exit;
                 end;
@@ -967,7 +967,7 @@ begin
         Inc(IndexI, FDrive.SecLength);
     end;
 
-    // write directory
+    // WriteFile directory
     for IndexI := Low(Buffer) to High(Buffer) do begin
         Buffer[IndexI] := $E5;
     end;
@@ -1042,7 +1042,7 @@ begin
 
                 if (Count <> 128) then begin
                     FFileSystemError := e.Message;
-                    CloseFile(ImageFile);
+                    Close(ImageFile);
                     Result := False;
                     exit;
                 end;
@@ -1070,7 +1070,7 @@ begin
 
                 if (Count <> 128) then begin
                     FFileSystemError := e.Message;
-                    CloseFile(ImageFile);
+                    Close(ImageFile);
                     Result := False;
                     exit;
                 end;
@@ -1082,9 +1082,9 @@ begin
 
     end;
 
-    // close image file
+    // CloseFile image file
     try
-        CloseFile(ImageFile);
+        Close(ImageFile);
     except
         on e: Exception do begin
 
@@ -1112,7 +1112,7 @@ begin
             SetLength(FDateStamps, (Records * 128));
             PDateStamps := @FDateStamps[0];
         except
-            Sync;
+            SyncDirectory;
             Result := False;
             exit;
         end;
@@ -1141,14 +1141,14 @@ begin
         end;
 
         // The filesystem does not know about datestamper yet, because it was not there when it was mounted.
-        if (not Create(FRoot, '00!!!TIME&.DAT', Inode, &0222)) then begin
+        if (not CreateFile(FRoot, '00!!!TIME&.DAT', Inode, &0222)) then begin
             FFileSystemError := Format('Unable to create DateStamper file.  (%s)', [FFileSystemError]);
             Result := False;
             exit;
         end;
 
-        if ((not Open(Inode, DateStampFile, O_WRONLY)) or (Write(DateStampFile, PDateStamps, (Records * 128)) <>
-            (Records * 128)) or (not Close(DateStampFile))) then begin
+        if ((not OpenFile(Inode, DateStampFile, O_WRONLY)) or (WriteFile(DateStampFile, PDateStamps, (Records * 128)) <>
+            (Records * 128)) or (not CloseFile(DateStampFile))) then begin
             FFileSystemError := Format('Unable to write DateStamper file.  (%s)', [FFileSystemError]);
             Result := False;
             exit;
@@ -1160,7 +1160,7 @@ begin
         times.ModTime := Now;
         UpdateTime(Inode, Times);
         FDrive.DirtyDateStamp := True;
-        Sync;
+        SyncDirectory;
 
     end;
 
@@ -1170,9 +1170,9 @@ end;
 // --------------------------------------------------------------------------------
 //  -- free actual drive
 // --------------------------------------------------------------------------------
-function TCpmFileSystem.Unmount: boolean;
+function TCpmFileSystem.UnmountFile: boolean;
 begin
-    Result := Sync;
+    Result := SyncDirectory;
 
     if ((FDrive.OsType and CPMFS_DS_DATES) <> 0) then begin
         SetLength(FDateStamps, 0);
@@ -1201,7 +1201,7 @@ end;
 // --------------------------------------------------------------------------------
 //  -- rename a file
 // --------------------------------------------------------------------------------
-function TCpmFileSystem.Rename(const AOldName: PChar; const ANewName: PChar): boolean;
+function TCpmFileSystem.RenameFile(const AOldName: PChar; const ANewName: PChar): boolean;
 var
     Extent, OldUser, NewUser: integer;
     OldName: array[0..7] of char;
@@ -1253,7 +1253,7 @@ end;
 // --------------------------------------------------------------------------------
 //  -- delete cp/m-file
 // --------------------------------------------------------------------------------
-function TCpmFileSystem.Delete(const AFileName: PChar): boolean;
+function TCpmFileSystem.DeleteFile(const AFileName: PChar): boolean;
 var
     User, Extent: integer;
     Name: array[0..7] of char;
@@ -1292,7 +1292,7 @@ end;
 // --------------------------------------------------------------------------------
 //  -- creat new CP/M file
 // --------------------------------------------------------------------------------
-function TCpmFileSystem.Create(ADirEntry: TCpmInode; const AFileName: string; var AInode: TCpmInode; AMode: mode_t): boolean;
+function TCpmFileSystem.CreateFile(ADirEntry: TCpmInode; const AFileName: string; var AInode: TCpmInode; AMode: mode_t): boolean;
 type
     PPhysDirectoryEntry = ^TPhysDirectoryEntry;
 var
@@ -1343,9 +1343,9 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-//  -- open
+//  -- open a CP/M file
 // --------------------------------------------------------------------------------
-function TCpmFileSystem.Open(AInode: TCpmInode; var AFile: TCpmFile; AMode: mode_t): boolean;
+function TCpmFileSystem.OpenFile(AInode: TCpmInode; var AFile: TCpmFile; AMode: mode_t): boolean;
 begin
 
     if (S_ISREG(AInode.Mode)) then begin
@@ -1371,7 +1371,7 @@ end;
 // --------------------------------------------------------------------------------
 //  -- read a file from CP/M filesystem
 // --------------------------------------------------------------------------------
-function TCpmFileSystem.Read(var AFile: TCpmFile; ABuffer: pbyte; ACount: size_t): ssize_t;
+function TCpmFileSystem.ReadFile(var AFile: TCpmFile; ABuffer: pbyte; ACount: size_t): ssize_t;
 var
     FindExt, FindBlock, Ext, Block, Extentno, Got, NextBlockPos, NextExtPos: integer;
     BlockSize, ExtCap, Ptr, RdStart, RdEnd: integer;
@@ -1536,7 +1536,7 @@ end;
 // --------------------------------------------------------------------------------
 //  -- write a file to CP/M filesystem
 // --------------------------------------------------------------------------------
-function TCpmFileSystem.Write(var AFile: TCpmFile; ABuffer: pbyte; ACount: size_t): ssize_t;
+function TCpmFileSystem.WriteFile(var AFile: TCpmFile; ABuffer: pbyte; ACount: size_t): ssize_t;
 var
     FindExt, FindBlock, Ext, ExtNo, Got, NextBlockPos, NextExtPos: integer;
     Block, WrStart, WrEnd, DataPtr, Last: integer;
@@ -1653,7 +1653,7 @@ begin
                 UpdateTimeStamps(AFile.Ino, Ext);
                 UpdateDateStamper(AFile.Ino, Ext);
             end
-            // read existing block and set start/end to cover modified parts
+            // ReadFile existing block and set start/end to cover modified parts
             else begin
                 WrStart := ((AFile.Pos mod BlockSize) div FDrive.SecLength);
 
@@ -1697,7 +1697,7 @@ begin
             FindBlock := 0;
         end;
 
-        // fill block and write it
+        // fill block and WriteFile it
         FDrive.DirtyDirectory := True;
 
         while ((AFile.Pos <> NextBlockPos) and (ACount <> 0)) do begin
@@ -1715,7 +1715,7 @@ begin
 
         // In case the data only fills part of a sector, the rest is
         // still initialized: A new block was cleared and the boundaries
-        // of an existing block were read.
+        // of an existing block were ReadFile.
         WriteBlock(Block, @Buffer[0], WrStart, WrEnd);
         AFile.Ino.MTime := Now;
 
@@ -1779,7 +1779,7 @@ end;
 // --------------------------------------------------------------------------------
 //  -- close
 // --------------------------------------------------------------------------------
-function TCpmFileSystem.Close(AFile: TCpmFile): boolean;
+function TCpmFileSystem.CloseFile(AFile: TCpmFile): boolean;
 begin
     Result := True;
 end;
@@ -2477,7 +2477,7 @@ end;
 // --------------------------------------------------------------------------------
 //  -- write directory back
 // --------------------------------------------------------------------------------
-function TCpmFileSystem.Sync: boolean;
+function TCpmFileSystem.SyncDirectory: boolean;
 var
     IndexI, Blocks: integer;
     PDirectory: pbyte;
