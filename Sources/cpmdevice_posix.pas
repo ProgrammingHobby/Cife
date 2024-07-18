@@ -27,7 +27,7 @@ uses
 
 type
 
-    { TCpmDevice }
+    { TCpmDevice_Posix }
 
     TCpmDevice_Posix = class(TCpmDevice)
     public    // Attribute
@@ -68,7 +68,7 @@ type
 
 implementation
 
-{ TCpmDevice }
+{ TCpmDevice_Posix }
 
 // --------------------------------------------------------------------------------
 function TCpmDevice_Posix.Open(const AFilename: string; const ADeviceOptions: TLibdskDeviceOptions): boolean;
