@@ -31,21 +31,25 @@ type
     { TSettingsDialog }
 
     TSettingsDialog = class(TForm)
+        buttonBrowseLibDskFile: TButton;
         buttonBrowseDiskdefsFile: TButton;
         ButtonPanel: TButtonPanel;
         checkboxConvertTextFiles: TCheckBox;
         checkboxKeepTimeStamps: TCheckBox;
         checkboxOpenLastImage: TCheckBox;
         checkboxUppercaseCpmCharacters: TCheckBox;
+        editLibDskPath: TEdit;
         editDiskdefsPath: TEdit;
         Label1: TLabel;
         Label2: TLabel;
         Label3: TLabel;
+        Label4: TLabel;
         memoTextfileEndings: TMemo;
         Notebook: TNotebook;
         Page1: TPage;
         Page2: TPage;
         Panel1: TPanel;
+        Panel10: TPanel;
         Panel4: TPanel;
         Panel2: TPanel;
         Panel3: TPanel;
@@ -53,10 +57,12 @@ type
         Panel6: TPanel;
         Panel7: TPanel;
         Panel8: TPanel;
+        Panel9: TPanel;
         spineditUserNumber: TSpinEdit;
         Splitter: TSplitter;
         treeviewSettingPages: TTreeView;
         procedure buttonBrowseDiskdefsFileClick(Sender: TObject);
+        procedure buttonBrowseLibDskFileClick(Sender: TObject);
         procedure checkboxConvertTextFilesChange(Sender: TObject);
         procedure FormClose(Sender: TObject; var CloseAction: TCloseAction);
         procedure FormShow(Sender: TObject);
@@ -77,6 +83,8 @@ implementation
 
 uses XMLSettings, CifeGlobals, Dialogs;
 
+    { #todo : Auswahl der Libdsk Library einfügen. }
+
 { TSettingsDialog }
 // --------------------------------------------------------------------------------
 procedure TSettingsDialog.PanelPaint(Sender: TObject);
@@ -85,9 +93,11 @@ const
 var
     panel: TPanel;
 begin
+
     if not (Sender is TPanel) then begin
         exit;
     end;
+
     panel := TPanel(Sender);
     panel.Canvas.Brush.Style := bsClear;
     panel.Canvas.Pen.Color := clSilver;
@@ -105,6 +115,7 @@ begin
     if (Index = 0) then begin
         Inc(Index);
     end;
+
     Notebook.PageIndex := Index - 1;
 end;
 
@@ -125,6 +136,7 @@ begin
                 SetValue('ConvertTextFiles', checkboxConvertTextFiles.Checked);
                 SetValue('TextFileEndings', memoTextfileEndings.Text);
                 SetValue('DiskdefsFile', editDiskdefsPath.Text);
+                SetValue('LibdskFile', editLibDskPath.Text);
                 CloseKey;
             end;
 
@@ -143,17 +155,43 @@ procedure TSettingsDialog.buttonBrowseDiskdefsFileClick(Sender: TObject);
 var
     Dialog: TOpenDialog;
 begin
+
     try
         Dialog := TOpenDialog.Create(self);
         Dialog.Title := 'Select CP/M Diskdefs File';
         Dialog.InitialDir := ExtractFilePath(editDiskdefsPath.Text);
+
         if (Dialog.Execute) then begin
             editDiskdefsPath.Text := Dialog.FileName;
             editDiskdefsPath.SelStart := editDiskdefsPath.GetTextLen;
         end;
+
     finally
         FreeAndNil(Dialog);
     end;
+
+end;
+
+// --------------------------------------------------------------------------------
+procedure TSettingsDialog.buttonBrowseLibDskFileClick(Sender: TObject);
+var
+    Dialog: TOpenDialog;
+begin
+
+    try
+        Dialog := TOpenDialog.Create(self);
+        Dialog.Title := 'Select Libdsk-Library File';
+        Dialog.InitialDir := ExtractFilePath(editLibDskPath.Text);
+
+        if (Dialog.Execute) then begin
+            editLibDskPath.Text := Dialog.FileName;
+            editLibDskPath.SelStart := editLibDskPath.GetTextLen;
+        end;
+
+    finally
+        FreeAndNil(Dialog);
+    end;
+
 end;
 
 // --------------------------------------------------------------------------------
@@ -181,6 +219,8 @@ begin
             memoTextfileEndings.Text := GetValue('TextFileEndings', 'txt pip pas');
             editDiskdefsPath.Text := GetValue('DiskdefsFile', '');
             editDiskdefsPath.SelStart := editDiskdefsPath.GetTextLen;
+            editLibDskPath.Text := GetValue('LibdskFile', '');
+            editLibDskPath.SelStart := editLibDskPath.GetTextLen;
             CloseKey;
             RestoreFormState(TForm(self));
         finally

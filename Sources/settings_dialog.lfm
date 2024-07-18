@@ -1,32 +1,32 @@
 object SettingsDialog: TSettingsDialog
   Left = 568
-  Height = 242
+  Height = 308
   Top = 250
   Width = 513
   BorderStyle = bsSizeToolWin
   Caption = 'Settings'
-  ClientHeight = 242
+  ClientHeight = 308
   ClientWidth = 513
   OnClose = FormClose
   OnShow = FormShow
   Position = poOwnerFormCenter
   object Panel1: TPanel
     Left = 4
-    Height = 180
+    Height = 246
     Top = 4
     Width = 505
     Align = alClient
     AutoSize = True
     BorderSpacing.Around = 4
     BevelOuter = bvNone
-    ClientHeight = 180
+    ClientHeight = 246
     ClientWidth = 505
     DoubleBuffered = False
     ParentDoubleBuffered = False
     TabOrder = 1
     object treeviewSettingPages: TTreeView
       Left = 4
-      Height = 172
+      Height = 238
       Top = 4
       Width = 132
       Align = alLeft
@@ -50,7 +50,7 @@ object SettingsDialog: TSettingsDialog
     end
     object Splitter: TSplitter
       Left = 140
-      Height = 180
+      Height = 246
       Top = 0
       Width = 5
       AutoSnap = False
@@ -58,10 +58,10 @@ object SettingsDialog: TSettingsDialog
     end
     object Notebook: TNotebook
       Left = 149
-      Height = 172
+      Height = 238
       Top = 4
       Width = 352
-      PageIndex = 1
+      PageIndex = 0
       Align = alClient
       AutoSize = True
       BorderSpacing.Around = 4
@@ -69,7 +69,7 @@ object SettingsDialog: TSettingsDialog
       object Page1: TPage
         object Panel2: TPanel
           Left = 4
-          Height = 29
+          Height = 33
           Top = 4
           Width = 344
           Align = alTop
@@ -77,7 +77,7 @@ object SettingsDialog: TSettingsDialog
           BorderSpacing.Around = 4
           BevelOuter = bvNone
           ClientHeight = 29
-          ClientWidth = 344
+          ClientWidth = 340
           TabOrder = 0
           OnPaint = PanelPaint
           object checkboxOpenLastImage: TCheckBox
@@ -93,15 +93,15 @@ object SettingsDialog: TSettingsDialog
         end
         object Panel3: TPanel
           Left = 4
-          Height = 29
-          Top = 37
+          Height = 33
+          Top = 41
           Width = 344
           Align = alTop
           AutoSize = True
           BorderSpacing.Around = 4
           BevelOuter = bvNone
           ClientHeight = 29
-          ClientWidth = 344
+          ClientWidth = 340
           TabOrder = 1
           OnPaint = PanelPaint
           object checkboxUppercaseCpmCharacters: TCheckBox
@@ -117,14 +117,14 @@ object SettingsDialog: TSettingsDialog
         end
         object Panel7: TPanel
           Left = 4
-          Height = 64
-          Top = 70
+          Height = 68
+          Top = 78
           Width = 344
           Align = alTop
           AutoSize = True
           BorderSpacing.Around = 4
           BevelOuter = bvNone
-          ClientHeight = 64
+          ClientHeight = 68
           ClientWidth = 344
           TabOrder = 2
           OnPaint = PanelPaint
@@ -136,31 +136,31 @@ object SettingsDialog: TSettingsDialog
             Align = alTop
             BorderSpacing.Left = 4
             BorderSpacing.Top = 4
-            Caption = 'Path to diskdefs file:'
+            Caption = 'Path to diskdefs file :'
             ParentColor = False
           end
           object Panel8: TPanel
             Left = 4
-            Height = 33
+            Height = 37
             Top = 27
             Width = 336
             Align = alClient
             BorderSpacing.Around = 4
             BevelOuter = bvNone
             ClientHeight = 33
-            ClientWidth = 336
+            ClientWidth = 332
             TabOrder = 0
             object editDiskdefsPath: TEdit
               Left = 0
               Height = 33
               Top = 0
-              Width = 261
+              Width = 257
               Align = alClient
               ReadOnly = True
               TabOrder = 0
             end
             object buttonBrowseDiskdefsFile: TButton
-              Left = 261
+              Left = 257
               Height = 33
               Top = 0
               Width = 75
@@ -171,11 +171,66 @@ object SettingsDialog: TSettingsDialog
             end
           end
         end
+        object Panel9: TPanel
+          Left = 4
+          Height = 68
+          Top = 150
+          Width = 344
+          Align = alTop
+          AutoSize = True
+          BorderSpacing.Around = 4
+          BevelOuter = bvNone
+          ClientHeight = 68
+          ClientWidth = 344
+          TabOrder = 3
+          OnPaint = PanelPaint
+          object Label4: TLabel
+            Left = 4
+            Height = 19
+            Top = 4
+            Width = 340
+            Align = alTop
+            BorderSpacing.Left = 4
+            BorderSpacing.Top = 4
+            Caption = 'Path to LibDsk-Library file :'
+          end
+          object Panel10: TPanel
+            Left = 4
+            Height = 37
+            Top = 27
+            Width = 336
+            Align = alClient
+            BorderSpacing.Around = 4
+            BevelOuter = bvNone
+            ClientHeight = 33
+            ClientWidth = 332
+            TabOrder = 0
+            object editLibDskPath: TEdit
+              Left = 0
+              Height = 33
+              Top = 0
+              Width = 257
+              Align = alClient
+              ReadOnly = True
+              TabOrder = 0
+            end
+            object buttonBrowseLibDskFile: TButton
+              Left = 257
+              Height = 33
+              Top = 0
+              Width = 75
+              Align = alRight
+              Caption = 'Browse'
+              TabOrder = 1
+              OnClick = buttonBrowseLibDskFileClick
+            end
+          end
+        end
       end
       object Page2: TPage
         object Panel4: TPanel
           Left = 4
-          Height = 33
+          Height = 29
           Top = 4
           Width = 344
           Align = alTop
@@ -183,14 +238,14 @@ object SettingsDialog: TSettingsDialog
           BorderSpacing.Around = 4
           BevelOuter = bvNone
           ClientHeight = 29
-          ClientWidth = 340
+          ClientWidth = 344
           TabOrder = 0
           OnPaint = PanelPaint
           object checkboxKeepTimeStamps: TCheckBox
             Left = 4
             Height = 21
             Top = 4
-            Width = 332
+            Width = 336
             Align = alClient
             BorderSpacing.Around = 4
             Caption = 'keep last updated timestamps'
@@ -200,7 +255,7 @@ object SettingsDialog: TSettingsDialog
         object Panel5: TPanel
           Left = 4
           Height = 37
-          Top = 41
+          Top = 37
           Width = 344
           Align = alTop
           AutoSize = True
@@ -236,7 +291,7 @@ object SettingsDialog: TSettingsDialog
         object Panel6: TPanel
           Left = 4
           Height = 115
-          Top = 82
+          Top = 78
           Width = 344
           Align = alTop
           AutoSize = True
@@ -289,7 +344,7 @@ object SettingsDialog: TSettingsDialog
   object ButtonPanel: TButtonPanel
     Left = 12
     Height = 34
-    Top = 196
+    Top = 262
     Width = 489
     BorderSpacing.Around = 12
     OKButton.Name = 'OKButton'
