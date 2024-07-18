@@ -156,6 +156,7 @@ end;
 function TImagePage.OpenImage(const AFileName: string; const AFileType: string): boolean;
 var
     UpperCase: boolean;
+    LibdskFile: string;
 begin
     UpperCase := False;
 
@@ -163,13 +164,14 @@ begin
         try
             OpenKey('Settings');
             UpperCase := GetValue('UseUppercaseCharacters', False);
+            LibdskFile:=GetValue('LibdskFile', '');
             CloseKey;
         finally
             Free;
         end;
     end;
 
-    Result := FCpmTools.OpenImage(AFileName, AFileType, UpperCase);
+    Result := FCpmTools.OpenImage(AFileName, AFileType, UpperCase, LibdskFile);
 end;
 
 // --------------------------------------------------------------------------------

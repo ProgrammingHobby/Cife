@@ -70,7 +70,7 @@ type
     public    // Attribute
 
     public    // Methoden
-        function OpenImage(const AFileName: string): boolean;
+        function OpenImage(const AFileName: string; ALibdskFile: string): boolean;
         function CloseImage: boolean;
         function ReadDiskdefData(const AImageType: string; ADiskdefsPath: string): boolean;
         function InitDriveData(AUpperCase: boolean): boolean;
@@ -236,22 +236,22 @@ uses Character, StrUtils, DateUtils, CpmDevice_Libdsk, CpmDevice_Posix;
 // --------------------------------------------------------------------------------
 //  -- Open Image
 // --------------------------------------------------------------------------------
-function TCpmFileSystem.OpenImage(const AFileName: string): boolean;
+function TCpmFileSystem.OpenImage(const AFileName: string; ALibdskFile: string): boolean;
 begin
     Result := True;
 
-    try
-        if (FDrive.LibdskGeometry[0] = #0) then begin
-            FCpmDevice := TCpmDevice_Posix.Create;
-        end
-        else begin
-            FCpmDevice := TCpmDevice_Libdsk.Create;
+    if (FDrive.LibdskGeometry[0] = #0) then begin
+        FCpmDevice := TCpmDevice_Posix.Create;
+    end
+    else begin
+
+        if not (FileExists(ALibdskFile)) then begin
+            FFileSystemError := 'Libdsk Library not present';
+            Result := False;
+            exit;
         end;
 
-    except
-        FFileSystemError := 'Cannot open Image-Device';
-        Result := False;
-        exit;
+        FCpmDevice := TCpmDevice_Libdsk.Create(ALibdskFile);
     end;
 
     if not (FCpmDevice.Open(AFileName, FDrive.LibdskDeviceOptions)) then begin

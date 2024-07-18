@@ -27,7 +27,7 @@ uses
 
 type
 
-    { TCpmDevice }
+    { TCpmDevice_Libdsk }
 
     TCpmDevice_Libdsk = class(TCpmDevice)
     public    // Attribute
@@ -42,6 +42,8 @@ type
         function IsOpen(): boolean; override;
         function GetErrorMsg(): string; override;
     public  // Konstruktor/Destruktor
+        constructor Create(ALibdskFile: string); overload;
+        destructor Destroy; override;
 
     protected // Attribute
 
@@ -68,7 +70,7 @@ type
 
 implementation
 
-{ TCpmDevice }
+{ TCpmDevice_Libdsk }
 
 // --------------------------------------------------------------------------------
 function TCpmDevice_Libdsk.Open(const AFilename: string; const ADeviceOptions: TLibdskDeviceOptions): boolean;
@@ -181,6 +183,16 @@ function TCpmDevice_Libdsk.GetErrorMsg: string;
 begin
     Result := FDeviceError;
     FDeviceError := EmptyStr;
+end;
+
+constructor TCpmDevice_Libdsk.Create(ALibdskFile: string);
+begin
+   inherited Create;
+end;
+
+destructor TCpmDevice_Libdsk.Destroy;
+begin
+    inherited Destroy;
 end;
 
 // --------------------------------------------------------------------------------

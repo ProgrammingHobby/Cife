@@ -37,7 +37,7 @@ type
     public    // Methoden
         procedure SetPrintDirectoryEntryCallBack(APrintDirectoryEntryCB: TPrintDirectoryEntryCB);
         procedure SetDiskDefsPath(ADiskdefsPath: string);
-        function OpenImage(const AFileName: string; const AFileType: string; AUpperCase: boolean): boolean;
+        function OpenImage(const AFileName: string; const AFileType: string; AUpperCase: boolean; ALibdskFile: string): boolean;
         function CloseImage: boolean;
         procedure ShowDirectory;
         procedure RefreshDirectory(AUpperCase: boolean);
@@ -95,7 +95,7 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-function TCpmTools.OpenImage(const AFileName: string; const AFileType: string; AUpperCase: boolean): boolean;
+function TCpmTools.OpenImage(const AFileName: string; const AFileType: string; AUpperCase: boolean; ALibdskFile: string): boolean;
 begin
     FFileName := AFileName;
     FFileType := AFileType;
@@ -106,7 +106,7 @@ begin
         Exit;
     end;
 
-    if not (FCpmFileSystem.OpenImage(AFileName)) then begin
+    if not (FCpmFileSystem.OpenImage(AFileName, ALibdskFile)) then begin
         MessageDlg(Format('cannot open %s' + LineEnding + '(%s)', [ExtractFileName(AFileName), FCpmFileSystem.GetErrorMsg()]),
             mtError, [mbOK], 0);
         Result := False;
