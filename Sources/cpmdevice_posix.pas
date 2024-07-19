@@ -104,6 +104,7 @@ end;
 // --------------------------------------------------------------------------------
 function TCpmDevice_Posix.Close: boolean;
 begin
+
     try
         CloseFile(FDevice.Imagefile);
         FDevice.Opened := False;
@@ -114,6 +115,7 @@ begin
         end;
 
     end;
+
     Result := not FDevice.Opened;
 end;
 
@@ -131,6 +133,7 @@ begin
         BlockRead(FDevice.Imagefile, ABuffer[0], FDevice.SecLength, Count);
         Result := True;
     except
+
         on e: Exception do begin
 
             if (Count <> FDevice.SecLength) then begin
@@ -140,7 +143,9 @@ begin
             FDeviceError := FDeviceError + Format(LineEnding + '%s', [e.Message]);
             Result := False;
         end;
+
     end;
+
 end;
 
 // --------------------------------------------------------------------------------
@@ -167,7 +172,9 @@ begin
             FDeviceError := FDeviceError + Format(LineEnding + '%s', [e.Message]);
             Result := False;
         end;
+
     end;
+
 end;
 
 // --------------------------------------------------------------------------------
