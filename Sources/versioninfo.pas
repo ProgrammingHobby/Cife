@@ -35,13 +35,16 @@ function GetLCLVersion: string;
 function GetWidgetSet: string;
 
 const
-    WIDGETSET_GTK = 'GTK widget set';
-    WIDGETSET_GTK2 = 'GTK 2 widget set';
-    WIDGETSET_WIN = 'Win32/Win64 widget set';
-    WIDGETSET_WINCE = 'WinCE widget set';
-    WIDGETSET_CARBON = 'Carbon widget set';
-    WIDGETSET_QT = 'QT widget set';
-    WIDGETSET_fpGUI = 'fpGUI widget set';
+    WIDGETSET_GTK = 'GTK';
+    WIDGETSET_GTK2 = 'GTK2';
+    WIDGETSET_GTK3 = 'GTK3';
+    WIDGETSET_WIN = 'Win32/Win64';
+    WIDGETSET_WINCE = 'WinCE';
+    WIDGETSET_CARBON = 'Carbon';
+    WIDGETSET_QT = 'QT';
+    WIDGETSET_QT5 = 'QT5';
+    WIDGETSET_QT6 = 'QT6';
+    WIDGETSET_fpGUI = 'fpGUI';
     WIDGETSET_OTHER = 'Other gui';
 
 implementation
@@ -77,10 +80,13 @@ begin
     case WidgetSet.LCLPlatform of
         lpGtk: Result := WIDGETSET_GTK;
         lpGtk2: Result := WIDGETSET_GTK2;
+        lpGtk3: Result := WIDGETSET_GTK3;
         lpWin32: Result := WIDGETSET_WIN;
         lpWinCE: Result := WIDGETSET_WINCE;
         lpCarbon: Result := WIDGETSET_CARBON;
         lpQT: Result := WIDGETSET_QT;
+        lpQt5: Result := WIDGETSET_QT5;
+        lpQt6: Result := WIDGETSET_QT6;
         lpfpGUI: Result := WIDGETSET_fpGUI;
         else Result := WIDGETSET_OTHER;
     end;
