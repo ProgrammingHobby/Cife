@@ -31,6 +31,7 @@ type
     { TMainWindow }
 
     TMainWindow = class(TForm)
+      actionDiskdefsParameter: TAction;
         actionClearHistory: TAction;
         actionNew: TAction;
         actionDelete: TAction;
@@ -93,6 +94,7 @@ type
         labelTracks: TLabel;
         MainMenu: TMainMenu;
         menuFile: TMenuItem;
+        menuItemDiskdefsParameter: TMenuItem;
         menuitemClearHistory: TMenuItem;
         menuitemRecentFiles: TMenuItem;
         PageControl: TPageControl;
@@ -153,6 +155,7 @@ type
         procedure actionCopyExecute(Sender: TObject);
         procedure actionCutExecute(Sender: TObject);
         procedure actionDeleteExecute(Sender: TObject);
+        procedure actionDiskdefsParameterExecute(Sender: TObject);
         procedure actionFormatCurrentExecute(Sender: TObject);
         procedure actionNewExecute(Sender: TObject);
         procedure actionOpenExecute(Sender: TObject);
@@ -193,7 +196,7 @@ implementation
 
 {$R *.lfm}
 
-uses File_Dialog, Settings_Dialog, About_Dialog, XMLSettings, Clipbrd, Types
+uses File_Dialog, Settings_Dialog, About_Dialog, DiskdefsParameter_Dialog, XMLSettings, Clipbrd, Types
 
     {$ifdef UNIX}
     , URIParser, BaseUnix
@@ -326,6 +329,21 @@ begin
 
     if (Assigned(Page)) then begin
         Page.DeleteFile;
+    end;
+
+end;
+
+// --------------------------------------------------------------------------------
+procedure TMainWindow.actionDiskdefsParameterExecute(Sender: TObject);
+var
+    Dialog: TDiskdefsParameterDialog;
+begin
+
+    try
+        Dialog := TDiskdefsParameterDialog.Create(self);
+        Dialog.ShowModal;
+    finally
+        FreeAndNil(Dialog);
     end;
 
 end;

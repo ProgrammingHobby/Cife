@@ -774,6 +774,9 @@ object MainWindow: TMainWindow
     end
     object menuHelp: TMenuItem
       Caption = 'Help'
+      object menuItemDiskdefsParameter: TMenuItem
+        Action = actionDiskdefsParameter
+      end
       object menuItemAbout: TMenuItem
         Action = actionAbout
       end
@@ -1111,6 +1114,10 @@ object MainWindow: TMainWindow
     object actionClearHistory: TAction
       Caption = 'Clear History'
       OnExecute = actionClearHistoryExecute
+    end
+    object actionDiskdefsParameter: TAction
+      Caption = 'Diskdefs Parameter'
+      OnExecute = actionDiskdefsParameterExecute
     end
   end
   object PopupMenu1: TPopupMenu
