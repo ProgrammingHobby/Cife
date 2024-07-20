@@ -70,9 +70,10 @@ type
     public    // Attribute
 
     public    // Methoden
-        function OpenImage(const AFileName: string; ALibdskFile: string): boolean;
+        function OpenImage(const AFileName: string): boolean;
         function CloseImage: boolean;
-        function ReadDiskdefData(const AImageType: string; ADiskdefsPath: string): boolean;
+        function ReadDiskdefData(const AImageType: string; ADiskdefsPath: string; ALibdskFile: string): boolean;
+        procedure InitDevice(ALibdskFile: string);
         function InitDriveData(AUpperCase: boolean): boolean;
         procedure Glob(const AArgv: PChar; var AGargc: integer; var AGargv: TStringList);
         procedure StatFs(var ABuffer: TCpmStatFS);
@@ -236,23 +237,9 @@ uses Character, StrUtils, DateUtils, CpmDevice_Libdsk, CpmDevice_Posix;
 // --------------------------------------------------------------------------------
 //  -- Open Image
 // --------------------------------------------------------------------------------
-function TCpmFileSystem.OpenImage(const AFileName: string; ALibdskFile: string): boolean;
+function TCpmFileSystem.OpenImage(const AFileName: string): boolean;
 begin
     Result := True;
-
-    if (FDrive.LibdskGeometry[0] = #0) then begin
-        FCpmDevice := TCpmDevice_Posix.Create;
-    end
-    else begin
-
-        if not (FileExists(ALibdskFile)) then begin
-            FFileSystemError := 'Libdsk Library not present';
-            Result := False;
-            exit;
-        end;
-
-        FCpmDevice := TCpmDevice_Libdsk.Create(ALibdskFile);
-    end;
 
     if not (FCpmDevice.Open(AFileName, FDrive.LibdskDeviceOptions)) then begin
         FFileSystemError := FCpmDevice.GetErrorMsg();
@@ -278,7 +265,7 @@ end;
 // --------------------------------------------------------------------------------
 //  -- get DPB
 // --------------------------------------------------------------------------------
-function TCpmFileSystem.ReadDiskdefData(const AImageType: string; ADiskdefsPath: string): boolean;
+function TCpmFileSystem.ReadDiskdefData(const AImageType: string; ADiskdefsPath: string; ALibdskFile: string): boolean;
 begin
 
     if (AImageType.Contains('Amstrad (PCW16)')) then begin
@@ -286,6 +273,27 @@ begin
     end
     else begin
         Result := DiskdefsReadSuper(AImageType, ADiskdefsPath);
+    end;
+
+    InitDevice(ALibdskFile);
+end;
+
+// --------------------------------------------------------------------------------
+//  -- init proper device
+// --------------------------------------------------------------------------------
+procedure TCpmFileSystem.InitDevice(ALibdskFile: string);
+begin
+
+    if (Assigned(FCpmDevice)) then begin
+        FCpmDevice.Close;
+        FreeAndNil(FCpmDevice);
+    end;
+
+    if (FileExists(ALibdskFile) and (FDrive.LibdskGeometry[0] <> #0)) then begin
+        FCpmDevice := TCpmDevice_Libdsk.Create(ALibdskFile);
+    end
+    else begin
+        FCpmDevice := TCpmDevice_Posix.Create;
     end;
 
 end;
@@ -2649,6 +2657,7 @@ end;
 // --------------------------------------------------------------------------------
 destructor TCpmFileSystem.Destroy;
 begin
+    FCpmDevice.Close;
     FreeAndNil(FCpmDevice);
     inherited Destroy;
 end;

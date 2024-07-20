@@ -160,7 +160,6 @@ end;
 function TImagePage.OpenImage(const AFileName: string; const AFileType: string): boolean;
 var
     UpperCase: boolean;
-    LibdskFile: string;
 begin
     UpperCase := False;
 
@@ -168,14 +167,13 @@ begin
         try
             OpenKey('Settings');
             UpperCase := GetValue('UseUppercaseCharacters', False);
-            LibdskFile := GetValue('LibdskFile', '');
             CloseKey;
         finally
             Free;
         end;
     end;
 
-    Result := FCpmTools.OpenImage(AFileName, AFileType, UpperCase, LibdskFile);
+    Result := FCpmTools.OpenImage(AFileName, AFileType, UpperCase);
 end;
 
 // --------------------------------------------------------------------------------
@@ -565,7 +563,8 @@ end;
 // --------------------------------------------------------------------------------
 constructor TImagePage.Create(ATheOwner: TComponent);
 var
-    DiskdefsPath: string;
+    DiskdefsFile: string;
+    LibdskFile: string;
 begin
     inherited Create(ATheOwner);
     OnResize := @DirectoryListResize;
@@ -575,7 +574,8 @@ begin
 
         try
             OpenKey('Settings');
-            DiskdefsPath := GetValue('DiskdefsFile', '');
+            DiskdefsFile := GetValue('DiskdefsFile', '');
+            LibdskFile := GetValue('LibdskFile', '');
             CloseKey;
         finally
             Free;
@@ -585,7 +585,8 @@ begin
 
     FCpmTools := TCpmTools.Create;
     FCpmTools.SetPrintDirectoryEntryCallBack(@PrintDirectoryEntry);
-    FCpmTools.SetDiskDefsPath(DiskdefsPath);
+    FCpmTools.SetDiskDefsFile(DiskdefsFile);
+    FCpmTools.SetLibdskFile(LibdskFile);
     FTempFolder := GetTempDir(True) + CreateTempFolderName(13) + PathDelim;
     MkDir(FTempFolder);
     FEnableAction := [];

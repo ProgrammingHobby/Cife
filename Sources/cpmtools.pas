@@ -36,8 +36,9 @@ type
 
     public    // Methoden
         procedure SetPrintDirectoryEntryCallBack(APrintDirectoryEntryCB: TPrintDirectoryEntryCB);
-        procedure SetDiskDefsPath(ADiskdefsPath: string);
-        function OpenImage(const AFileName: string; const AFileType: string; AUpperCase: boolean; ALibdskFile: string): boolean;
+        procedure SetDiskDefsFile(ADiskdefsFile: string);
+        procedure SetLibdskFile(ALibdskFile: string);
+        function OpenImage(const AFileName: string; const AFileType: string; AUpperCase: boolean): boolean;
         function CloseImage: boolean;
         procedure ShowDirectory;
         procedure RefreshDirectory(AUpperCase: boolean);
@@ -66,7 +67,8 @@ type
         FCpmFileSystem: TCpmFileSystem;
         FFileName: string;
         FFileType: string;
-        FDiskdefsPath: string;
+        FDiskdefsFile: string;
+        FLibdskFile: string;
         FDirStatistic: TDirStatistic;
         FPrintDirectoryEntry: TPrintDirectoryEntryCB;
 
@@ -89,24 +91,30 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-procedure TCpmTools.SetDiskDefsPath(ADiskdefsPath: string);
+procedure TCpmTools.SetDiskDefsFile(ADiskdefsFile: string);
 begin
-    FDiskdefsPath := ADiskdefsPath;
+    FDiskdefsFile := ADiskdefsFile;
 end;
 
 // --------------------------------------------------------------------------------
-function TCpmTools.OpenImage(const AFileName: string; const AFileType: string; AUpperCase: boolean; ALibdskFile: string): boolean;
+procedure TCpmTools.SetLibdskFile(ALibdskFile: string);
+begin
+    FLibdskFile := ALibdskFile;
+end;
+
+// --------------------------------------------------------------------------------
+function TCpmTools.OpenImage(const AFileName: string; const AFileType: string; AUpperCase: boolean): boolean;
 begin
     FFileName := AFileName;
     FFileType := AFileType;
 
-    if not (FCpmFileSystem.ReadDiskdefData(AFileType, FDiskdefsPath)) then begin
+    if not (FCpmFileSystem.ReadDiskdefData(AFileType, FDiskdefsFile, FLibdskFile)) then begin
         MessageDlg(Format('cannot read superblock' + LineEnding + '(%s)', [FCpmFileSystem.GetErrorMsg()]), mtError, [mbOK], 0);
         Result := False;
         Exit;
     end;
 
-    if not (FCpmFileSystem.OpenImage(AFileName, ALibdskFile)) then begin
+    if not (FCpmFileSystem.OpenImage(AFileName)) then begin
         MessageDlg(Format('cannot open %s' + LineEnding + '(%s)', [ExtractFileName(AFileName), FCpmFileSystem.GetErrorMsg()]),
             mtError, [mbOK], 0);
         Result := False;
@@ -405,7 +413,7 @@ var
     BootFileSize, ReadSize: integer;
 begin
 
-    if not (FCpmFileSystem.ReadDiskdefData(AImageType, FDiskdefsPath)) then begin
+    if not (FCpmFileSystem.ReadDiskdefData(AImageType, FDiskdefsFile, FLibdskFile)) then begin
         MessageDlg(Format('cannot read superblock' + LineEnding + '(%s)', [FCpmFileSystem.GetErrorMsg()]), mtError, [mbOK], 0);
         Result := False;
         Exit;
@@ -468,7 +476,7 @@ begin
 
     end;
 
-    if not (FCpmFileSystem.ReadDiskdefData(AImageType, FDiskdefsPath) and
+    if not (FCpmFileSystem.ReadDiskdefData(AImageType, FDiskdefsFile, FLibdskFile) and
         FCpmFileSystem.MakeFileSystem(AImageFile, BootTracks, AFileSystemLabel, ATimeStampsUsed, AUseUpperCase)) then begin
         MessageDlg(Format('can not make new file system' + LineEnding + '(%s)', [FCpmFileSystem.GetErrorMsg]),
             mtError, [mbOK], 0);
