@@ -3204,6 +3204,12 @@ begin
         Result := False;
         exit;
     end;
+
+    if ((FDrive.Offset > 0) and ((FDrive.Offset mod FDrive.SecLength) = 0)) then begin
+        FFileSystemError := 'offset must be an even multiple of sector size';
+        Result := False;
+        exit;
+    end;
 end;
 
 // --------------------------------------------------------------------------------
