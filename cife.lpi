@@ -23,7 +23,7 @@
       <AutoIncrementBuild Value="True"/>
       <MajorVersionNr Value="1"/>
       <RevisionNr Value="1"/>
-      <BuildNr Value="1720"/>
+      <BuildNr Value="1725"/>
       <StringTable FileDescription="CP/M Image-File Explorer" InternalName="CIFE" OriginalFilename="CIFE"/>
     </VersionInfo>
     <BuildModes>
@@ -743,6 +743,14 @@
       <Unit>
         <Filename Value="Sources/libdsk.pas"/>
         <IsPartOfProject Value="True"/>
+      </Unit>
+      <Unit>
+        <Filename Value="Sources/diskdefsparameter_dialog.pas"/>
+        <IsPartOfProject Value="True"/>
+        <ComponentName Value="DiskdefsParameterDialog"/>
+        <HasResources Value="True"/>
+        <ResourceBaseClass Value="Form"/>
+        <UnitName Value="DiskdefsParameter_Dialog"/>
       </Unit>
     </Units>
   </ProjectOptions>

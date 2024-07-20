@@ -349,6 +349,24 @@ msgstr ""
 msgid "Repair Filesystem Errors"
 msgstr ""
 
+#: tdiskdefsparameterdialog.caption
+msgctxt "tdiskdefsparameterdialog.caption"
+msgid "Diskdefs Parameter"
+msgstr ""
+
+#: tdiskdefsparameterdialog.tabsheet1.caption
+msgctxt "tdiskdefsparameterdialog.tabsheet1.caption"
+msgid "General"
+msgstr ""
+
+#: tdiskdefsparameterdialog.tabsheet2.caption
+msgid "Additional"
+msgstr ""
+
+#: tdiskdefsparameterdialog.tabsheet3.caption
+msgid "Libdsk"
+msgstr ""
+
 #: tfiledialog.buttonopenboottrackfile.caption
 msgctxt "tfiledialog.buttonopenboottrackfile.caption"
 msgid "Browse"
@@ -438,6 +456,11 @@ msgstr ""
 
 #: tmainwindow.actiondelete.caption
 msgid "Delete"
+msgstr ""
+
+#: tmainwindow.actiondiskdefsparameter.caption
+msgctxt "tmainwindow.actiondiskdefsparameter.caption"
+msgid "Diskdefs Parameter"
 msgstr ""
 
 #: tmainwindow.actionformatcurrent.caption
