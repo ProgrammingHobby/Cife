@@ -17,25 +17,26 @@
  *}
 program cife;
 
-{$mode objfpc}{$H+}
+{$mode objfpc}
+{$H+}
 
 uses
- {$IFDEF UNIX}
+    {$IFDEF UNIX}
     cthreads,
- {$ENDIF}
- {$IFDEF HASAMIGA}
+    {$ENDIF}
+    {$IFDEF HASAMIGA}
     athreads,
- {$ENDIF}
+    {$ENDIF}
     Interfaces, // this includes the LCL widgetset
     Forms,
     Dialogs,
-    Main_Window, FileHexEdit_Dialog { you can add units after this };
+    Main_Window { you can add units after this };
 
-{$R *.res}
+    {$R *.res}
 
 begin
     RequireDerivedFormResource := True;
-  Application.Scaled:=True;
+    Application.Scaled := True;
     Application.Initialize;
     Application.CreateForm(TMainWindow, MainWindow);
     Application.Run;

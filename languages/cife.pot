@@ -637,6 +637,11 @@ msgctxt "tsettingsdialog.buttonbrowsediskdefsfile.caption"
 msgid "Browse"
 msgstr ""
 
+#: tsettingsdialog.buttonbrowselibdskfile.caption
+msgctxt "tsettingsdialog.buttonbrowselibdskfile.caption"
+msgid "Browse"
+msgstr ""
+
 #: tsettingsdialog.caption
 msgctxt "tsettingsdialog.caption"
 msgid "Settings"
@@ -667,6 +672,10 @@ msgid "space separated list of textfile endings to be converted during copy Oper
 msgstr ""
 
 #: tsettingsdialog.label3.caption
-msgid "Path to diskdefs file:"
+msgid "Path to diskdefs file :"
+msgstr ""
+
+#: tsettingsdialog.label4.caption
+msgid "Path to LibDsk-Library file :"
 msgstr ""
 
