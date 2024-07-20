@@ -111,7 +111,11 @@ uses StdCtrls, RenameFile_Dialog, StrUtils, Graphics, XMLSettings, Dialogs, Char
 procedure TImagePage.DoShow;
 begin
     inherited DoShow;
-    RefreshDirectory;
+    FCpmTools.ShowDirectory;
+
+    if Assigned(FDirStatisticCallBack) then begin
+        FDirStatisticCallBack(FCpmTools.GetDirectoryStatistic);
+    end;
 
     if Assigned(FFileSystemInfoCallBack) then begin
         FFileSystemInfoCallBack(FCpmTools.GetFileSystemInfo);
@@ -164,7 +168,7 @@ begin
         try
             OpenKey('Settings');
             UpperCase := GetValue('UseUppercaseCharacters', False);
-            LibdskFile:=GetValue('LibdskFile', '');
+            LibdskFile := GetValue('LibdskFile', '');
             CloseKey;
         finally
             Free;
@@ -387,7 +391,6 @@ var
     FileAttr: TWIN32FILEATTRIBUTEDATA;
     SystemTime, LocalTime: TSystemTime;
     {$endif}
-
 begin
 
     with TXMLSettings.Create(SettingsFile) do begin
@@ -902,7 +905,6 @@ var
     WinSystemTime: TSYSTEMTIME;
     FileHandle: THandle;
     {$endif}
-
 begin
     WriteError := False;
     FCpmTools.ReadFileFromImage(ACpmFileName, FileData, FileLength, AIsTextFile, FileTime);
