@@ -289,7 +289,7 @@ begin
         FreeAndNil(FCpmDevice);
     end;
 
-    if (FileExists(ALibdskFile) and (FDrive.LibdskGeometry[0] <> #0)) then begin
+    if (FileExists(ALibdskFile) and ((FDrive.LibdskGeometry[0] <> #0) or (FDrive.LibdskDeviceOptions[0] <> #0))) then begin
         FCpmDevice := TCpmDevice_Libdsk.Create(ALibdskFile);
     end
     else begin
