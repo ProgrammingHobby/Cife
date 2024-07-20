@@ -306,7 +306,12 @@ begin
         FDrive.DirBlks := ((FDrive.MaxDir * 32 + (FDrive.BlkSiz - 1)) div FDrive.BlkSiz);
     end;
 
-    FCpmDevice.SetGeometry(FDrive.SecLength, FDrive.SecTrk, FDrive.Tracks, FDrive.Offset, FDrive.LibdskGeometry);
+    if not FCpmDevice.SetGeometry(FDrive.SecLength, FDrive.SecTrk, FDrive.Tracks, FDrive.Offset, FDrive.LibdskGeometry) then
+    begin
+        FFileSystemError := FCpmDevice.GetErrorMsg;
+        Result := False;
+        exit;
+    end;
 
     // generate skew table
     if (FSkewTab = nil) then begin
