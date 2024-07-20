@@ -1,0 +1,6 @@
+{"version":1,"strings":[
+{"hash":119946722,"name":"tdiskdefsparameterdialog.caption","sourcebytes":[68,105,115,107,100,101,102,115,32,80,97,114,97,109,101,116,101,114],"value":"Diskdefs Parameter"},
+{"hash":231000124,"name":"tdiskdefsparameterdialog.tabsheet1.caption","sourcebytes":[71,101,110,101,114,97,108],"value":"General"},
+{"hash":11288268,"name":"tdiskdefsparameterdialog.tabsheet2.caption","sourcebytes":[65,100,100,105,116,105,111,110,97,108],"value":"Additional"},
+{"hash":87002011,"name":"tdiskdefsparameterdialog.tabsheet3.caption","sourcebytes":[76,105,98,100,115,107],"value":"Libdsk"}
+]}

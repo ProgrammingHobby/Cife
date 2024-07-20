@@ -1,0 +1,173 @@
+object DiskdefsParameterDialog: TDiskdefsParameterDialog
+  Left = 1520
+  Height = 638
+  Top = 250
+  Width = 586
+  Caption = 'Diskdefs Parameter'
+  ClientHeight = 638
+  ClientWidth = 586
+  Font.Pitch = fpFixed
+  OnShow = FormShow
+  Position = poOwnerFormCenter
+  LCLVersion = '3.4.0.0'
+  object ButtonPanel: TButtonPanel
+    Left = 6
+    Height = 34
+    Top = 598
+    Width = 574
+    OKButton.Name = 'OKButton'
+    OKButton.DefaultCaption = True
+    HelpButton.Name = 'HelpButton'
+    HelpButton.DefaultCaption = True
+    CloseButton.Name = 'CloseButton'
+    CloseButton.DefaultCaption = True
+    CancelButton.Name = 'CancelButton'
+    CancelButton.DefaultCaption = True
+    TabOrder = 0
+    ShowButtons = [pbOK]
+    ShowBevel = False
+  end
+  object PageControl1: TPageControl
+    Left = 0
+    Height = 592
+    Top = 0
+    Width = 586
+    ActivePage = TabSheet1
+    Align = alClient
+    AutoSize = True
+    TabIndex = 0
+    TabOrder = 1
+    object TabSheet1: TTabSheet
+      AutoSize = True
+      Caption = 'General'
+      ClientHeight = 558
+      ClientWidth = 576
+      object Memo1: TMemo
+        Left = 0
+        Height = 558
+        Top = 0
+        Width = 576
+        Align = alClient
+        BorderStyle = bsNone
+        Font.Pitch = fpFixed
+        Lines.Strings = (
+          '  General parameters that specify the basic geometry of the image:'
+          ''
+          '      seclen :    Size of a sector in bytes'
+          '      tracks :    Number of tracks (should be an even number)'
+          '      sectrk :    Number of sectors per track'
+          '      blocksize : Size of the allocation units'
+          '                  (possible values: 256 , 512 , 1024 , 2048 , 4096 , 8192'
+          '                  and 16384 bytes. Must be equal to or a multiple of the sector size).'
+          '      maxdir :    Maximum number of directory entries'
+          '      dirblks :   Number of allocation units used for the directory.'
+          '      boottrk :   Number of tracks for the boot area'
+          '      bootsec :   Number of sectors for the boot area'
+          '      os :        System type (possible values: 2.2 , 3 , isx , p2dos , zsys) '
+          ''
+          '  If boottrk and bootsec are both specified, the value of bootsec is used.'
+          '  If maxdir and dirblks are both specified, the value of dirblks is used.'
+        )
+        ParentFont = False
+        ReadOnly = True
+        ScrollBars = ssAutoVertical
+        TabOrder = 0
+        WordWrap = False
+      end
+    end
+    object TabSheet2: TTabSheet
+      AutoSize = True
+      Caption = 'Additional'
+      ClientHeight = 558
+      ClientWidth = 576
+      object Memo2: TMemo
+        Left = 0
+        Height = 558
+        Top = 0
+        Width = 576
+        Align = alClient
+        BorderStyle = bsNone
+        Font.Pitch = fpFixed
+        Lines.Strings = (
+          '  Additional parameters for the extended definition of the image:'
+          '      '
+          '      skew :           Logical sector skew.'
+          '      skewtab :        Skew table (e.g. 1,3,5,7,2,4,6,8'
+          '                       The number of entries must match'
+          '                       the number of sectors/tracks.)'
+          '      offset :         Offset from when the directory and thus the file system'
+          '                       within the image begins (n bytes , n [K]ilobytes ,'
+          '                       n [M]egabytes , n [T]racks , n [S]ectors)'
+          '      logicalextents : Logical extents per physical extent.'
+          '      extentsize :     Logical extent size (if not specified, 16384 is used)  '
+          '      sideorder :      Behavior for emulating double sides disks'
+          '                       (possible values: alternate , outout and outback.'
+          '                       If not specified, alternate is used)'
+          ''
+          '  Sideorder function : '
+          '      alternate - Track n is cylinder (n/heads) head (n%heads)'
+          '      outout -    Tracks go (head 0) 0,1,2,3,...37,38,39'
+          '                       then (head 1) 0,1,2,3,...37,38,39'
+          '      outback -   Tracks go (head 0) 0,1,2,3,...37,38,39'
+          '                       then (head 1) 39,38,37,...,2,1,0'
+        )
+        ParentFont = False
+        ReadOnly = True
+        ScrollBars = ssAutoVertical
+        TabOrder = 0
+        WordWrap = False
+      end
+    end
+    object TabSheet3: TTabSheet
+      AutoSize = True
+      Caption = 'Libdsk'
+      ClientHeight = 558
+      ClientWidth = 576
+      object Memo3: TMemo
+        Left = 0
+        Height = 558
+        Top = 0
+        Width = 576
+        Align = alClient
+        BorderStyle = bsNone
+        Font.Pitch = fpFixed
+        Lines.Strings = (
+          '  Parameters for the Libdsk Library functions:'
+          ''
+          '      libdsk:format :  Libdsk Format Type '
+          '      libdsk:devopts : Libdsk Driver[,Libdsk Format Type]'
+          ''
+          '  libdsk:format and libdsk:devopts can be specified individually or together.'
+          ''
+          '  If libdsk:format is specified alone, the specified format is used and'
+          '  an attempt is made to recognize the appropriate libdsk driver.'
+          ''
+          '  If libdsk:devopts is specified alone and the driver is specified alone,'
+          '  an attempt is made to recognize the format. It is also possible'
+          '  to specify the driver and the format separated by a comma.'
+          ''
+          '  If libdsk:format is specified together with libdsk:devopts,'
+          '  the specified format is used and the driver that is supplied'
+          '  with libdsk:devopts.'
+          ''
+          '  Libdsk Format Type Values:'
+          '      cpcsys , cpcdata , pcw180 , pcw200 , pcw720, pcw800 , pcw1200 ,'
+          '      pcw1440 , ibm160 , ibm320 , ibm360 , ibm720 , ibm1200 , ibm1440 ,'
+          '      acorn160 , acorn320 , acorn640 , acorn800 , acorn1600 , bbc100 ,'
+          '      bbc200 , mbee400 , mgt800 , trdos640 , ampro200 , ampro400d ,'
+          '      ampro400s , ampro800 , myz80 , pcpm320'
+          ''
+          '  Libdsk Driver Values:'
+          '      dsk , edsk , raw , rawoo , rawob , logical , floppy , myz80 , cfi ,'
+          '      imd , jv3 , qm , tele , nanowasp , apridisk , rcpmfs , remote ,'
+          '      ydsk , qrst , ldbs , (additionally for Windows: gotek  , ntwdm , dc42)'
+        )
+        ParentFont = False
+        ReadOnly = True
+        ScrollBars = ssAutoVertical
+        TabOrder = 0
+        WordWrap = False
+      end
+    end
+  end
+end
