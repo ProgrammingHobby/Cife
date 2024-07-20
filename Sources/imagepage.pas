@@ -701,34 +701,37 @@ begin
     DirEntry := DelSpace(DirList.Items[DirList.ItemIndex].Caption);
     TmpFile := RightStr(DirEntry, Length(DirEntry) - Pos(':', DirEntry));
     CpmFileName := Format('%.2d%s', [StrToInt(LeftStr(DirEntry, Pos(':', DirEntry) - 1)), TmpFile]);
-    FCpmTools.ReadFileFromImage(CpmFileName, FileData, FileLength, False, FileTime);
-    try
-        DataStream := TMemoryStream.Create;
-        DataStream.Write(FileData[0], FileLength);
+    if (FCpmTools.ReadFileFromImage(CpmFileName, FileData, FileLength, False, FileTime)) then begin
 
         try
-            Dialog := TFileHexEditDialog.Create(self);
-            Dialog.SetFileData(DataStream, TmpFile);
-            if (Dialog.ShowModal = mrOk) then begin
-                DataStream.Clear;
-                Dialog.GetFileData(DataStream);
-                if (DataStream.Size <> FileLength) then begin
-                    MessageDlg('Error retrieving data from HexEditor', mtError, [mbOK], 0);
-                    exit;
+            DataStream := TMemoryStream.Create;
+            DataStream.Write(FileData[0], FileLength);
+
+            try
+                Dialog := TFileHexEditDialog.Create(self);
+                Dialog.SetFileData(DataStream, TmpFile);
+                if (Dialog.ShowModal = mrOk) then begin
+                    DataStream.Clear;
+                    Dialog.GetFileData(DataStream);
+                    if (DataStream.Size <> FileLength) then begin
+                        MessageDlg('Error retrieving data from HexEditor', mtError, [mbOK], 0);
+                        exit;
+                    end;
+                    SetLength(FileData, 0);
+                    SetLength(FileData, FileLength);
+                    DataStream.Position := 0;
+                    DataStream.Read(FileData[0], FileLength);
+                    FileTime.ModTime := now;
+                    FCpmTools.WriteFileToImage(CpmFileName, FileData, FileLength, False, True, FileTime, True);
+                    RefreshDirectory;
                 end;
-                SetLength(FileData, 0);
-                SetLength(FileData, FileLength);
-                DataStream.Position := 0;
-                DataStream.Read(FileData[0], FileLength);
-                FileTime.ModTime := now;
-                FCpmTools.WriteFileToImage(CpmFileName, FileData, FileLength, False, True, FileTime, True);
-                RefreshDirectory;
+            finally
+                FreeAndNil(Dialog);
             end;
         finally
-            FreeAndNil(Dialog);
+            DataStream.Free;
         end;
-    finally
-        DataStream.Free;
+
     end;
 
 end;
