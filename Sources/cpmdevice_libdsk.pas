@@ -250,6 +250,7 @@ begin
     FLibdskHandle := LoadLibrary(ALibdskFile);
 
     if (FLibdskHandle <> dynlibs.NilHandle) then begin
+        {$ifdef UNIX}
         Fdg_stdformat := Tdg_stdformat(GetProcedureAddress(FLibdskHandle, 'dg_stdformat'));
         Fdsk_open := Tdsk_open(GetProcedureAddress(FLibdskHandle, 'dsk_open'));
         Fdsk_close := Tdsk_close(GetProcedureAddress(FLibdskHandle, 'dsk_close'));
@@ -257,6 +258,18 @@ begin
         Fdsk_getgeom := Tdsk_getgeom(GetProcedureAddress(FLibdskHandle, 'dsk_getgeom'));
         Fdsk_lread := Tdsk_lread(GetProcedureAddress(FLibdskHandle, 'dsk_lread'));
         Fdsk_lwrite := Tdsk_lwrite(GetProcedureAddress(FLibdskHandle, 'dsk_lwrite'));
+        {$endif}
+
+        {$ifdef WINDOWS}
+        Fdg_stdformat := Tdg_stdformat(GetProcedureAddress(FLibdskHandle, '_dg_stdformat@16'));
+        Fdsk_open := Tdsk_open(GetProcedureAddress(FLibdskHandle, '_dsk_open@16'));
+        Fdsk_close := Tdsk_close(GetProcedureAddress(FLibdskHandle, '_dsk_close@4'));
+        Fdsk_strerror := Tdsk_strerror(GetProcedureAddress(FLibdskHandle, '_dsk_strerror@4'));
+        Fdsk_getgeom := Tdsk_getgeom(GetProcedureAddress(FLibdskHandle, '_dsk_getgeom@8'));
+        Fdsk_lread := Tdsk_lread(GetProcedureAddress(FLibdskHandle, '_dsk_lread@16'));
+        Fdsk_lwrite := Tdsk_lwrite(GetProcedureAddress(FLibdskHandle, '_dsk_lwrite@16'));
+        {$endif}
+
     end;
 
 end;
