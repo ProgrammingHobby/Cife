@@ -51,10 +51,10 @@ type
         function GetDirectoryStatistic: TDirStatistic;
         function GetFileInfo(AFileName: string): TFileInfo;
         procedure SetNewAttributes(AFileName: string; AAttributes: cpm_attr_t);
-        procedure WriteFileToImage(ACpmFileName: string; const ABuffer: TBytes; ACount: size_t;
-            AIsTextFile: boolean; APreserveTimeStamps: boolean; ATimes: TUTimeBuf; AAutoOverwrite: boolean = False);
-        procedure ReadFileFromImage(ACpmFileName: string; var ABuffer: TBytes; var ACount: size_t;
-            AIsTextFile: boolean; var ATimes: TUTimeBuf);
+        function WriteFileToImage(ACpmFileName: string; const ABuffer: TBytes; ACount: size_t;
+            AIsTextFile: boolean; APreserveTimeStamps: boolean; ATimes: TUTimeBuf; AAutoOverwrite: boolean = False): boolean;
+        function ReadFileFromImage(ACpmFileName: string; var ABuffer: TBytes; var ACount: size_t;
+            AIsTextFile: boolean; var ATimes: TUTimeBuf): boolean;
     public  // Konstruktor/Destruktor
         constructor Create; overload;
         destructor Destroy; override;
@@ -599,8 +599,8 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-procedure TCpmTools.WriteFileToImage(ACpmFileName: string; const ABuffer: TBytes; ACount: size_t;
-    AIsTextFile: boolean; APreserveTimeStamps: boolean; ATimes: TUTimeBuf; AAutoOverwrite: boolean);
+function TCpmTools.WriteFileToImage(ACpmFileName: string; const ABuffer: TBytes; ACount: size_t;
+    AIsTextFile: boolean; APreserveTimeStamps: boolean; ATimes: TUTimeBuf; AAutoOverwrite: boolean): boolean;
 var
     CpmFile: TCpmFile;
     Inode: TCpmInode;
@@ -609,12 +609,14 @@ var
     IndexI, IndexJ: size_t;
     DataByte: byte;
 begin
+    Result := True;
 
     if FCpmFileSystem.Name2Inode(PChar(ACpmFileName), Inode) then begin
 
         if ((ACount > Inode.Size) and ((ACount - Inode.Size) > FCpmFileSystem.GetFreeFileSpace)) then begin
             MessageDlg(Format('can not write %s' + LineEnding + 'no more space', [ACpmFileName]),
                 mtError, [mbOK], 0);
+            Result := False;
             exit;
         end;
 
@@ -624,6 +626,7 @@ begin
         if (ACount > FCpmFileSystem.GetFreeFileSpace) then begin
             MessageDlg(Format('can not write %s' + LineEnding + 'no more space', [ACpmFileName]),
                 mtError, [mbOK], 0);
+            Result := False;
             exit;
         end;
 
@@ -636,6 +639,7 @@ begin
             FCpmFileSystem.Name2Inode(PChar(ACpmFileName), Inode);
         end
         else begin
+            Result := False;
             exit;
         end;
 
@@ -645,6 +649,7 @@ begin
         if not (FCpmFileSystem.CreateFile(FCpmFileSystem.GetDirectoryRoot, ACpmFileName, Inode, &666)) then begin
             MessageDlg(Format('can not create %s' + LineEnding + '%s', [ACpmFileName, FCpmFileSystem.GetErrorMsg]),
                 mtError, [mbOK], 0);
+            Result := False;
             exit;
         end;
 
@@ -694,6 +699,7 @@ begin
             MessageDlg(Format('can not write %s' + LineEnding + '%s', [ACpmFileName, FCpmFileSystem.GetErrorMsg]),
                 mtError, [mbOK], 0);
             WriteError := True;
+            Result := False;
         end;
 
     end;
@@ -701,6 +707,7 @@ begin
     if (not FCpmFileSystem.CloseFile(CpmFile) and not WriteError) then begin
         MessageDlg(Format('can not close %s' + LineEnding + '%s', [ACpmFileName, FCpmFileSystem.GetErrorMsg]),
             mtError, [mbOK], 0);
+        Result := False;
     end;
 
     if (APreserveTimeStamps and not WriteError) then begin
@@ -710,12 +717,13 @@ begin
     if not FCpmFileSystem.SyncDirectory then begin
         MessageDlg(Format('paste error write back directory' + LineEnding + '%s', [FCpmFileSystem.GetErrorMsg]),
             mtError, [mbOK], 0);
+        Result := False;
     end;
 end;
 
 // --------------------------------------------------------------------------------
-procedure TCpmTools.ReadFileFromImage(ACpmFileName: string; var ABuffer: TBytes; var ACount: size_t;
-    AIsTextFile: boolean; var ATimes: TUTimeBuf);
+function TCpmTools.ReadFileFromImage(ACpmFileName: string; var ABuffer: TBytes; var ACount: size_t;
+    AIsTextFile: boolean; var ATimes: TUTimeBuf): boolean;
 var
     Inode: TCpmInode;
     CpmFile: TCpmFile;
@@ -724,10 +732,12 @@ var
     CrPending: boolean;
     IndexI, IndexJ: integer;
 begin
+    Result := True;
 
     if not FCpmFileSystem.Name2Inode(PChar(ACpmFileName), Inode) then begin
         MessageDlg(Format('can not open %s' + LineEnding + '%s', [ACpmFileName, FCpmFileSystem.GetErrorMsg]),
             mtError, [mbOK], 0);
+        Result := False;
         exit;
     end
     else begin
@@ -741,6 +751,7 @@ begin
             on e: Exception do begin
                 MessageDlg(Format('error creating read buffer.' + LineEnding + '%s', [e.Message]), mtError, [mbOK], 0);
                 ACount := 0;
+                Result := False;
                 exit;
             end;
 
@@ -756,6 +767,7 @@ begin
                 MessageDlg(Format('error reading %s' + LineEnding + '%s', [ACpmFileName, FCpmFileSystem.GetErrorMsg]),
                     mtError, [mbOK], 0);
                 ACount := 0;
+                Result := False;
                 exit;
             end;
 
@@ -810,6 +822,7 @@ begin
                 MessageDlg(Format('error reading %s' + LineEnding + '%s', [ACpmFileName, FCpmFileSystem.GetErrorMsg]),
                     mtError, [mbOK], 0);
                 ACount := 0;
+                Result := False;
                 exit;
             end;
 
