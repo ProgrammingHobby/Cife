@@ -37,8 +37,8 @@ type
 
     public    // Methoden
         function Open(const AFilename: string; const ADeviceOptions: TLibdskDeviceOptions): boolean; virtual;
-        procedure SetGeometry(const ASecLength, ASecTrk, ATracks, AOffset: integer;
-            const ALibdskGeometry: TLibdskGeometry); virtual;
+        function SetGeometry(const ASecLength, ASecTrk, ATracks, AOffset: integer;
+            const ALibdskGeometry: TLibdskGeometry): boolean; virtual;
         function Close: boolean; virtual;
         function ReadSector(const ATrack, ASector: integer; var ABuffer: array of byte): boolean; virtual;
         function WriteSector(const ATrack, ASector: integer; const ABuffer: array of byte): boolean; virtual;
@@ -67,9 +67,10 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-procedure TCpmDevice.SetGeometry(const ASecLength, ASecTrk, ATracks, AOffset: integer; const ALibdskGeometry: TLibdskGeometry);
+function TCpmDevice.SetGeometry(const ASecLength, ASecTrk, ATracks, AOffset: integer;
+    const ALibdskGeometry: TLibdskGeometry): boolean;
 begin
-
+    Result := False;
 end;
 
 // --------------------------------------------------------------------------------

@@ -34,8 +34,8 @@ type
 
     public    // Methoden
         function Open(const AFilename: string; const ADeviceOptions: TLibdskDeviceOptions): boolean; override;
-        procedure SetGeometry(const ASecLength, ASecTrk, ATracks, AOffset: integer;
-            const ALibdskGeometry: TLibdskGeometry); override;
+        function SetGeometry(const ASecLength, ASecTrk, ATracks, AOffset: integer;
+            const ALibdskGeometry: TLibdskGeometry): boolean; override;
         function Close: boolean; override;
         function ReadSector(const ATrack, ASector: integer; var ABuffer: array of byte): boolean; override;
         function WriteSector(const ATrack, ASector: integer; const ABuffer: array of byte): boolean; override;
@@ -91,14 +91,15 @@ begin
 end;
 
 // --------------------------------------------------------------------------------
-procedure TCpmDevice_Posix.SetGeometry(const ASecLength, ASecTrk, ATracks, AOffset: integer;
-    const ALibdskGeometry: TLibdskGeometry);
+function TCpmDevice_Posix.SetGeometry(const ASecLength, ASecTrk, ATracks, AOffset: integer;
+    const ALibdskGeometry: TLibdskGeometry): boolean;
 begin
     FDeviceError := EmptyStr;
     FDevice.SecLength := ASecLength;
     FDevice.SecTrk := ASecTrk;
     FDevice.Tracks := ATracks;
     FDevice.Offset := AOffset;
+    Result := True;
 end;
 
 // --------------------------------------------------------------------------------
