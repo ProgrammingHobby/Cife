@@ -588,7 +588,7 @@ begin
     FCpmTools.SetDiskDefsFile(DiskdefsFile);
     FCpmTools.SetLibdskFile(LibdskFile);
     FTempFolder := GetTempDir(True) + CreateTempFolderName(13) + PathDelim;
-    MkDir(FTempFolder);
+    CreateDir(FTempFolder);
     FEnableAction := [];
 end;
 
