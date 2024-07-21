@@ -69,10 +69,12 @@ type
 
 function SettingsFile: string;
 procedure GetDiskDefsList(APath: string; ADiskDefsList: TComboBox);
+function CheckDiskdefsFile(ADiskdefsFile: string): boolean;
+function CheckLibdskLibrary(ALibdskFile: string): boolean;
 
 implementation
 
-uses ImageTypeInfo;
+uses ImageTypeInfo, dynlibs, libdsk;
 
 // --------------------------------------------------------------------------------
 function SettingsFile: string;
@@ -142,6 +144,112 @@ begin
     end;
 
     ADiskDefsList.Items.EndUpdate;
+end;
+
+// --------------------------------------------------------------------------------
+function CheckDiskdefsFile(ADiskdefsFile: string): boolean;
+var
+    Diskdefs: TStringList;
+    Line: TStringArray;
+    BeginCount, EndCount: integer;
+    IndexI: integer;
+begin
+    Result := True;
+
+    if not FileExists(ADiskdefsFile) then begin
+        Result := False;
+        exit;
+    end;
+
+    try
+        Diskdefs := TStringList.Create;
+        Diskdefs.LoadFromFile(ADiskdefsFile);
+        BeginCount := 0;
+        EndCount := 0;
+        IndexI := 0;
+
+        while (IndexI < Diskdefs.Count) do begin
+            Line := Diskdefs[IndexI].Trim.Split(' ');
+
+            if (Line[0] = 'diskdef') then begin
+                Inc(BeginCount);
+            end;
+
+            if (Line[0] = 'end') then begin
+                Inc(EndCount);
+            end;
+
+            Inc(IndexI);
+        end;
+
+    finally
+        FreeAndNil(Diskdefs);
+    end;
+
+    if (BeginCount <> EndCount) then begin
+        Result := False;
+    end;
+
+end;
+
+// --------------------------------------------------------------------------------
+function CheckLibdskLibrary(ALibdskFile: string): boolean;
+var
+    LibdskHandle: TLibHandle;
+    dg_stdformat: Tdg_stdformat;
+    dsk_open: Tdsk_open;
+    dsk_close: Tdsk_close;
+    dsk_strerror: Tdsk_strerror;
+    dsk_getgeom: Tdsk_getgeom;
+    dsk_lread: Tdsk_lread;
+    dsk_lwrite: Tdsk_lwrite;
+begin
+    Result := True;
+
+    if not FileExists(ALibdskFile) then begin
+        Result := False;
+        exit;
+    end;
+
+    LibdskHandle := LoadLibrary(ALibdskFile);
+
+    if (LibdskHandle <> dynlibs.NilHandle) then begin
+        {$ifdef UNIX}
+        dg_stdformat := Tdg_stdformat(GetProcedureAddress(LibdskHandle, 'dg_stdformat'));
+        dsk_open := Tdsk_open(GetProcedureAddress(LibdskHandle, 'dsk_open'));
+        dsk_close := Tdsk_close(GetProcedureAddress(LibdskHandle, 'dsk_close'));
+        dsk_strerror := Tdsk_strerror(GetProcedureAddress(LibdskHandle, 'dsk_strerror'));
+        dsk_getgeom := Tdsk_getgeom(GetProcedureAddress(LibdskHandle, 'dsk_getgeom'));
+        dsk_lread := Tdsk_lread(GetProcedureAddress(LibdskHandle, 'dsk_lread'));
+        dsk_lwrite := Tdsk_lwrite(GetProcedureAddress(LibdskHandle, 'dsk_lwrite'));
+        {$endif}
+
+        {$ifdef WINDOWS}
+        dg_stdformat := Tdg_stdformat(GetProcedureAddress(LibdskHandle, '_dg_stdformat@16'));
+        dsk_open := Tdsk_open(GetProcedureAddress(LibdskHandle, '_dsk_open@16'));
+        dsk_close := Tdsk_close(GetProcedureAddress(LibdskHandle, '_dsk_close@4'));
+        dsk_strerror := Tdsk_strerror(GetProcedureAddress(LibdskHandle, '_dsk_strerror@4'));
+        dsk_getgeom := Tdsk_getgeom(GetProcedureAddress(LibdskHandle, '_dsk_getgeom@8'));
+        dsk_lread := Tdsk_lread(GetProcedureAddress(LibdskHandle, '_dsk_lread@16'));
+        dsk_lwrite := Tdsk_lwrite(GetProcedureAddress(LibdskHandle, '_dsk_lwrite@16'));
+        {$endif}
+    end;
+
+    if ((LibdskHandle = dynlibs.NilHandle) or not (Assigned(dg_stdformat) and Assigned(dsk_open) and
+        Assigned(dsk_close) and Assigned(dsk_strerror) and Assigned(dsk_getgeom) and Assigned(dsk_lread) and
+        Assigned(dsk_lwrite))) then begin
+        Result := False;
+        exit;
+    end;
+
+    if (LibdskHandle <> dynlibs.NilHandle) then begin
+
+        if (FreeLibrary(LibdskHandle)) then begin
+            LibdskHandle := dynlibs.NilHandle;
+        end;
+
+    end;
+
 end;
 
 // --------------------------------------------------------------------------------

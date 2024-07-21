@@ -10,7 +10,6 @@ object MainWindow: TMainWindow
   OnClose = FormClose
   OnDropFiles = FormDropFiles
   OnShow = FormShow
-  LCLVersion = '3.4.0.0'
   object StatusBar1: TStatusBar
     Left = 4
     Height = 21
@@ -18,7 +17,15 @@ object MainWindow: TMainWindow
     Width = 679
     BorderSpacing.Left = 4
     BorderSpacing.Right = 4
-    Panels = <>
+    Panels = <    
+      item
+        Width = 200
+      end    
+      item
+        Bevel = pbRaised
+        Width = 200
+      end>
+    SimplePanel = False
   end
   object Panel1: TPanel
     Left = 0
@@ -448,7 +455,7 @@ object MainWindow: TMainWindow
       ChildSizing.EnlargeVertical = crsHomogenousChildResize
       ChildSizing.Layout = cclLeftToRightThenTopToBottom
       ChildSizing.ControlsPerLine = 2
-      ClientHeight = 143
+      ClientHeight = 144
       ClientWidth = 98
       Font.Height = -13
       Font.Name = 'Sans'

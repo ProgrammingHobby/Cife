@@ -31,7 +31,7 @@ type
     { TMainWindow }
 
     TMainWindow = class(TForm)
-      actionDiskdefsParameter: TAction;
+        actionDiskdefsParameter: TAction;
         actionClearHistory: TAction;
         actionNew: TAction;
         actionDelete: TAction;
@@ -181,6 +181,7 @@ type
         procedure MenuActionsControl(AMenuAction: TEnableAction);
         function IsTabExisting(AImageFile, AImageType: string): boolean;
         procedure CheckValidClipboardData;
+        procedure CheckPathSettings;
 
         {$ifdef UNIX}
         function IsRegular(const AStrPath: string): boolean;
@@ -567,19 +568,7 @@ begin
                 (PageControl.ActivePage as TImagePage).RefreshDirectory;
             end;
 
-            if (FileExists(GetValue('DiskdefsFile', ''))) then begin
-                actionNew.Enabled := True;
-                actionOpen.Enabled := True;
-                menuitemRecentFiles.Enabled := True;
-                StatusBar1.SimpleText := GetValue('DiskdefsFile', '');
-            end
-            else begin
-                actionNew.Enabled := False;
-                actionOpen.Enabled := False;
-                menuitemRecentFiles.Enabled := False;
-                StatusBar1.SimpleText := '';
-            end;
-
+            CheckPathSettings;
             CloseKey;
         finally
             Free;
@@ -693,25 +682,6 @@ begin
     with TXMLSettings.Create(SettingsFile) do begin
 
         try
-            OpenKey('Settings');
-
-            if (FileExists(GetValue('DiskdefsFile', ''))) then begin
-                actionNew.Enabled := True;
-                actionOpen.Enabled := True;
-                menuitemRecentFiles.Enabled := True;
-                StatusBar1.SimpleText := GetValue('DiskdefsFile', '');
-            end
-            else begin
-                MessageDlg('Diskdefinitions file not found. Please select valid ''diskdefs'' file' +
-                    ' on the Options -> Settings -> General-Settings page.'
-                    , mtError, [mbOK], 0);
-                actionNew.Enabled := False;
-                actionOpen.Enabled := False;
-                menuitemRecentFiles.Enabled := False;
-                StatusBar1.SimpleText := '';
-            end;
-
-            CloseKey;
             RestoreFormState(TForm(self));
         finally
             Free;
@@ -725,6 +695,7 @@ begin
     actionClearHistory.Enabled := FImageFileHistory.Load;
     MenuActionsControl([]);
     FCuttedFilesPage := -1;
+    CheckPathSettings;
 end;
 
 // --------------------------------------------------------------------------------
@@ -983,6 +954,56 @@ begin
         {$endif}
 
     end;
+end;
+
+// --------------------------------------------------------------------------------
+procedure TMainWindow.CheckPathSettings;
+begin
+
+    with TXMLSettings.Create(SettingsFile) do begin
+
+        try
+            OpenKey('Settings');
+
+            if (CheckDiskdefsFile(GetValue('DiskdefsFile', ''))) then begin
+                actionNew.Enabled := True;
+                actionOpen.Enabled := True;
+                menuitemRecentFiles.Enabled := True;
+                StatusBar1.Panels[0].Text := 'Diskdefinitions file present';
+            end
+            else begin
+                MessageDlg('No valid diskdefinitions file found. Please select valid ''diskdefs'' file' +
+                    ' on the Options -> Settings -> General-Settings page.' + 'Settings Entry cleared.'
+                    , mtError, [mbOK], 0);
+                actionNew.Enabled := False;
+                actionOpen.Enabled := False;
+                menuitemRecentFiles.Enabled := False;
+                StatusBar1.Panels[0].Text := '';
+                DeleteValue('DiskdefsFile');
+            end;
+
+
+            if (GetValue('LibdskFile', '').IsEmpty) then begin
+                StatusBar1.Panels[1].Text := '';
+            end
+            else if (CheckLibdskLibrary(GetValue('LibdskFile', ''))) then begin
+                StatusBar1.Panels[1].Text := 'Libdsk library present';
+            end
+            else begin
+                MessageDlg('No valid Libdsk library found. Please select valid ''Libdsk library'' file' +
+                    ' on the Options -> Settings -> General-Settings page.' + 'Settings Entry cleared.'
+                    , mtError, [mbOK], 0);
+                StatusBar1.Panels[1].Text := '';
+                DeleteValue('LibdskFile');
+            end;
+
+            CloseKey;
+        finally
+            Free;
+        end;
+
+    end;
+
 end;
 
 {$ifdef UNIX}
