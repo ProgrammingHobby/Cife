@@ -182,6 +182,7 @@ type
         function IsTabExisting(AImageFile, AImageType: string): boolean;
         procedure CheckValidClipboardData;
         procedure CheckPathSettings;
+        procedure RestoreLastOpenedImagePages;
 
         {$ifdef UNIX}
         function IsRegular(const AStrPath: string): boolean;
@@ -674,14 +675,32 @@ begin
     labelOs.Constraints.MinWidth := LabelWidth;
     groupDriveData.AutoSize := False;
 
+    actionClose.Enabled := False;
+    FImageFileHistory := TImageFileHistory.Create(menuitemRecentFiles);
+    FImageFileHistory.SetHistoryMenuItemsEvent(@HistoryMenuItemClick);
+    actionClearHistory.Enabled := FImageFileHistory.Load;
+    MenuActionsControl([]);
+
     SetAutoSize(True);
     Constraints.MinWidth := Width;
     Constraints.MinHeight := Height;
     SetAutoSize(False);
+    CheckPathSettings;
 
     with TXMLSettings.Create(SettingsFile) do begin
 
         try
+            OpenKey('Settings');
+
+            if (GetValue('OpenLastImages', False)) then begin
+
+                if (GetValue('DiskdefsFile', '') <> '') then begin
+                    RestoreLastOpenedImagePages;
+                end;
+
+            end;
+
+            CloseKey;
             RestoreFormState(TForm(self));
         finally
             Free;
@@ -689,13 +708,7 @@ begin
 
     end;
 
-    actionClose.Enabled := False;
-    FImageFileHistory := TImageFileHistory.Create(menuitemRecentFiles);
-    FImageFileHistory.SetHistoryMenuItemsEvent(@HistoryMenuItemClick);
-    actionClearHistory.Enabled := FImageFileHistory.Load;
-    MenuActionsControl([]);
     FCuttedFilesPage := -1;
-    CheckPathSettings;
 end;
 
 // --------------------------------------------------------------------------------
@@ -1002,6 +1015,71 @@ begin
             Free;
         end;
 
+    end;
+
+end;
+
+// --------------------------------------------------------------------------------
+procedure TMainWindow.RestoreLastOpenedImagePages;
+var
+    IndexI: integer;
+    HistoryEntry: THistoryEntry;
+    ImagePage: TImagePage;
+    TestBox: TComboBox;
+begin
+
+    try
+        TestBox := TComboBox.Create(nil);
+
+        with TXMLSettings.Create(SettingsFile) do begin
+
+            try
+                OpenKey('Settings');
+                GetDiskDefsList(GetValue('DiskdefsFile', ''), TestBox);
+                CloseKey;
+            finally
+                Free;
+            end;
+
+        end;
+
+
+        for IndexI := FImageFileHistory.GetHistoryItemsCount - 1 downto 0 do begin
+            HistoryEntry := FImageFileHistory.GetHistoryEntry(IndexI);
+            ImagePage := TImagePage.Create(PageControl);
+            ImagePage.SetFileSystemInfoCallBack(@ShowImageInfo);
+            ImagePage.SetDirectoryStatisticCallBack(@ShowDirectoryStatistic);
+            ImagePage.SetMenuActionCallBack(@MenuActionsControl);
+            ImagePage.SetPopupMenu(PopupMenu1);
+
+            if ((TestBox.Items.IndexOf(HistoryEntry.FileType) <> -1) and
+                (ImagePage.OpenImage(HistoryEntry.FileName, HistoryEntry.FileType))) then begin
+                ImagePage.Caption := ExtractFileName(HistoryEntry.FileName);
+                ImagePage.PageControl := PageControl;
+                PageControl.ActivePage := ImagePage;
+
+                if (PageControl.PageCount > 0) then begin
+                    actionClose.Enabled := True;
+                    actionClearHistory.Enabled := True;
+                    AllowDropFiles := True;
+                end;
+
+            end
+            else begin
+                FreeAndNil(ImagePage);
+            end;
+
+        end;
+
+    finally
+        TestBox.Items.BeginUpdate;
+
+        for IndexI := 0 to TestBox.Items.Count - 1 do begin
+            TestBox.Items.Objects[IndexI].Free;
+        end;
+
+        TestBox.Items.EndUpdate;
+        FreeAndNil(TestBox);
     end;
 
 end;
