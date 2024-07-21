@@ -45,6 +45,7 @@ type
         procedure AddItem(AImageFile: string; AImageType: string);
         procedure DeleteItem(AItem: integer);
         function GetHistoryEntry(AItem: integer): THistoryEntry;
+        function GetHistoryItemsCount: integer;
         function Load: boolean;
         function Save: boolean;
     public  // Konstruktor/Destruktor
@@ -164,6 +165,12 @@ begin
     end;
 
     Result := HistoryEntry;
+end;
+
+// --------------------------------------------------------------------------------
+function TImageFileHistory.GetHistoryItemsCount: integer;
+begin
+    Result := FHistoryItemsCount;
 end;
 
 // --------------------------------------------------------------------------------
